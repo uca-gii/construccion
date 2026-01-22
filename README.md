@@ -2,7 +2,7 @@
 
 Apuntes de Implementación e Implantación de Sistemas Software
 
-Curso 2024-25
+Curso XXXX-XX
 
 
 ## Slides
