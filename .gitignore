@@ -59,6 +59,8 @@ build/Release
 # Dependency directories
 node_modules/
 jspm_packages/
+marp/package.json
+marp/package-lock.json
 
 # TypeScript v1 declaration files
 typings/
