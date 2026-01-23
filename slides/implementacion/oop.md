@@ -627,21 +627,24 @@ public static void TestCars1()
 
 `TestCars` produce la salida siguiente:
 
-```csharp
-// TestCars1
-// ----------  
-// Four wheels and an engine.  
-// Standard transportation.  
-// ----------  
-// Four wheels and an engine.  
-// Standard transportation.  
-// ----------  
-// Four wheels and an engine.  
-// Carries seven people.  
-// ----------  
+```txt
+TestCars1
+----------  
+Four wheels and an engine.  
+Standard transportation.  
+----------  
+Four wheels and an engine.  
+Standard transportation.  
+----------  
+Four wheels and an engine.  
+Carries seven people.  
+----------  
 ```
 
-- ¿Los resultados son los esperados?
+¿Los resultados son los esperados?
+
+---
+
 - El tipo del segundo objeto de la lista es `ConvertibleCar`, pero `DescribeCar` no accede a la versión de `ShowDetails` definida en `ConvertibleCar` (debido a `new`).
 - El tipo del tercer objeto de la lista es `Minivar`, que redefine con `override` el método `ShowDetails` declarado en la clase base.
 
@@ -671,16 +674,16 @@ public static void TestCars3()
 
 Estos métodos producirían las salidas siguientes:
 
-```csharp
-// TestCars2
-// ----------  
-// A roof that opens up.  
-// Carries seven people.  
+```txt
+TestCars2
+----------  
+A roof that opens up.  
+Carries seven people.  
   
-// TestCars3  
-// ----------  
-// Standard transportation.  
-// Carries seven people.  
+TestCars3  
+----------  
+Standard transportation.  
+Carries seven people.  
 ```
 
 - En `TextCars2`, el tipo de los objetos creados coincide con el tipo declarado.
