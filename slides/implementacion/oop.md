@@ -6,6 +6,7 @@ date: Enero 2026
 subject: Implementación e Implantación de Sistemas Software, curso 2025/26
 title: Principios de POO
 description: Apuntes de Implementación e Implantación de Sistemas Software
+math: mathjax
 ---
 
 <!-- size: 16:9 -->
@@ -52,7 +53,7 @@ p {
 }
 </style>
 
-**Ocultar la implementación**
+**Ocultar** la implementación
 
 ---
 
@@ -70,12 +71,10 @@ p {
 
 ## Principios básicos de la construcción de software (OO)
 
-
-
-- __Abstracción__: diferenciar el *qué* y el *cómo*
-- __Modularidad__: componentes, módulos (en OO, clases y objetos), interfaces, etc.
-- $\bigtriangleup$ __cohesión__: módulos auto-contenidos, independientes y con un único propósito
-- $\bigtriangledown$ __acoplamiento__: reducir las dependencias entre módulos
+- **Abstracción**: diferenciar el *qué* y el *cómo*
+- **Modularidad**: componentes, módulos (en OO, clases y objetos), interfaces, etc.
+- $\bigtriangleup$ **cohesión**: módulos auto-contenidos, independientes y con un único propósito
+- $\bigtriangledown$ **acoplamiento**: reducir las dependencias entre módulos
 
 ---
 
@@ -118,7 +117,7 @@ En relación a los principios de _alta cohesión_ y _bajo acoplamiento_, critica
 ## Cohesión
 
 > Cohesion refers to the degree to which the elements inside a module belong together
-> 
+>
 > --- E. Yourdon & L. Constantine. <emph>Structured Design: Fundamentals of a Discipline of Computer Program and Systems Design.</emph> Prentice Hall, 2nd edition, 1986.
 
 ---
@@ -139,8 +138,8 @@ h3 {
 
 #### Problemáticas de Lista v0.1
 
-- Baja __cohesión__
-- Alta __variabilidad__ no bien tratada $\rightarrow$ poca __flexibilidad__
+- Baja **cohesión**
+- Alta **variabilidad** no bien tratada $\rightarrow$ poca **flexibilidad**
 
 ---
 
@@ -193,8 +192,8 @@ h3 {
 
 #### Problemáticas de Lista v0.2
 
-- Muchas __dependencias__ (provocadas por el exceso de herencia) $\rightarrow$ excesivo __acoplamiento__
-- Poca __flexibilidad__
+- Muchas **dependencias** (provocadas por el exceso de herencia) $\rightarrow$ excesivo **acoplamiento**
+- Poca **flexibilidad**
 
 ---
 
@@ -208,7 +207,7 @@ h2 {
 
 ## Implementación alternativa: Lista v0.3
 
-Delegar funcionalidad hacia las subclases (vía __herencia__).
+Delegar funcionalidad hacia las subclases (vía **herencia**).
 
 Criticar la implementación:
 
@@ -240,8 +239,8 @@ h3 {
 
 #### Problemáticas de Lista v0.3
 
-- Elevada __complejidad__. Si hay que crear nuevos tipos de recorrido, se abusará de la [herencia como _estructura_](#ejemplo-herencia-como-estructura)
-- La __variabilidad__ no está bien tratada $\rightarrow$ poca __flexibilidad__, mala __reutilización__
+- Elevada **complejidad**. Si hay que crear nuevos tipos de recorrido, se abusará de la herencia como _estructura_
+- La **variabilidad** no está bien tratada $\rightarrow$ poca **flexibilidad**, mala **reutilización**
 
 ---
 
@@ -262,7 +261,7 @@ p {
 
 ## Implementación alternativa: Lista v0.4
 
-__Delegar__ hacia otra clase
+**Delegar** hacia otra clase
 
 ```java
   public interface List<T> {
@@ -290,9 +289,9 @@ __Delegar__ hacia otra clase
 
 ### Ventajas de Lista v0.4
 
-- Mayor __cohesión__: Las responsabilidades están ahora separadas: `List` almacena, `Iterator` recorre. `List` está más cohesionada
-- Para hacer `List` más cohesionada, se ha tenido que introducir una __dependencia__ (acoplamiento)
-- Uso de __delegación__ (o _composición_) en lugar de la herencia: la responsabilidad de recorrer se ha delegado hacia otro sitio
+- Mayor   **cohesión**: Las responsabilidades están ahora separadas: `List` almacena, `Iterator` recorre. `List` está más cohesionada
+- Para hacer `List` más cohesionada, se ha tenido que introducir una **dependencia** (acoplamiento)
+- Uso de **delegación** (o _composición_) en lugar de la herencia: la responsabilidad de recorrer se ha delegado hacia otro sitio
 
 ---
 
@@ -300,11 +299,11 @@ __Delegar__ hacia otra clase
 
 Los principios aplicados han sido:
 
-- __Abstracción__: diferenciar el *qué* y el *cómo*
-- __Cohesión__ (maximizar): módulos auto-contenidos, independientes y con un
+- **Abstracción**: diferenciar el *qué* y el *cómo*
+- **Cohesión** (maximizar): módulos auto-contenidos, independientes y con un
     único propósito
-- __Acoplamiento__ (minimizar): dependencias entre módulos
-- __Modularidad__: clases, interfaces y componentes/módulos
+- **Acoplamiento** (minimizar): dependencias entre módulos
+- **Modularidad**: clases, interfaces y componentes/módulos
 
 ---
 
@@ -322,12 +321,12 @@ Reducir el acoplamiento usando módulos o componentes con distintas responsabili
 
 ### Técnicas de ocultación
 
-- __Encapsular__: agrupar en módulos y clases
-- __Visibilidad__: `public`, `private`, `protected`, etc.
-- __Delegación__: incrementar la cohesión extrayendo funcionalidad pensada para otros propósitos fuera de un módulo
-- __Herencia__: delegar _en vertical_
-- __Polimorfismo__: ocultar la implementación de un método, manteniendo la misma interfaz de la clase base
-- __Interfaces__: usar interfaces bien documentadas
+- **Encapsular**: agrupar en módulos y clases
+- **Visibilidad**: `public`, `private`, `protected`, etc.
+- **Delegación**: incrementar la cohesión extrayendo funcionalidad pensada para otros propósitos fuera de un módulo
+- **Herencia**: delegar _en vertical_
+- **Polimorfismo**: ocultar la implementación de un método, manteniendo la misma interfaz de la clase base
+- **Interfaces**: usar interfaces bien documentadas
 
 ---
 
@@ -389,13 +388,13 @@ class Complejo(real: Double, imaginaria: Double) {
 
 - Cuando se redefine un método abstracto, no es necesario `override`
 - Pero si se quiere redefinir un método concreto, `override` es necesario para evitar sobreescrituras accidentales.
-- En Scala, el riesgo de redefinición accidental de métodos es mayor debido a los mixins (`trait` en Scala). 
+- En Scala, el riesgo de redefinición accidental de métodos es mayor debido a los mixins (`trait` en Scala).
 
 ---
 
 ### Scala Traits
 
-Un __trait__ es una forma de separar las dos principales responsabilidades de una clase: definir el __estado__ de sus instancias y definir su __comportamiento__.
+Un **trait** es una forma de separar las dos principales responsabilidades de una clase: definir el **estado** de sus instancias y definir su **comportamiento**.
 
 - Las clases y los objetos en Scala pueden extender un `trait`
 - Los `trait`de Scala son similares a las `interface` de Java.
@@ -561,7 +560,7 @@ Si no se añade `@Override`, podemos confundirnos y hacer un _overload_ accident
 
 ---
 
-#### Ejemplo 4: Override en C#
+#### Ejemplo 4: Override en C\#
 
 - `DescribeCar` muestra una descripción básica de un coche y llama a `ShowDetails` para información adicional.
 - Cada clase define su propia versión de `ShowDetails`
@@ -691,7 +690,6 @@ Carries seven people.
 
 ---
 
-
 ## Moldes o _casting_
 
 - *Upcasting:* Interpretar un objeto de una clase derivada como del mismo tipo que la clase base
@@ -811,7 +809,7 @@ public class Aventura {
   - ¿Hay herencia sólo de comportamiento? Pista: pensar en C++
   
 - Herencia como **tipo** vs herencia como **estructura**:
-  - En herencia de tipos, cada subclase es un subtipo. Debe satisfacerse el principio de __sustitución__ de Liskov (LSP, _Liskov Substitution Principle_): toda operación que funciona para un objeto de la clase $C$ también debe funcionar para un objeto de una subclase de $C$
+  - En herencia de tipos, cada subclase es un subtipo. Debe satisfacerse el principio de **sustitución** de Liskov (LSP, _Liskov Substitution Principle_): toda operación que funciona para un objeto de la clase $C$ también debe funcionar para un objeto de una subclase de $C$
   - Usar la herencia como una forma de estructurar programas es **erróneo**, pues provoca que no se satisfaga la propiedad LSP.
 
 ---
@@ -994,7 +992,7 @@ class ChecksumWriter extends ConsoleWriter {
 
 ---
 
-##### Ejemplo: Herencia fuera de control
+#### Ejemplo: Herencia fuera de control
 
 @startuml
 
@@ -1015,7 +1013,6 @@ WithSpacesWriter <|-- UppercaseWithSpacesWriter
 WithSpacesWriter <|-- ChecksumWithSpacesWriter
 ChecksumWriter <|-- ChecksumWithSpacesWriter
 UppercaseWriter <|-- UppercaseWithSpacesWriter
-
 
 UppercaseWithSpacesWriter <|-- UppercaseChecksumWithSpacesWriter
 ChecksumWithSpacesWriter <|-- UppercaseChecksumWithSpacesWriter
@@ -1040,7 +1037,6 @@ p {
 ¡Mal uso de la herencia!
 
 ---
-
 
 ### Ejemplo 2 (Scala): herencia de interfaz (traits)
 
@@ -1078,10 +1074,12 @@ object Test {
 ```
 
 Genera la salida:
-```
+
+```txt
 ABC
 A B C
 ```
+
 ---
 
 ### Stackable traits
@@ -1164,7 +1162,7 @@ public class Square: Rectangle {
 ```
 
 Nota: [Diferencia entre `new` y `override` en C#](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/knowing-when-to-use-override-and-new-keywords)
- 
+
 ---
 
 - El comportamiento de un objeto `Square` no es consistente con el de un objeto `Rectangle`:
@@ -1241,10 +1239,9 @@ public class Square: Rectangle
 
 - La [diferencia entre `new` y `override` en un método en C#](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/knowing-when-to-use-override-and-new-keywords) es que `new` oculta la implementación de la clase base y `override` la extiende.
 
-Sin embargo, cuando la creación de una clase derivada provoca cambios en la clase base, es síntoma de un __mal diseño__.
+Sin embargo, cuando la creación de una clase derivada provoca cambios en la clase base, es síntoma de un **mal diseño**.
 
 El principio LSP pone en evidencia que la relación **es-un** tiene que ver con el comportamiento público extrínseco, del que los clientes dependen.
-
 
 ---
 
@@ -1266,9 +1263,9 @@ void g(Rectangle r)
 
 ¿Qué pasa si llamamos a `g(new Square(3))`?
 
-El autor de `g` asumió que cambiar el ancho de un rectángulo deja intacto el alto. Si pasamos un cuadrado esto no es así 
+El autor de `g` asumió que cambiar el ancho de un rectángulo deja intacto el alto. Si pasamos un cuadrado esto no es así.
 
-__Violación de LSP__: Si pasamos una instancia de una clase derivada (`Square`), se altera el comportamiento definido por la clase base (`Rectangle`) de forma que `g` deja de funcionar.
+**Violación de LSP**: Si pasamos una instancia de una clase derivada (`Square`), se altera el comportamiento definido por la clase base (`Rectangle`) de forma que `g` deja de funcionar.
 
 ---
 
