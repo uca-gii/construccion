@@ -149,6 +149,16 @@ h2 {
   color: blue;
 
 }
+pre code {
+  font-size: 0.80em;      /* 75% del tamaño base */
+  line-height: 1.2;       /* compacta líneas */
+  white-space: pre-wrap;  /* envuelve líneas largas */
+  word-break: break-word; /* evita desbordes horizontales */
+}
+pre {
+  padding: 10px;          /* reduce padding del bloque */
+  margin: 8px 0;          /* reduce márgenes verticales */
+}
 </style>
 
 ## Implementación alternativa: Lista v0.2
@@ -277,7 +287,13 @@ p {
     boolean isEqualTo(List<T>);
     Iterator<T> iterator();
   }
+```
 
+---
+
+Java `Iterator` interface:
+
+```java
   public interface Iterator<E> {
     boolean hasNext();
     E next();
@@ -1185,6 +1201,20 @@ Nota: [Diferencia entre `new` y `override` en C#](https://docs.microsoft.com/en-
 - Podría argumentarse que el error era que los métodos `Width`y `Height` no se declararon `virtual` en `Rectangle`.
 
 ---
+
+<style scoped>
+/* Solo bloques de código (no afecta al código inline) */
+pre code {
+  font-size: 0.75em;      /* 75% del tamaño base */
+  line-height: 1.2;       /* compacta líneas */
+  white-space: pre-wrap;  /* envuelve líneas largas */
+  word-break: break-word; /* evita desbordes horizontales */
+}
+pre {
+  padding: 10px;          /* reduce padding del bloque */
+  margin: 8px 0;          /* reduce márgenes verticales */
+}
+</style>
 
 ### Ejemplo: rectángulos versión 0.3
 
