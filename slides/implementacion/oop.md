@@ -25,6 +25,14 @@ h2 {
 emph {
   color: #E87B00;
 }
+.cols {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+.cols > div {
+  align-self: start;
+}
 </style>
 
 # OBJETOS
@@ -149,41 +157,44 @@ h2 {
   color: blue;
 
 }
-pre code {
-  font-size: 0.80em;      /* 75% del tamaño base */
-  line-height: 1.2;       /* compacta líneas */
-  white-space: pre-wrap;  /* envuelve líneas largas */
-  word-break: break-word; /* evita desbordes horizontales */
-}
-pre {
-  padding: 10px;          /* reduce padding del bloque */
-  margin: 8px 0;          /* reduce márgenes verticales */
-}
 </style>
 
 ## Implementación alternativa: Lista v0.2
 
 Hay que crear nuevos tipos de recorrido. Ampliamos la interfaz...
 
+<div class="cols">
+<div>
+
 ```java
-  public interface List<T> {
-    public void addFirst(T value);
-    public void removeFirst();
-    public void addLast(T value);
-    public void removeLast();
-    public T first();
-    public T last();
-    public boolean isEmpty();
-    public int length();
-    public List<T> clone();
-    public boolean isEqualTo(List<T>);
-    public void traverseForward();
-    public void traverseBackWard();
-    public void traverseEvens(); //pares
-    public void traverseOdds();  //impares
-    // etc...
-  }
+public interface List<T> {
+  public void addFirst(T value);
+  public void removeFirst();
+  public void addLast(T value);
+  public void removeLast();
+  public T first();
+  public T last();
+  public boolean isEmpty();
+  public int length();
+  public List<T> clone();
+  public boolean isEqualTo(List<T>);
+  ...
 ```
+
+</div>
+<div>
+
+```java
+  ...
+  public void traverseForward();
+  public void traverseBackWard();
+  public void traverseEvens(); //pares
+  public void traverseOdds();  //impares
+}
+```
+
+</div>
+</div>
 
 ---
 
@@ -273,33 +284,38 @@ p {
 
 **Delegar** hacia otra clase
 
-```java
-  public interface List<T> {
-    void addFirst(T value);
-    void removeFirst();
-    void addLast(T value);
-    void removeLast();
-    T first();
-    T last();
-    boolean isEmpty();
-    int length();
-    List<T> clone();
-    boolean isEqualTo(List<T>);
-    Iterator<T> iterator();
-  }
-```
-
----
-
-Java `Iterator` interface:
+<div class="cols">
+<div>
 
 ```java
-  public interface Iterator<E> {
-    boolean hasNext();
-    E next();
-    void remove();
-  }
+public interface List<T> {
+  void addFirst(T value);
+  void removeFirst();
+  void addLast(T value);
+  void removeLast();
+  T first();
+  T last();
+  boolean isEmpty();
+  int length();
+  List<T> clone();
+  boolean isEqualTo(List<T>);
+  Iterator<T> iterator();
+}
 ```
+
+</div>
+<div>
+
+```java
+public interface Iterator<E> {
+  boolean hasNext();
+  E next();
+  void remove();
+}
+```
+
+</div>
+</div>
 
 ---
 
@@ -1202,23 +1218,12 @@ Nota: [Diferencia entre `new` y `override` en C#](https://docs.microsoft.com/en-
 
 ---
 
-<style scoped>
-/* Solo bloques de código (no afecta al código inline) */
-pre code {
-  font-size: 0.75em;      /* 75% del tamaño base */
-  line-height: 1.2;       /* compacta líneas */
-  white-space: pre-wrap;  /* envuelve líneas largas */
-  word-break: break-word; /* evita desbordes horizontales */
-}
-pre {
-  padding: 10px;          /* reduce padding del bloque */
-  margin: 8px 0;          /* reduce márgenes verticales */
-}
-</style>
-
 ### Ejemplo: rectángulos versión 0.3
 
-Hacemos que los métodos `Width`y `Height` sean `virtual`...
+Hacemos que los métodos `Width`y `Height` sean [`virtual` en C\#]((https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/virtual)):
+
+<div class="cols">
+<div>
 
 ```csharp
 public class Rectangle
@@ -1239,13 +1244,11 @@ public class Rectangle
 }
 ```
 
-Nota: [Métodos redefinibles con `virtual` en C#](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/virtual)
-
----
+</div>
+<div>
 
 ```csharp
-public class Square: Rectangle
-{
+public class Square: Rectangle {
   public override double Width
   {
     set {
@@ -1262,6 +1265,9 @@ public class Square: Rectangle
   }
 }
 ```
+
+</div>
+</div>
 
 ---
 
