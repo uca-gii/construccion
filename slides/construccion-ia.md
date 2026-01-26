@@ -41,30 +41,25 @@ emph {
 ## El impacto de las herramientas de IA en la construcción de software
 
 <!-- 
-Slide de portada: Aquí empezamos fuerte presentando el tema principal. Vamos a hablar de cómo 
-las herramientas de IA (Copilot, Claude, Cursor, etc.) están cambiando la forma en que construimos 
-software. No es solo "escribir código más rápido", sino algo mucho más profundo y transformador.
+Vamos a hablar de cómo  las herramientas de IA (Copilot, Claude, Cursor, etc.) están cambiando la forma en que construimos  software. No es solo "escribir código más rápido", sino algo mucho más profundo y transformador.
 -->
 
 ---
 
 <!-- paginate: true -->
 
-## Experimento de Eduardo Ferro: 11 semanas de desarrollo con IA
+## Experimento de desarrollo con IA
 
 <!-- 
-Esta slide presenta el experimento de Eduardo Ferro, un tío que es manager de ingeniería (no un 
-programador a tiempo completo). Se puso a programar con IA durante 11 semanas y midió TODO: cada 
-commit, cada línea, cada cambio. Lo interesante es que no son proyectos de juguete, sino sistemas 
-reales de producción que usa gente de verdad. Fíjate en el dato: 9.6 commits al día, el doble de 
-su velocidad normal. Y lo más alucinante: eliminó el 40.9% del código que tocó. ¡Menos es más!
+Experimento de Eduardo Ferro. Se puso a programar con IA durante 11 semanas y midió TODO: cada commit, cada línea, cada cambio. No son proyectos de juguete, sino sistemas  reales de producción que usa la gente. Fíjate en el dato: el doble de  su velocidad normal de comits. Y lo mejor: eliminó el 40.9% del código que tocó. ¡Menos es más!
 -->
 
 <div class="cols">
 <div>
 
-**Contexto (Eduardo Ferro, 2025-2026)**
-- Engineering Manager (no desarrollador full-time)
+### Contexto
+
+- Experimento de Eduardo Ferro
 - 424 commits en 11 semanas
 - 6 repositorios de producción
 - 100% del código con asistencia IA
@@ -73,10 +68,11 @@ su velocidad normal. Y lo más alucinante: eliminó el 40.9% del código que toc
 </div>
 <div>
 
-**Métrica clave**
-- 9.6 commits/día (x2 velocidad normal)
-- 135,485 líneas cambiadas
-- 40.9% de código eliminado
+### Métricas
+
+- 9,6 commits/día (x2 velocidad normal)
+- 135.485 líneas cambiadas
+- 40,9% de código eliminado
 - Ratio Funcionalidad:Sostenibilidad = **0.23:1**
 
 </div>
@@ -84,29 +80,24 @@ su velocidad normal. Y lo más alucinante: eliminó el 40.9% del código que toc
 
 ---
 
-## El Cambio de Paradigma
+## Cambio de paradigma
 
 <!-- 
-Aquí está el cambio mental clave. Antes pensábamos: "más código = más funcionalidades = más valor".
-Pero resulta que eso es un espejismo. Lo que realmente da valor es poder iterar rápido con confianza,
-y para eso necesitas un código sostenible, con buenos tests, bien documentado. La IA no inventó esto
-(los buenos desarrolladores siempre lo supieron), pero SÍ hizo que fuera económicamente viable. Antes
+Aquí está el cambio mental clave. Antes pensábamos: "más código = más funcionalidades = más valor". Pero lo que realmente da valor es poder iterar rápido con confianza,
+y para eso necesitas un código sostenible, con buenos tests, bien documentado.
+La IA no inventó esto, pero sí hizo que fuera económicamente viable. Antes
 era un lujo, ahora es accesible.
 -->
 
-### Antes: Velocidad = Más Features
+### Antes
 
-```
-Más código → Más features → Más valor (?)
-```
+- Más código → Más _features_ → Más valor (?)
 
 ### Ahora: Velocidad = Sostenibilidad
 
-```
-Mejor código → Feedback loops → Iteración rápida → Más valor
-```
+- Mejor código → Feedback → Iteraciones rápidas → Más valor
 
-<emph>La IA no cambió lo que es importante. Cambió lo que es económicamente viable.</emph>
+<emph>La IA no cambió lo que es importante, sino lo que es económicamente viable.</emph>
 
 ---
 
@@ -126,6 +117,7 @@ documentación... Esto no es perder el tiempo, es invertir en poder ir rápido S
 - **98.3%** Sostenibilidad (suma >100% porque no son excluyentes)
 
 #### Desglose de Sostenibilidad:
+
 - **30.7%** Tests
 - **19.0%** Documentación  
 - **13.8%** Cleanup (código muerto, simplificación)
