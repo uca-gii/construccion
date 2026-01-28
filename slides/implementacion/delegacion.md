@@ -29,68 +29,135 @@ h2 {
 
 ---
 
+<style scoped>
+.cols {
+  display: grid;
+  grid-template-columns: 25% 75%;
+  gap: 1rem; /* opcional: espacio entre columnas */
+}
+</style>
+
 ### Versión inicial: Orquesta v0.1
 
-Criticar la solución siguiente (parte 1):
+<div class="cols">
+<div>
+
+Criticar la siguiente implementación de una orquesta.
+
+- Los instrumentos abstractos...
+
+</div>
+<div>
 
 ```java
-  abstract class Instrumento {
-      public void tocar() { }
-      public static void afinarInstrumento(Instrumento i)
-      {
-         // Afinar en funcion del tipo de i
-         if (i instanceof Viento)
-            afinarViento(i);
-         else if (i instanceof Cuerda)
-            afinarCuerda(i);
-         // Probar que esta afinado
-         i.tocar();  
-      }
-      public static void afinarViento(Viento i)
-      { System.out.println("afinal soplido"); }
-
-      public static void afinarCuerda(Cuerda i)
-      { System.out.println("afinar rasgado"); }
+abstract class Instrumento {
+  public void tocar() { }
+  public static void afinarInstrumento(Instrumento i)
+  {
+    // Afinar en funcion del tipo de i
+    if (i instanceof Viento)
+      afinarViento(i);
+    else if (i instanceof Cuerda)
+      afinarCuerda(i);
+    // Probar que esta afinado
+    i.tocar();  
   }
+  public static void afinarViento(Viento i)
+  { System.out.println("afinal soplido"); }
+
+  public static void afinarCuerda(Cuerda i)
+  { System.out.println("afinar rasgado"); }
+}
 ```
+
+</div>
+</div>
 
 ---
 
-```java
-  class Viento extends Instrumento {
-      public void tocar() { soplar(); }
-      public void afinar() { System.out.println("afinar soplido"); }
-      public void soplar() { System.out.println("soplar"); }
-  }
+<style scoped>
+.cols {
+  display: grid;
+  grid-template-columns: 25% 75%;
+  gap: 1rem; /* opcional: espacio entre columnas */
+}
+</style>
 
-  class Cuerda extends Instrumento {
-      public void tocar() { rasgar(); }
-      public void afinar() { System.out.println("afinar rasgado"); }
-      public void rasgar() { System.out.println("rasgar"); }
-  }
+<div class="cols">
+<div>
+
+- Los instrumentos concretos...
+
+</div>
+<div>
+
+```java
+class Viento extends Instrumento {
+  public void tocar()
+  { soplar(); }
+
+  public void afinar()
+  { System.out.println("afinar soplido"); }
+  
+  public void soplar()
+  { System.out.println("soplar"); }  
+}
+
+class Cuerda extends Instrumento {
+  public void tocar()
+  { rasgar(); }
+
+  public void afinar()
+  { System.out.println("afinar rasgado"); }
+
+  public void rasgar()
+  { System.out.println("rasgar"); }
+}
 ```
+
+</div>
+</div>
 
 ---
 
+<style scoped>
+.cols {
+  display: grid;
+  grid-template-columns: 25% 75%;
+  gap: 1rem; /* opcional: espacio entre columnas */
+}
+</style>
+
+<div class="cols">
+<div>
+
+- La orquesta...
+
+</div>
+<div>
+
 ```java
-  public class Orquesta {
-    ArrayList<Instrumento> instrumentos;
-    public Orquesta() {
-      instrumentos = new ArrayList<Instrumento>(3); }
-    public void tocar() {
-       for (int i=0; i<instrumentos.size(); i++)
-         instrumentos.get(i).tocar();
-    }
-    public static void main(String[] args) {
-      instrumentos.add(new Viento());
-      instrumentos.add(new Cuerda());
+public class Orquesta {
+  ArrayList<Instrumento> instrumentos;
+  public Orquesta() {
+    instrumentos = new ArrayList<Instrumento>(3); }
+  public void tocar() {
       for (int i=0; i<instrumentos.size(); i++)
-         Instrumento.afinarInstrumento(
-                instrumentos.get(i));
-      tocar();
-    }
+        instrumentos.get(i).tocar();
   }
+  public static void main(String[] args) {
+    instrumentos.add(new Viento());
+    instrumentos.add(new Cuerda());
+    for (int i=0; i<instrumentos.size(); i++)
+        Instrumento.afinarInstrumento(
+              instrumentos.get(i));
+    tocar();
+  }
+}
 ```
+
+</div>
+</div>
 
 ---
 
