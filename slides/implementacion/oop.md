@@ -1137,6 +1137,9 @@ h2 {
 
 Geométricamente, un cuadrado es un rectángulo, así que usamos herencia pura (*es-un*):
 
+<div class="cols">
+<div>
+
 ```csharp
 public class Rectangle {
   private Point topLeft;
@@ -1153,11 +1156,19 @@ public class Rectangle {
     set { height = value; }
   }
 }
+```
 
+</div>
+<div>
+
+```csharp
 public class Square: Rectangle {
    ...
 }
 ```
+
+</div>
+</div>
 
 ---
 
