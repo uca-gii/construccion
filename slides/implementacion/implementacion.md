@@ -1,8 +1,3 @@
-# implementacion
-
-> [!NOTE]
-> Mermaid blocks (```mermaid) render in GitHub.
-> PlantUML blocks are embedded as images via kroki.io; the source is kept in <details>.
 
 <!-- Source: oop.md -->
 # OBJETOS
