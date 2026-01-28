@@ -17,6 +17,17 @@ h2 {
   color: darkblue;
   text-align: center;
 }
+emph {
+  color: #E87B00;
+}
+.cols {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+.cols > div {
+  align-self: start;
+}
 </style>
 
 # DELEGACIÓN
@@ -33,7 +44,9 @@ h2 {
 .cols {
   display: grid;
   grid-template-columns: 25% 75%;
-  gap: 1rem; /* opcional: espacio entre columnas */
+}
+p {
+  color: green;
 }
 </style>
 
@@ -44,7 +57,9 @@ h2 {
 
 Criticar la siguiente implementación de una orquesta.
 
-- Los instrumentos abstractos...
+_**Pista**:_
+
+Minimizar el <emph>acoplamiento</emph> y maximizar la <emph>cohesión</emph>
 
 </div>
 <div>
@@ -75,20 +90,11 @@ abstract class Instrumento {
 
 ---
 
-<style scoped>
-.cols {
-  display: grid;
-  grid-template-columns: 25% 75%;
-  gap: 1rem; /* opcional: espacio entre columnas */
-}
-</style>
-
-<div class="cols">
-<div>
+### Orquesta v0.1 (cont.)
 
 - Los instrumentos concretos...
 
-</div>
+<div class="cols">
 <div>
 
 ```java
@@ -97,12 +103,17 @@ class Viento extends Instrumento {
   { soplar(); }
 
   public void afinar()
-  { System.out.println("afinar soplido"); }
-  
+  { System.out.println("afinar soplido");}
+
   public void soplar()
   { System.out.println("soplar"); }  
 }
+```
 
+</div>
+<div>
+
+```java
 class Cuerda extends Instrumento {
   public void tocar()
   { rasgar(); }
@@ -130,6 +141,8 @@ class Cuerda extends Instrumento {
 
 <div class="cols">
 <div>
+
+### Orquesta v0.1 (cont.)
 
 - La orquesta...
 
@@ -161,284 +174,468 @@ public class Orquesta {
 
 ---
 
+<style scoped>
+h4 {
+  text-align: center;
+  color: red;
+}
+</style>
+
 #### Críticas a la Orquesta v0.1
 
-- __Acoplamiento__: método `static`
-- __Cohesión__: ubicación de `main`
+- **Acoplamiento**: el abuso de métodos `static` obliga a numerosas dependencias (`Instrumento` ⇢ `Orquesta`, `Viento`, `Cuerda`) y debería ser al revés.
+- **Cohesión**: la ubicación de `main` en `Orquesta` mezcla responsabilidades de la orquesta y el cliente de prueba.
+
+#### Cambio propuesto
+
+- Usar **polimorfismo** en lugar de métodos `static` y `instanceof`
 
 ---
+
+<style scoped>
+.cols {
+  display: grid;
+  grid-template-columns: 25% 75%;
+  gap: 1rem; /* opcional: espacio entre columnas */
+}
+p {
+  color: green;
+}
+</style>
 
 ### Implementación alternativa: Orquesta v0.2
 
-Usar polimorfismo. Seguir criticando la implementación...
+<div class="cols">
+<div>
+
+Seguir criticando la implementación...
+
+</div>
+<div>
 
 ```java
-  class Orquesta {
-    ArrayList<Instrumento> instrumentos;
-    public Orquesta() {
-        instrumentos = new ArrayList<Instrumento>(3);
-    }
-    public void tocar() {
-       for (int i=0; i<instrumentos.size(); i++)
-         instrumentos.get(i).tocar();
-    }
-    public void afinar(Instrumento i) {
-      i.afinar();  // Metodo polimorfico
-      i.tocar();   // Prueba de que esta afinado
-    }
+class Orquesta {
+  ArrayList<Instrumento> instrumentos;
+  public Orquesta() {
+      instrumentos = new ArrayList<Instrumento>(3);
   }
+  public void tocar() {
+      for (int i=0; i<instrumentos.size(); i++)
+        instrumentos.get(i).tocar();
+  }
+  public void afinar(Instrumento i) {
+    i.afinar();  // Metodo polimorfico
+    i.tocar();   // Prueba de que esta afinado
+  }
+}
 ```
+
+</div>
+</div>
 
 ---
 
+<style scoped>
+.cols {
+  display: grid;
+  grid-template-columns: 25% 75%;
+}
+</style>
+
+<div class="cols">
+<div>
+
+### Orquesta v0.2 (cont.)
+
+</div>
+<div>
+
 ```java
-  public class PruebaOrquesta {
-     public static void main(String[] args) {
-        Orquesta orquesta = new Orquesta();
-        orquesta.instrumentos.add(new Viento());
-        orquesta.instrumentos.add(new Cuerda());
-        orquesta.instrumentos.add(new Percusion());
-        for (int i=0; i<instrumentos.size(); i++)
-           orquesta.afinar(orquesta.instrumentos.get(i));
-        orquesta.tocar();
-     }
+public class PruebaOrquesta {
+  public static void main(String[] args) {
+    Orquesta orquesta = new Orquesta();
+    orquesta.instrumentos.add(new Viento());
+    orquesta.instrumentos.add(new Cuerda());
+    orquesta.instrumentos.add(new Percusion());
+    for (int i=0; i<instrumentos.size(); i++)
+        orquesta.afinar(orquesta.instrumentos.get(i));
+    orquesta.tocar();
   }
+}
 ```
+
+</div>
+</div>
 
 ---
 
+<style scoped>
+.cols {
+  display: grid;
+  grid-template-columns: 25% 75%;
+}
+</style>
+
+<div class="cols">
+<div>
+
+### Orquesta v0.2 (cont.)
+
+</div>
+<div>
+
 ```java
-  abstract class Instrumento {
-      public void tocar() { };
-      public void afinar() { };
-  }
+abstract class Instrumento {
+  public void tocar() { };
+  public void afinar() { };
+}
 
-  class Viento extends Instrumento {
-      public void tocar() { soplar(); }
-      public void afinar() { System.out.println("afinar soplido"); }
-      public void soplar() { System.out.println("soplar"); }
-  }
+class Viento extends Instrumento {
+  public void tocar() { soplar(); }
+  public void afinar() { System.out.println("afinar soplido"); }
+  public void soplar() { System.out.println("soplar"); }
+}
 
-  class Cuerda extends Instrumento {
-      public void tocar() { rasgar(); }
-      public void afinar() { System.out.println("afinar rasgado"); }
-      public void rasgar() { System.out.println("rasgar"); }
-  }
+class Cuerda extends Instrumento {
+  public void tocar() { rasgar(); }
+  public void afinar() { System.out.println("afinar rasgado"); }
+  public void rasgar() { System.out.println("rasgar"); }
+}
 
-  class Percusion extends Instrumento {
-      public void tocar() { golpear(); }
-      public void afinar() { System.out.println("afinar golpeado"); }
-      public void golpear() { System.out.println("golpear"); }
-  }
+class Percusion extends Instrumento {
+  public void tocar() { golpear(); }
+  public void afinar() { System.out.println("afinar golpeado"); }
+  public void golpear() { System.out.println("golpear"); }
+}
 ```
 
+</div>
+</div>
+
 ---
+
+<style scoped>
+h4 {
+  text-align: center;
+  color: red;
+}
+</style>
 
 #### Críticas a la Orquesta v0.2
 
-- __Encapsulación__: visibilidad de `Orquesta::instrumentos` (en C++ sería `friend`)
-- __Encapsulación__: método `add`
-- __Flexibilidad__: la implementación `Orquesta::instrumentos` puede variar, pero no hay colección (agregado) en quien confíe `Orquesta` por delegación.
+- **Encapsulación**: visibilidad de `Orquesta::instrumentos` (en C++ sería `friend`)
+- **Encapsulación**: el método `add` de `orquesta.instrumentos` expone la implementación de la colección (un `ArrayList`)
+- **Flexibilidad**: la implementación `Orquesta::instrumentos` puede variar, pero no hay colección (agregado) en quien confíe `Orquesta` por delegación.
+
+#### Cambio propuesto
+
+- Delegar las altas/bajas de `Instrumento` en la colección (agregado) de `Orquesta`
 
 ---
 
+<style scoped>
+.cols {
+  display: grid;
+  grid-template-columns: 25% 75%;
+}
+p {
+  color: green;
+}
+</style>
+  
 ### Implementación alternativa: Orquesta v0.3
 
-Delegar las altas/bajas de `Instrumento` en la colección (agregado) de `Orquesta`:
+<div class="cols">
+<div>
+
+Seguir criticando la implementación...
+
+</div>
+<div>
 
 ```java
-  class Orquesta {
+class Orquesta {
+  protected ArrayList<Instrumento> instrumentos;
 
-    protected ArrayList<Instrumento> instrumentos;
-
-    public Orquesta() {
-        instrumentos = new ArrayList<Instrumento>(3);
-    }
-    public boolean addInstrumento(Instrumento i) {
-       return instrumentos.add(i);
-    }
-    public boolean removeInstrumento(Instrumento i) {
-       return instrumentos.remove(i);
-    }
-    public void tocar() {
-       for (int i=0; i<instrumentos.size(); i++)
-         instrumentos.get(i).tocar();
-    }
-    public void afinar(Instrumento i) {
-      i.afinar();
-      i.tocar(); // Prueba de que esta afinado
-    }
+  public Orquesta() {
+      instrumentos = new ArrayList<Instrumento>(3);
   }
+  public boolean addInstrumento(Instrumento i) {
+      return instrumentos.add(i);
+  }
+  public boolean removeInstrumento(Instrumento i) {
+      return instrumentos.remove(i);
+  }
+  public void tocar() {
+      for (int i=0; i<instrumentos.size(); i++)
+        instrumentos.get(i).tocar();
+  }
+  public void afinar(Instrumento i) {
+    i.afinar();
+    i.tocar(); // Prueba de que esta afinado
+  }
+}
 ```
 
+</div>
+</div>
+
 ---
+
+<style scoped>
+.cols {
+  display: grid;
+  grid-template-columns: 25% 75%;
+}
+p {
+  color: green;
+}
+</style>
+  
+<div class="cols">
+<div>
+
+### Orquesta v0.3 (cont.)
+
+</div>
+<div>
 
 ```java
-  public class PruebaOrquesta {
-     public static void main(String[] args) {
-        Orquesta orquesta = new Orquesta();
-        orquesta.addInstrumento(new Viento());
-        orquesta.addInstrumento(new Cuerda());
-        orquesta.addInstrumento(new Percusion());
-        for (int i=0; i<orquesta.instrumentos.size(); i++)
-           orquesta.afinar(orquesta.instrumentos.get(i));
-        orquesta.tocar();
-     }
+public class PruebaOrquesta {
+  public static void main(String[] args) {
+    Orquesta orquesta = new Orquesta();
+    orquesta.addInstrumento(new Viento());
+    orquesta.addInstrumento(new Cuerda());
+    orquesta.addInstrumento(new Percusion());
+    for (int i=0; i<orquesta.instrumentos.size(); i++)
+        orquesta.afinar(orquesta.instrumentos.get(i));
+    orquesta.tocar();
   }
+}
 ```
 
----
-
-#### Críticas a la Orquesta v0.3:
-
-- __Acoplamiento__: `PruebaOrquesta` conoce la implementación basada en un `ArrayList` de la colección de instrumentos de la orquesta.
-- __Variabilidad__: ¿La colección de instrumentos será siempre lineal?
+</div>
+</div>
 
 ---
+
+<style scoped>
+h4 {
+  text-align: center;
+  color: red;
+}
+</style>
+
+#### Críticas a la Orquesta v0.3
+
+- **Acoplamiento**: `PruebaOrquesta` conoce la implementación basada en un `ArrayList` de la colección de instrumentos de la orquesta.
+- **Variabilidad**: ¿La colección de instrumentos será siempre lineal?
+
+#### Cambio propuesto
+
+- Definir una __interfaz__ para iterar en la colección de instrumentos
+
+---
+
+<style scoped>
+p {
+  color: green;
+}
+</style>
 
 ### Implementación alternativa: Orquesta v0.4
 
-Definir una __interfaz__ para iterar en la colección de instrumentos:
+<div class="cols">
+<div>
 
 ```java
-  class Orquesta {
-    protected List<Instrumento> instrumentos;
-    public Orquesta() {
-       instrumentos = new ArrayList<Instrumento>(3);
-    }
-    public boolean addInstrumento(Instrumento i) {
-       return instrumentos.add(i);
-    }
-    public boolean removeInstrumento(Instrumento i) {
-       return instrumentos.remove(i);
-    }
-    public void tocar() {
-       for (Iterator<Instrumento> i = instrumentos.iterator(); i.hasNext(); )
-          i.next().tocar();
-    }
-    public void afinar(Instrumento i) {
-       i.afinar();
-       i.tocar(); // Prueba de que esta afinado
-    }
+class Orquesta {
+  protected List<Instrumento> instrumentos;
+  public Orquesta() {
+      instrumentos = new ArrayList<Instrumento>(3);
   }
+  public boolean addInstrumento(Instrumento i) {
+      return instrumentos.add(i);
+  }
+  public boolean removeInstrumento(Instrumento i) {
+      return instrumentos.remove(i);
+  }
+  public void tocar() {
+    for (Iterator<Instrumento> i =
+          instrumentos.iterator();
+          i.hasNext(); )
+      i.next().tocar();
+}
+  public void afinar(Instrumento i) {
+      i.afinar();
+      i.tocar(); // Prueba de que esta afinado
+  }
+}
 ```
+
+</div>
+<div>
+
+```java
+public class PruebaOrquesta {
+    public static void main(String[] args) {
+      Orquesta orquesta = new Orquesta();
+      orquesta.addInstrumento(new Viento());
+      orquesta.addInstrumento(new Cuerda());
+      orquesta.addInstrumento(new Percusion());
+      for (Iterator<Instrumento> i =
+            orquesta.instrumentos.iterator();
+            i.hasNext(); )
+          orquesta.afinar(i.next());
+      orquesta.tocar();
+    }
+}
+```
+
+Seguir criticando la implementación...
+
+</div>
+</div>
 
 ---
 
-```java
-  public class PruebaOrquesta {
-     public static void main(String[] args) {
-        Orquesta orquesta = new Orquesta();
-        orquesta.addInstrumento(new Viento());
-        orquesta.addInstrumento(new Cuerda());
-        orquesta.addInstrumento(new Percusion());
-        for (Iterator<Instrumento> i = orquesta.instrumentos.iterator(); i.hasNext(); )
-           orquesta.afinar(i.next());
-        orquesta.tocar();
-     }
-  }
-```
-
----
+<style scoped>
+h4 {
+  text-align: center;
+  color: red;
+}
+</style>
 
 #### Críticas a la Orquesta v0.4
 
-- __Ocultación__: el atributo `instrumentos` sigue sin ser privado.
+- **Ocultación**: el atributo `instrumentos` sigue sin ser privado
 
-Rehacemos la implementación, aprovechando que aparece una nueva versión del lenguaje (Java JDK 1.5) que permite iterar haciendo un __*for each*__ sobre una colección que implemente la interfaz `Iterable`. 
+#### Cambio propuesto
+
+Usar delegación, interfaces y el __*for each*__ (disponible desde el JDK 1.5), que permite iterar sobre una colección que implemente la interfaz `Iterable`
 
 ---
+
+<style scoped>
+p {
+  color: green;
+}
+</style>
 
 ### Implementación alternativa: Orquesta v0.5
 
-Usando delegación + interfaces y el _for each_ de Java 1.5. Criticar...
+<div class="cols">
+<div>
 
 ```java
-  class Orquesta {
-    private List<Instrumento> instrumentos;
-    public Orquesta() {
-       instrumentos = new ArrayList<Instrumento>(3);
-    }
-    public boolean addInstrumento(Instrumento i) {
-       return instrumentos.add(i);
-    }
-    public boolean removeInstrumento(Instrumento i) {
-       return instrumentos.remove(i);
-    }
-    public List<Instrumento> instrumentos() {
-        return instrumentos;
-    }
-    public void tocar() {
-       for (Instrumento i: instrumentos)
-          i.tocar();
-    }
-    public void afinar(Instrumento i) {
-       i.afinar();
-       i.tocar(); // Prueba de que esta afinado
-    }
+class Orquesta {
+  private List<Instrumento> instrumentos;
+  public Orquesta() {
+      instrumentos = new ArrayList<Instrumento>(3);
   }
+  public boolean addInstrumento(Instrumento i) {
+      return instrumentos.add(i);
+  }
+  public boolean removeInstrumento(Instrumento i) {
+      return instrumentos.remove(i);
+  }
+  public List<Instrumento> instrumentos() {
+      return instrumentos;
+  }
+  public void tocar() {
+      for (Instrumento i: instrumentos)
+        i.tocar();
+  }
+  public void afinar(Instrumento i) {
+      i.afinar();
+      i.tocar(); // Prueba de que esta afinado
+  }
+}
 ```
+
+</div>
+<div>
+
+```java
+public class PruebaOrquesta {
+  public static void main(String[] args) {
+    Orquesta orquesta = new Orquesta();
+    orquesta.addInstrumento(new Viento());
+    orquesta.addInstrumento(new Cuerda());
+    orquesta.addInstrumento(new Percusion());
+    for (Instrumento i: orquesta.instrumentos())
+        orquesta.afinar(i);
+    orquesta.tocar();
+  }
+}
+```
+
+Seguir criticando la implementación...
+
+</div>
+</div>
 
 ---
 
-```java
-  public class PruebaOrquesta {
-     public static void main(String[] args) {
-        Orquesta orquesta = new Orquesta();
-        orquesta.addInstrumento(new Viento());
-        orquesta.addInstrumento(new Cuerda());
-        orquesta.addInstrumento(new Percusion());
-        for (Instrumento i: orquesta.instrumentos())
-           orquesta.afinar(i);
-        orquesta.tocar();
-     }
-  }
-```
+<style scoped>
+h4 {
+  text-align: center;
+  color: red;
+}
+</style>
 
----
+#### Críticas a la Orquesta v0.5
 
-#### Críticas a la Orquesta v0.5:
-
-- __Ocultación__: la interfaz del método `instrumentos()` sigue expuesta: el cliente sabe que devuelve una `List`.
+- **Ocultación**: la interfaz del método `instrumentos()` sigue expuesta: el cliente sabe que devuelve una `List`.
 - Hemos ocultado un poco la implementación de `instrumentos` (que es una `List`), pero ¿conviene saber que es una `List`? Quizá no hemos ocultado lo suficiente.
 
+#### Cambio propuesto
+
+- Nos quedamos sólo con lo que nos interesa de  `Orquesta`: que es una colección iterable.
+
+- Eliminamos lo que no nos interesa: el resto de elementos de la interfaz `List` que implementan la forma **lineal** de almacenar los instrumentos.
+
 ---
+
+<style scoped>
+p {
+  color: green;
+}
+</style>
 
 #### Implementación alternativa: Orquesta v0.6
 
-Nos quedamos sólo con lo que nos interesa de la Orquesta: que es una colección iterable.
-
-Eliminamos lo que no nos interesa: el resto de elementos de la interfaz `List` que explican la forma lineal de almacenar los instrumentos.
-
----
+<div class="cols">
+<div>
 
 ```java
-  class Orquesta implements Iterable<Instrumento> {
-    private List<Instrumento> instrumentos;
-    public Orquesta() {
-       instrumentos = new ArrayList<Instrumento>(3);
-    }
-    public boolean addInstrumento(Instrumento i) {
-       return instrumentos.add(i);
-    }
-    public boolean removeInstrumento(Instrumento i) {
-       return instrumentos.remove(i);
-    }
-    public Iterator<Instrumento> iterator() {
-       return instrumentos.iterator();
-    }
-    public void tocar() {
-       for (Instrumento i: this)
-          i.tocar();
-    }
-    public void afinar(Instrumento i) {
-      i.afinar();
-      i.tocar(); // Prueba de que esta afinado
-    }
+class Orquesta implements Iterable<Instrumento> {
+  private List<Instrumento> instrumentos;
+  public Orquesta() {
+      instrumentos = new ArrayList<Instrumento>(3);
   }
+  public boolean addInstrumento(Instrumento i) {
+      return instrumentos.add(i);
+  }
+  public boolean removeInstrumento(Instrumento i) {
+      return instrumentos.remove(i);
+  }
+  public Iterator<Instrumento> iterator() {
+      return instrumentos.iterator();
+  }
+  public void tocar() {
+      for (Instrumento i: this)
+        i.tocar();
+  }
+  public void afinar(Instrumento i) {
+    i.afinar();
+    i.tocar(); // Prueba de que esta afinado
+  }
+}
 ```
 
----
+</div>
+<div>
 
 ```java
   public class PruebaOrquesta {
@@ -454,21 +651,26 @@ Eliminamos lo que no nos interesa: el resto de elementos de la interfaz `List` q
   }
 ```
 
+Seguir criticando la implementación...
+
+</div>
+</div>
+
 ---
 
 ### Implementación alternativa: Orquesta v0.7
 
-Supongamos que queremos sustituir la implementación basada en una `List` por otra (quizá más eficiente) basada en un `Map`.
+#### Cambio de requisitos
 
-Consultar la interfaz de `Map`:
+- Supongamos que queremos sustituir la implementación basada en una `List` por otra (quizá más eficiente) basada en un `Map`
 
-- Interfaz [`java.util.Map`](http://docs.oracle.com/javase/6/docs/api/java/util/Map.html) de Java 6:
+- Consultar la interfaz de `Map`: [`java.util.Map`](http://docs.oracle.com/javase/6/docs/api/java/util/Map.html) de Java 6 o [`java.util.Map<K,V>`](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html) de Java 11...
 
-- Interfaz [`java.util.Map<K,V>`](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html) de Java 11:
+¡ `Map` no implementa `Iterable` !
 
 ---
 
-`Map` no implementa `Iterable` (!)
+#### Tensión de frontera
 
 Existe una cierta tensión proveedor-cliente en la **frontera** de la interfaz
 
@@ -484,29 +686,41 @@ Si construimos un `Map` y lo pasamos...
 
 ¿La interfaz `Map` es siempre satisfactoria? ¿seguro que no va a cambiar?
 
-- JDK < 5.0:
+<div class="cols">
+<div>
+
+JDK < 5.0:
 
 ```java
   Map sensors = new HashMap();
   sensors.put(1, new Sensor());
   sensors.put(2, new Sensor());
   ...
-  Sensor s = (Sensor)sensors.get(sensorId);
+  Sensor s = (Sensor)sensors.get(id);
 ```
 
-- JDK >= 5.0:
+</div>
+<div>
+
+JDK >= 5.0:
 
 ```java
-  Map<Integer,Sensor> sensors = new HashMap<Integer,Sensor>();
+  Map<Integer,Sensor> sensors =
+      new HashMap<Integer,Sensor>();
   sensors.put(1, new Sensor());
   sensors.put(2, new Sensor());
   ...
-  Sensor s = sensors.get(sensorId);
+  Sensor s = sensors.get(id);
 ```
+
+</div>
+</div>
 
 ---
 
-__Conclusión__: `Map<Integer,Sensor>` ofrece más de lo que necesitamos
+#### Conclusión
+
+`Map<Integer,Sensor>` ofrece más de lo que necesitamos
 
 ```java
   public class Sensors {
@@ -525,7 +739,7 @@ __Conclusión__: `Map<Integer,Sensor>` ofrece más de lo que necesitamos
 
 ---
 
-Así que proponemos esta implementación de la Orquesta v0.7:
+Así que proponemos este **rediseño** para la Orquesta v0.7:
 
 ```java
 class Orquesta implements Iterable<Instrumento> {
@@ -589,7 +803,26 @@ public class PruebaOrquesta {
 }
 ```
 
-Esta implementación sí que podemos adaptarla más fácilmente para cambiar el `List` por un `Map`, pues la responsabilidad de ser iterable ha quedado confinada en `Instrumentos`, que desacopla `Orquesta` y la implementación elegida (`List`, `Map`, etc.) para la colección de instrumentos.
+Esta implementación podemos adaptarla más fácilmente para cambiar el `List` por un `Map`, pues la responsabilidad de ser iterable queda confinada en `Instrumentos`, que desacopla `Orquesta` y la implementación elegida (`List`, `Map`, etc.) para la colección de instrumentos.
+
+Esto ya es más <emph>diseño</emph> que implementación (separación de responsabilidades)...
+
+---
+
+### Resumen (sin versiones intermedias)
+
+- Reducir <emph>acoplamiento</emph>: Evitar tipos `static` y uso de `instanceof`) en `afinarInstrumento(...)` ➞ usar polimorfismo en `Instrumento::afinar()`
+- Mejorar <emph>cohesión</emph>: `main` no pertenece a `Orquesta` ➞ cliente de prueba aparte.
+- <emph>Encapsular</emph> la colección  `instrumentos` para no exponer su implementación ➞ altas/bajas sólo vía `addInstrumento` y `removeInstrumento`
+- Reducir <emph>acoplamiento</emph> a la implementación de la colección ➞ el cliente no debe conocer `ArrayList` o incluso `List`
+- <emph>Ocultar</emph> las capacidades innecesarias ➞ `Orquesta` se ve como `Iterable<Instrumento>` (con saber cómo iterar es suficiente)
+- Anticipar <emph>variabilidad</emph> real de la colección (v.g. si `List` cambia a `Map`) ➞ introducir un agregado `Instrumentos` que encapsula la estructura y filtra operaciones
+
+<!--
+
+Críticas acumuladas aplicables a la v0.1 para llegar a la implementación final v0.7
+
+-->
 
 ---
 
