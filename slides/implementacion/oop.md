@@ -4,7 +4,7 @@ author:
 - Juan Manuel Dodero
 date: Enero 2026
 subject: Implementación e Implantación de Sistemas Software, curso 2025/26
-title: Principios de POO
+title: Programación con objetos
 description: Apuntes de Implementación e Implantación de Sistemas Software
 math: mathjax
 ---
@@ -35,7 +35,7 @@ emph {
 }
 </style>
 
-# OBJETOS
+# PROGRAMACIÓN CON OBJETOS
 
 ---
 

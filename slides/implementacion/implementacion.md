@@ -1,23 +1,29 @@
+## Índice
+
+- [Programación con objetos](#programación-con-objetos)
+- [Delegación](#delegación)
+- [Inyección de Dependencias](#inyección-de-dependencias)
+- [Refactoring y duplicación de código](#refactoring-y-duplicación-de-código)
+- [Ortogonalidad y dependencias](#ortogonalidad-y-dependencias)
+- [Programación con aspectos](#programación-con-aspectos)
+- [Tratamiento de errores](#tratamiento-de-errores)
+- [Programación funcional y streams](#programación-funcional-y-streams)
+- [Programación asertiva y contratos](#programación-asertiva-y-contratos)
+- [Programación asíncrona y eventos](#programación-asíncrona-y-eventos)
+
 
 <!-- Source: oop.md -->
-# OBJETOS
-
----
+# PROGRAMACIÓN CON OBJETOS
 
 
 ¿Cuál es la ventaja principal de la **Orientación a Objetos**?
 
----
-
 
 **Ocultar** la implementación
-
----
 
 
 ¿Cómo consigue la OO ocultar la implementación?
 
----
 
 ## Principios básicos de la construcción de software (OO)
 
@@ -25,8 +31,6 @@
 - **Modularidad**: componentes, módulos (en OO, clases y objetos), interfaces, etc.
 - $\bigtriangleup$ **cohesión**: módulos auto-contenidos, independientes y con un único propósito
 - $\bigtriangledown$ **acoplamiento**: reducir las dependencias entre módulos
-
----
 
 
 ## Versión inicial: Lista v0.1
@@ -50,7 +54,6 @@ En relación a los principios de _alta cohesión_ y _bajo acoplamiento_, critica
   }
 ```
 
----
 
 ## Abstracción
 
@@ -63,8 +66,6 @@ En relación a los principios de _alta cohesión_ y _bajo acoplamiento_, critica
 >
 > --- E. Yourdon & L. Constantine. **Structured Design: Fundamentals of a Discipline of Computer Program and Systems Design.** Prentice Hall, 2nd edition, 1986.
 
----
-
 
 ### Críticas a Lista v0.1
 
@@ -76,8 +77,6 @@ En relación a los principios de _alta cohesión_ y _bajo acoplamiento_, critica
 
 - Baja **cohesión**
 - Alta **variabilidad** no bien tratada $\rightarrow$ poca **flexibilidad**
-
----
 
 
 ## Implementación alternativa: Lista v0.2
@@ -117,8 +116,6 @@ public interface List<T> {
 </div>
 </div>
 
----
-
 
 ### Críticas a Lista v0.2
 
@@ -129,8 +126,6 @@ public interface List<T> {
 
 - Muchas **dependencias** (provocadas por el exceso de herencia) $\rightarrow$ excesivo **acoplamiento**
 - Poca **flexibilidad**
-
----
 
 
 ## Implementación alternativa: Lista v0.3
@@ -150,8 +145,6 @@ Criticar la implementación:
   }
 ```
 
----
-
 
 ### Críticas a Lista v0.3
 
@@ -163,19 +156,13 @@ Criticar la implementación:
 - Elevada **complejidad**. Si hay que crear nuevos tipos de recorrido, se abusará de la herencia como _estructura_
 - La **variabilidad** no está bien tratada $\rightarrow$ poca **flexibilidad**, mala **reutilización**
 
----
-
 
 ¿Cómo se resuelve esto en las bibliotecas típicas que conocéis
 (v.g. C++ STL, Java Collections, etc.)?
 
-<!--
-**Notes**
+>[!NOTE]
+> Iteradores
 
- Iteradores
--->
-
----
 
 ## Implementación alternativa: Lista v0.4
 
@@ -214,7 +201,6 @@ public interface Iterator<E> {
 </div>
 </div>
 
----
 
 ### Ventajas de Lista v0.4
 
@@ -222,7 +208,6 @@ public interface Iterator<E> {
 - Para hacer `List` más cohesionada, se ha tenido que introducir una **dependencia** (acoplamiento)
 - Uso de **delegación** (o _composición_) en lugar de la herencia: la responsabilidad de recorrer se ha delegado hacia otro sitio
 
----
 
 ## Ocultar la implementación
 
@@ -234,7 +219,6 @@ Los principios aplicados han sido:
 - **Acoplamiento** (minimizar): dependencias entre módulos
 - **Modularidad**: clases, interfaces y componentes/módulos
 
----
 
 ### Alta cohesión, bajo acoplamiento
 
@@ -246,7 +230,6 @@ Los principios aplicados han sido:
 
 Reducir el acoplamiento usando módulos o componentes con distintas responsabilidades, agrupados en bibliotecas
 
----
 
 ### Técnicas de ocultación
 
@@ -257,7 +240,6 @@ Reducir el acoplamiento usando módulos o componentes con distintas responsabili
 - **Polimorfismo**: ocultar la implementación de un método, manteniendo la misma interfaz de la clase base
 - **Interfaces**: usar interfaces bien documentadas
 
----
 
 ## Herencia
 
@@ -276,7 +258,6 @@ Reducir el acoplamiento usando módulos o componentes con distintas responsabili
   - Herencia pura: mantiene la interfaz tal cual (relación *es-un*)
   - Extensión: amplía la interfaz con nuevas funcionalidades(relación *es-como-un*). Puede causar problemas de _casting_.
 
----
 
 ### Generalización y especialización
 
@@ -284,7 +265,6 @@ Reducir el acoplamiento usando módulos o componentes con distintas responsabili
 >
 > --- [Bruce Eckel](bibliografia.md#eckel)
 
----
 
 ## Polimorfismo
 
@@ -294,7 +274,6 @@ El polimorfismo se basa en:
 
 - **Enlace dinámico** (_dynamic binding_): se elige el método a ejecutar en tiempo de ejecución, en función de la clase de objeto; es la implementación del *polimorfismo*
 
----
 
 ### Overriding
 
@@ -302,7 +281,6 @@ El polimorfismo se basa en:
 - En algunos lenguajes es obligatorio (en otros es recomendado) especificar explícitamente cuándo un método es redefinido.
 - Vamos a ver ejemplos en distintos lenguajes...
 
----
 
 #### Ejemplo 1: Override en Scala
 
@@ -319,7 +297,6 @@ class Complejo(real: Double, imaginaria: Double) {
 - Pero si se quiere redefinir un método concreto, `override` es necesario para evitar sobreescrituras accidentales.
 - En Scala, el riesgo de redefinición accidental de métodos es mayor debido a los mixins (`trait` en Scala).
 
----
 
 ### Scala Traits
 
@@ -332,7 +309,6 @@ Un **trait** es una forma de separar las dos principales responsabilidades de un
 - Los métodos definidos en una clase tienen precedencia sobre los de un `trait`
 - Los `trait` no tienen estado propio, sino el del objeto o la instancia de la clase a la que se aplica
 
----
 
 #### Ejemplo 2: Un iterador con Scala traits
 
@@ -359,19 +335,15 @@ println(iterator.next())  // prints 0
 println(iterator.next())  // prints 1
 ```
 
----
-
 
 ¿Y en Java no hay _traits_?
 
----
 
 ### Java default methods
 
 - Desde Java 8, las interfaces pueden incorporar [métodos por defecto](https://www.baeldung.com/java-static-default-methods) que hacen que las interfaces de Java se comporten más como un trait.
 - Sirven para implementar herencia múltiple
 
----
 
 #### Ejemplo 3: `@Override` en Java
 
@@ -380,7 +352,6 @@ Este ejemplo en Java es realmente la implementación de un **diseño incorrecto*
 pues hay una doble dependencia entre las clases `Real` y `Complejo`.
 La frontera entre Diseño e Implementación queda aquí un poco difusa.
 
----
 
 ```java
 class Real {
@@ -405,7 +376,6 @@ class Real {
 }
 ```
 
----
 
 ```java
 class Complejo extends Real {
@@ -430,7 +400,6 @@ class Complejo extends Real {
 }
 ```
 
----
 
 ```java
 public class Main {
@@ -445,17 +414,12 @@ public class Main {
 }
 ```
 
----
-
 
 ¿Qué sucede si no ponemos `@Override` a los métodos redefinidos?
-
----
 
 
 Si no se añade `@Override`, podemos confundirnos y hacer un _overload_ accidental de un método cuando realmente queríamos redefinirlo.
 
----
 
 #### Ejemplo 4: Override en C\#
 
@@ -463,7 +427,6 @@ Si no se añade `@Override`, podemos confundirnos y hacer un _overload_ accident
 - Cada clase define su propia versión de `ShowDetails`
 - Usamos mofificadores `new` y `override` distintos en cada clase `ConvertibleCar` y `Minivan`
 
----
 
 ```csharp
 class Car
@@ -481,7 +444,6 @@ class Car
 }
 ```
 
----
 
 ```csharp
 class ConvertibleCar : Car
@@ -501,7 +463,6 @@ class Minivan : Car
 }
 ```
 
----
 
 ```csharp
 public static void TestCars1()
@@ -519,7 +480,6 @@ public static void TestCars1()
 }
 ```
 
----
 
 `TestCars` produce la salida siguiente:
 
@@ -539,12 +499,10 @@ Carries seven people.
 
 ¿Los resultados son los esperados?
 
----
 
 - El tipo del segundo objeto de la lista es `ConvertibleCar`, pero `DescribeCar` no accede a la versión de `ShowDetails` definida en `ConvertibleCar` (debido a `new`).
 - El tipo del tercer objeto de la lista es `Minivar`, que redefine con `override` el método `ShowDetails` declarado en la clase base.
 
----
 
 ```csharp
 public static void TestCars2()
@@ -566,7 +524,6 @@ public static void TestCars3()
 }
 ```
 
----
 
 Estos métodos producirían las salidas siguientes:
 
@@ -585,14 +542,12 @@ Carries seven people.
 - En `TextCars2`, el tipo de los objetos creados coincide con el tipo declarado.
 - En `TextCars3`, el tipo de los objetos creados es una subclase de la clase del tipo declarado.
 
----
 
 ## Moldes o _casting_
 
 - *Upcasting:* Interpretar un objeto de una clase derivada como del mismo tipo que la clase base
 - *Downcasting:* Interpretar un objeto de una clase base como del mismo tipo que una clase derivada suya
 
----
 
 ### Ejemplo de casting: Aventura v0.1
 
@@ -619,7 +574,6 @@ public class Creador {
 }
 ```
 
----
 
 ```java
 public class Aventura {
@@ -640,14 +594,12 @@ public class Aventura {
 }
 ```
 
----
 
 #### Críticas a Aventura v0.1
 
 - ¿De qué tipos van a ser los personales de acción? $\rightarrow$ problema de _downcasting_
 - Hay que rediseñar la solución por ser insegura
 
----
 
 ### Ejemplo de casting: Aventura v0.2
 
@@ -674,7 +626,6 @@ class Heroe
 }
 ```
 
----
 
 ```java
 public class Aventura {
@@ -697,7 +648,6 @@ public class Aventura {
 }
 ```
 
----
 
 ## Uso de la herencia
 
@@ -709,12 +659,9 @@ public class Aventura {
   - En herencia de tipos, cada subclase es un subtipo. Debe satisfacerse el principio de **sustitución** de Liskov (LSP, _Liskov Substitution Principle_): toda operación que funciona para un objeto de la clase $C$ también debe funcionar para un objeto de una subclase de $C$
   - Usar la herencia como una forma de estructurar programas es **erróneo**, pues provoca que no se satisfaga la propiedad LSP.
 
----
-
 
 ¿El polimorfismo está ligado siempre a la herencia?
 
----
 
 ## Polimorfismo paramétrico
 
@@ -729,12 +676,10 @@ public class Aventura {
   - En C++, los genéricos permiten meta-programación en tiempo de compilación
   - En Java, las plantillas son wrappers que _moldean_ objetos (_syntactic sugar_)
 
----
 
 
 ## Usos incorrectos de la herencia
 
----
 
 ### Mal Ejemplo 1 (Java): herencia como estructura
 
@@ -758,7 +703,6 @@ class AccountWithFee extends VerboseAccount {
 }
 ```
 
----
 
 - Todos los objetos $a$ de la clase `Account` deben cumplir que si $b=a.getBalance()$ antes de ejecutar $a.transferIn(s)$ y  $b'=a.getBalance()$ después de ejecutar $a.transferIn(s)$, entonces $b+s=b'$.
 - Sin embargo, con la estructura `AccountWithFee` < `VerboseAccount` < `Account`, un objeto de tipo `AccountWithFee` no funciona bien cuando se contempla como un objeto `Account`. Considérese la siguiente secuencia:
@@ -774,7 +718,6 @@ void f(Account a) {
 }
 ```
 
----
 
 ### Mal Ejemplo 2 (Scala): herencia de implementación
 
@@ -800,7 +743,6 @@ object Test {
 }
 ```
 
----
 
 Ahora hay que añadir un nuevo comportamiento:
 
@@ -823,7 +765,6 @@ object Test {
 }
 ```
 
----
 
 ¿Y si queremos combinar ambas formas de imprimir?
 
@@ -839,7 +780,6 @@ class WithSpacesUppercaseWriter extends WithSpacesWriter {
 }
 ```
 
----
 
 ```scala
 object Test {
@@ -859,7 +799,6 @@ object Test {
 }
 ```
 
----
 
 ¿Y si aparece una nueva forma de imprimir?
 
@@ -875,7 +814,6 @@ class ChecksumWriter extends ConsoleWriter {
 }
 ```
 
----
 
 #### Ejemplo: Herencia fuera de control
 
@@ -917,12 +855,9 @@ hide methods
 
 </details>
 
----
-
 
 ¡Mal uso de la herencia!
 
----
 
 ### Ejemplo 2 (Scala): herencia de interfaz (traits)
 
@@ -946,7 +881,6 @@ trait WithSpaces extends Writer {
 }
 ```
 
----
 
 ```scala
 object Test {
@@ -966,7 +900,6 @@ ABC
 A B C
 ```
 
----
 
 ### Stackable traits
 
@@ -975,12 +908,9 @@ A B C
 - `abstract` no es necesario si se redefine un método no abstracto, que ya tiene una implementación
 - En diseño, son una implementación del patrón _Decorator_ pero por composición de clases en vez de por composición de objetos
 
----
-
 
 ## Implementación y diseño
 
----
 
 ### Ejemplo 3 (C#): rectángulos versión 0.1
 
@@ -1019,7 +949,6 @@ public class Square: Rectangle {
 </div>
 </div>
 
----
 
 ### Problema: cuadrados como rectángulos
 
@@ -1030,7 +959,6 @@ public class Square: Rectangle {
   - `Square` heredará los métodos accesores de `Rectangle`.
 - Así que hacemos lo siguiente...
 
----
 
 ### Ejemplo: rectángulos versión 0.2
 
@@ -1055,7 +983,6 @@ public class Square: Rectangle {
 
 Nota: [Diferencia entre `new` y `override` en C#](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/knowing-when-to-use-override-and-new-keywords)
 
----
 
 - El comportamiento de un objeto `Square` no es consistente con el de un objeto `Rectangle`:
 
@@ -1076,7 +1003,6 @@ Nota: [Diferencia entre `new` y `override` en C#](https://docs.microsoft.com/en-
 
 - Podría argumentarse que el error era que los métodos `Width`y `Height` no se declararon `virtual` en `Rectangle`.
 
----
 
 ### Ejemplo: rectángulos versión 0.3
 
@@ -1129,7 +1055,6 @@ public class Square: Rectangle {
 </div>
 </div>
 
----
 
 ### Extensión y ocultación de métodos
 
@@ -1139,7 +1064,6 @@ Sin embargo, cuando la creación de una clase derivada provoca cambios en la cla
 
 El principio LSP pone en evidencia que la relación **es-un** tiene que ver con el comportamiento público extrínseco, del que los clientes dependen.
 
----
 
 Ahora parece que funcionan `Square` y `Rectangle`, que matemáticamente quedan bien definidos.
 
@@ -1155,7 +1079,6 @@ void g(Rectangle r)
 }
 ```
 
----
 
 ¿Qué pasa si llamamos a `g(new Square(3))`?
 
@@ -1163,13 +1086,10 @@ El autor de `g` asumió que cambiar el ancho de un rectángulo deja intacto el a
 
 **Violación de LSP**: Si pasamos una instancia de una clase derivada (`Square`), se altera el comportamiento definido por la clase base (`Rectangle`) de forma que `g` deja de funcionar.
 
----
-
 
 ¿Quién tiene la culpa?
 ¿Diseño o implementación?
 
----
 
 ### Diseño vs implementación
 
@@ -1180,18 +1100,11 @@ El autor de `g` asumió que cambiar el ancho de un rectángulo deja intacto el a
 - ¿De qué clase se ha violado el invariante? ¡De `Rectangle` y no de `Square`!
 
 Para evaluar si un diseño es apropiado, no se debe tener en cuenta la solución por sí sola, sino en términos de los _supuestos razonables_ que hagan los usuarios del diseño.
-
----
-
 <!-- Source: delegacion.md -->
 # DELEGACIÓN
 
----
-
 
 ## CASO PRÁCTICO: Implementación de una orquesta
-
----
 
 
 ### Versión inicial: Orquesta v0.1
@@ -1232,7 +1145,6 @@ abstract class Instrumento {
 </div>
 </div>
 
----
 
 ### Orquesta v0.1 (cont.)
 
@@ -1273,8 +1185,6 @@ class Cuerda extends Instrumento {
 </div>
 </div>
 
----
-
 
 <div class="cols">
 <div>
@@ -1309,8 +1219,6 @@ public class Orquesta {
 </div>
 </div>
 
----
-
 
 #### Críticas a la Orquesta v0.1
 
@@ -1320,8 +1228,6 @@ public class Orquesta {
 #### Cambio propuesto
 
 - Usar **polimorfismo** en lugar de métodos `static` y `instanceof`
-
----
 
 
 ### Implementación alternativa: Orquesta v0.2
@@ -1354,8 +1260,6 @@ class Orquesta {
 </div>
 </div>
 
----
-
 
 <div class="cols">
 <div>
@@ -1381,8 +1285,6 @@ public class PruebaOrquesta {
 
 </div>
 </div>
-
----
 
 
 <div class="cols">
@@ -1421,8 +1323,6 @@ class Percusion extends Instrumento {
 </div>
 </div>
 
----
-
 
 #### Críticas a la Orquesta v0.2
 
@@ -1433,8 +1333,6 @@ class Percusion extends Instrumento {
 #### Cambio propuesto
 
 - Delegar las altas/bajas de `Instrumento` en la colección (agregado) de `Orquesta`
-
----
 
 
 
@@ -1475,8 +1373,6 @@ class Orquesta {
 </div>
 </div>
 
----
-
 
 
 <div class="cols">
@@ -1504,8 +1400,6 @@ public class PruebaOrquesta {
 </div>
 </div>
 
----
-
 
 #### Críticas a la Orquesta v0.3
 
@@ -1515,8 +1409,6 @@ public class PruebaOrquesta {
 #### Cambio propuesto
 
 - Definir una __interfaz__ para iterar en la colección de instrumentos
-
----
 
 
 ### Implementación alternativa: Orquesta v0.4
@@ -1573,8 +1465,6 @@ Seguir criticando la implementación...
 </div>
 </div>
 
----
-
 
 #### Críticas a la Orquesta v0.4
 
@@ -1583,8 +1473,6 @@ Seguir criticando la implementación...
 #### Cambio propuesto
 
 Usar delegación, interfaces y el __*for each*__ (disponible desde el JDK 1.5), que permite iterar sobre una colección que implemente la interfaz `Iterable`
-
----
 
 
 ### Implementación alternativa: Orquesta v0.5
@@ -1640,8 +1528,6 @@ Seguir criticando la implementación...
 </div>
 </div>
 
----
-
 
 #### Críticas a la Orquesta v0.5
 
@@ -1653,8 +1539,6 @@ Seguir criticando la implementación...
 - Nos quedamos sólo con lo que nos interesa de  `Orquesta`: que es una colección iterable.
 
 - Eliminamos lo que no nos interesa: el resto de elementos de la interfaz `List` que implementan la forma **lineal** de almacenar los instrumentos.
-
----
 
 
 #### Implementación alternativa: Orquesta v0.6
@@ -1710,7 +1594,6 @@ Seguir criticando la implementación...
 </div>
 </div>
 
----
 
 ### Implementación alternativa: Orquesta v0.7
 
@@ -1722,7 +1605,6 @@ Seguir criticando la implementación...
 
 ¡ `Map` no implementa `Iterable` !
 
----
 
 #### Tensión de frontera
 
@@ -1736,7 +1618,6 @@ Si construimos un `Map` y lo pasamos...
 - Ninguno de los receptores deberá poder borrar algo del map. Pero ¡hay un `clear()` en el `Map`!
 - Algunos de los métodos de `Map` esperan un `Object`: `containsKey(Object key)`, `containsValue(Object value)`
 
----
 
 ¿La interfaz `Map` es siempre satisfactoria? ¿seguro que no va a cambiar?
 
@@ -1770,7 +1651,6 @@ JDK >= 5.0:
 </div>
 </div>
 
----
 
 #### Conclusión
 
@@ -1791,7 +1671,6 @@ JDK >= 5.0:
 - Más fácil de hacer evolucionar sin impacto en el resto de la aplicación
 - El casting queda confinado en la clase `Sensors`, que es más seguro
 
----
 
 Así que proponemos este **rediseño** para la Orquesta v0.7:
 
@@ -1821,7 +1700,6 @@ class Orquesta implements Iterable<Instrumento> {
 }
 ```
 
----
 
 ```java
 public class Instrumentos implements Iterable<Instrumento> {
@@ -1841,7 +1719,6 @@ public class Instrumentos implements Iterable<Instrumento> {
 }
 ```
 
----
 
 ```java
 public class PruebaOrquesta {
@@ -1861,7 +1738,6 @@ Esta implementación podemos adaptarla más fácilmente para cambiar el `List` p
 
 Esto ya es más **diseño** que implementación (separación de responsabilidades)...
 
----
 
 ### Resumen (sin versiones intermedias)
 
@@ -1872,13 +1748,9 @@ Esto ya es más **diseño** que implementación (separación de responsabilidade
 - **Ocultar** las capacidades innecesarias ➞ `Orquesta` se ve como `Iterable<Instrumento>` (con saber cómo iterar es suficiente)
 - Anticipar **variabilidad** real de la colección (v.g. si `List` cambia a `Map`) ➞ introducir un agregado `Instrumentos` que encapsula la estructura y filtra operaciones
 
-<!--
-**Notes**
+>[!NOTE]
+>Críticas acumuladas aplicables a la v0.1 para llegar a la implementación final v0.7
 
-Críticas acumuladas aplicables a la v0.1 para llegar a la implementación final v0.7
--->
-
----
 
 ## Delegación
 
@@ -1887,7 +1759,6 @@ Delegación _en horizontal_ hacia otras clases cuya interfaz es bien conocida
 - Los objetos miembro __delegados__ son cambiables en tiempo de ejecución sin afectar al código cliente ya existente
 - Alternativa más flexible que la herencia. Ejemplo: `Cola extends ArrayList` implica que una cola va a implementarse como un `ArrayList` para toda la vida, sin posibilidad de cambio en ejecución
 
----
 
 ### Composición vs. Herencia
 
@@ -1900,11 +1771,9 @@ Delegación _en horizontal_ hacia otras clases cuya interfaz es bien conocida
     - Útil para hacer una versión especial de una clase existente, reutilizando su interfaz.
     - La relación de herencia en los lenguajes de programación _suele ser_ __estática__ (definida en tiempo de compilación) y no __dinámica__ (que pueda cambiarse en tiempo de ejecución).
 
----
 
 ## CASO PRÁCTICO: Implementación de comparadores
 
----
 
 ### Comparadores
 
@@ -1916,7 +1785,6 @@ Delegación _en horizontal_ hacia otras clases cuya interfaz es bien conocida
 
 Cada lenguaje tiene sus mecanismos de implementación...
 
----
 
 #### Comparadores: Implementación en Java
 
@@ -1940,7 +1808,6 @@ public interface Comparable<T> {
 }
 ```
 
----
 
 #####  Invariantes
 
@@ -1958,14 +1825,12 @@ public interface Comparable<T> {
 
   `(x.compareTo(y)=0)` $\leftarrow$ `(x.equals(y))`
 
----
 
 ####  Identificador de BankAccount: Implementación en Java ≥ 1.5
 
 - Utilizando _templates_ (**polimorfismo paramétrico**)
 - Delegar en `compareTo` y `equals` del tipo de id _envuelto_ (e.g. `String`)
 
----
 
 ```java
 import java.util.*;
@@ -1997,7 +1862,6 @@ public final class BankAccount implements Comparable<BankAccount> {
 }
 ```
 
----
 
 ##### Identificador de BankAccount: Implementación en Java ≤ 1.4
 
@@ -2005,7 +1869,6 @@ public final class BankAccount implements Comparable<BankAccount> {
 - La genericidad se consigue con `Object`. Hay que hacer casting.
 - Cuidado con `Boolean` que no implementa `Comparable` en JDK 1.4
 
----
 
 ```java
 import java.util.*;
@@ -2036,7 +1899,6 @@ public final class BankAccount implements Comparable {
 }
 ```
 
----
 
 ##### Implementación por composición/delegación
 
@@ -2044,7 +1906,6 @@ Cuando una clase hereda de una clase concreta que implementa `Comparable` y le a
 
 Una alternativa (no excluyente) a implementar `Comparable` es pasar un `Comparator` como parámetro (se prefiere __composición__ frente a __herencia__):
 
----
 
 - Si `BankAccount` implementa `Comparable`:
 
@@ -2066,7 +1927,6 @@ class BankAccountComparator implements java.util.Comparator<BankAccount> {
 }
 ```
 
----
 
 ### Comparadores: Implementación en Scala
 
@@ -2089,7 +1949,6 @@ trait Ord {
 }
 ```
 
----
 
 ```scala
 class Fecha(d: Int, m: Int, a: Int) extends Ord {
@@ -2113,11 +1972,9 @@ class Fecha(d: Int, m: Int, a: Int) extends Ord {
 }
 ```
 
----
 
 ## Mixins
 
----
 
 Un __mixin__ es un módulo/clase con métodos disponibles para otros módulos/clases _sin tener que usar la herencia_
 
@@ -2130,7 +1987,6 @@ Un __mixin__ es un módulo/clase con métodos disponibles para otros módulos/cl
 
 ¿Qué lenguajes tienen mixins?
 
----
 
 ### Ruby modules
 
@@ -2139,7 +1995,6 @@ En Ruby los mixins se implementan mediante módulos (`module`).
 - Un módulo no puede tener instancias (porque no es una clase)
 - Un módulo puede incluirse (`include`) dentro de la definición de una clase
 
----
 
 ### Comparadores: Implementación en Ruby
 
@@ -2152,7 +2007,6 @@ Una manera de implementar un `Comparable` en ruby mediante el __módulo__ [Compa
 
 - En `x <=> y`, `x` es el receptor del mensaje/método e `y` es el argumento
 
----
 
 ```ruby
 class Student
@@ -2178,7 +2032,6 @@ s1 <= s2 #false
 s3.between?(s1,s2) #true
 ```
 
----
 
 ### Scala Traits
 
@@ -2191,7 +2044,6 @@ Un __trait__ es una forma de separar las dos principales responsabilidades de un
 - Los métodos definidos en una clase tienen precedencia sobre los de un `trait`
 - Los `trait` no tienen estado propio, sino el del objeto o la instancia de la clase a la que se aplica
 
----
 
 #### Ejemplo 2: Un iterador con Scala traits
 
@@ -2218,12 +2070,9 @@ println(iterator.next())  // prints 0
 println(iterator.next())  // prints 1
 ```
 
----
-
 
 ¿Un `trait` de Scala es un _mixin_?
 
----
 
 ### Ejemplo: mezcla de traits con comportamiento
 
@@ -2251,7 +2100,6 @@ class AmphibiousHero extends Fighter with Flyer with Swimmer {
 }
 ```
 
----
 
 ```scala
 object Test {
@@ -2270,7 +2118,6 @@ object Test {
 }
 ```
 
----
 
 ### Scala traits como mixins
 
@@ -2283,39 +2130,26 @@ Entonces... una clase que extiende un trait con un comportamiento, ¿va contra e
 
 Lectura recomendada: [Scala Mixins: The right way](http://baddotrobot.com/blog/2014/09/22/scala-mixins/)
 
----
-
 
 ¿Y en Java no hay _traits_?
 
----
 
 ### Java default methods
 
 - Desde Java 8, las interfaces pueden incorporar [métodos por defecto](https://www.baeldung.com/java-static-default-methods) que hacen que las interfaces de Java se comporten más como un trait.
 - Sirven para implementar herencia múltiple
 
----
-
 
 ¿Qué ventajas tienen las implementaciones basadas en __Composición__ frente a las basadas en __Herencia__ (estática)?
 
----
-
 
 La respuesta está en la **inyección de dependencias**...
-
----
-
 <!-- Source: inyeccion.md -->
 # INYECCIÓN DE DEPENDENCIAS
-
----
 
 
 ## CASO PRÁCTICO: Implementación de una orquesta (2)
 
----
 
 ### Implementación de Orquesta v.08
 
@@ -2348,7 +2182,6 @@ public abstract class Instrumento {
 }
 ```
 
----
 
 ```java
 class Orquesta implements Iterable<Instrumento> {
@@ -2378,7 +2211,6 @@ class Orquesta implements Iterable<Instrumento> {
 }
 ```
 
----
 
 ```java
 class Viento extends Instrumento {
@@ -2409,7 +2241,6 @@ class Percusion extends Instrumento {
 }
 ```
 
----
 
 ```java
 public class Instrumentos implements Iterable<Instrumento> {
@@ -2428,8 +2259,6 @@ public class Instrumentos implements Iterable<Instrumento> {
   }
 }
 ```
-
----
 
 
 ### Diagrama de clases
@@ -2479,7 +2308,6 @@ together{
 
 </details>
 
----
 
 ### Dependencias de instrumento
 
@@ -2500,8 +2328,6 @@ public class PruebaOrquesta {
 Los `new` de `PruebaOrquesta` siguen introduciendo dependencias de `PruebaOrquesta` con respecto a los tipos concretos de `Instrumento`.
 
 Si quisiéramos probar la orquesta con otros instrumentos, tendríamos que modificar la clase cliente que utiliza la Orquesta.
-
----
 
 
 #### Diagrama de clases - Dependencias
@@ -2555,7 +2381,6 @@ together{
 
 </details>
 
----
 
 Por ejemplo, si programamos **casos de prueba unitaria** con _jUnit_ (versión 3):
 
@@ -2575,7 +2400,6 @@ public class OrquestaTest extends junit.framework.TestCase {
 }
 ```
 
----
 
 ### Problemas:
 
@@ -2584,14 +2408,12 @@ public class OrquestaTest extends junit.framework.TestCase {
 - No se puede pedir a la orquesta que se comporte de otra forma (por ejemplo, un conjunto diferente de instrumentos)
 - Tampoco se puede cambiar la partitura que queremos probar
 
----
 
 ### Solución: inyección de dependencias
 
 - Proporcionar a la `Orquesta` el conjunto de intrumentos de los que depende
 - Proporcionar a cada `Instrumento` la partitura con la que debe ejecutar
 
----
 
 #### Opciones:
 
@@ -2607,14 +2429,11 @@ Dependencia `Orquesta` $\dashrightarrow$ `Instrumento`:
   - Esto ya lo estamos haciendo en `PruebaOrquesta` y `OrquestaTest`
 - ¿Y por qué no un método `Orquesta::setPartitura(Partitura p)`?
 
----
-
 
 ¿Quién le añade los instrumentos a la orquesta?
 ¿Quién le pone el cascabel (partitura) al gato (instrumento)?
 ¿A qué gato (orquesta o instumento)?
 
----
 
 ## Framework DI
 
@@ -2628,7 +2447,6 @@ El framework DI inyecta dependencias de forma universal, no de modo particular a
 - [Spring Framework](https://www.vogella.com/tutorials/SpringDependencyInjection/article.html)
 - [Weld CDI](http://weld.cdi-spec.org/)
 - [Eclipse RCP](https://wiki.eclipse.org/Eclipse4/RCP/Dependency_Injection)
----
 
 ### Inyección con Spring Framework
 
@@ -2649,7 +2467,6 @@ A través de un fichero de configuración `orquesta.xml` le indicamos los valore
     class="Cuerda"/>
 ```
 
----
 
 ```xml
   <bean id="cuarteto"
@@ -2670,7 +2487,6 @@ A través de un fichero de configuración `orquesta.xml` le indicamos los valore
 </beans>
 ```
 
----
 
 La inyección de la dependencia concreta la hace el contenedor (_spring_ en este ejemplo):
 
@@ -2690,7 +2506,6 @@ public class PruebaOrquesta {
 }
 ```
 
----
 
 ### Beans
 
@@ -2703,7 +2518,6 @@ Los _beans_ son usados por muchos frameworks, entre otros Spring:
 
 Más info sobre [Spring DI](https://docs.spring.io/spring-framework/reference/core/beans/dependencies/factory-collaborators.html)
 
----
 
 #### Ejemplo: Logger
 
@@ -2724,11 +2538,9 @@ public class MyClass {
 
 Un _contenedor_ de dependencias en el framework debe responsabilizarse de crear las instancias de `Logger` e inyectarlas en su sitio (normalmente vía _reflexión_ o _introspección_)
 
----
 
 ## Anotaciones
 
----
 
 ### Anotaciones @ en Java
 
@@ -2752,7 +2564,6 @@ public class MyPart {
 
 La clase `MyPart` sigue usando `new` para ciertos elementos de la interfaz. Esto significa que no pensamos reemplazarlos ni siquiera para hacer pruebas.
 
----
 
 ### Otra manera de inyectar dependencias
 
@@ -2783,22 +2594,19 @@ public class OrquestaTest { // no hace falta extends
 }
 ```
 
----
-
 
 ¿Es necesario usar la inyección de dependencias para especificar las _partituras_ con las que deben funcionar los instrumentos de la _orquesta_?
 
-<!--
-**Notes**
+>[!NOTE]
+><details>
+<summary>Inyección de partituras</summary>
 
 Sólo si queremos que la orquesta pueda tocar con diferentes partituras, o si queremos probar la orquesta con diferentes partituras.
--->
+</details>
 
----
 
 ## CASO PRÁCTICO: Implementación de comparadores (2)
 
----
 
 ### Ejercicio: Identificador de BankAccount con inyección de dependencias
 
@@ -2808,7 +2616,6 @@ Supongamos que queremos obtener un listado ordenado por fecha de creación de to
 
 Resolvemos mediante inyección de dependencias...
 
----
 
 #### Con herencia de interfaz y delegación
 
@@ -2839,7 +2646,6 @@ public final class BankAccount implements Comparable<BankAccount> {
   }
 ```
 
----
 
 ```java
   public void setComparator(Comparator cmp) {
@@ -2868,7 +2674,6 @@ public final class BankAccount implements Comparable<BankAccount> {
 }
 ```
 
----
 
 `BankAcccountComparatorById.java`:
 
@@ -2894,7 +2699,6 @@ class BankAccountComparatorByCreationDate implements Comparator<BankAccount> {
 }
 ```
 
----
 
 #### Con inyección de dependencias
 
@@ -2906,13 +2710,11 @@ El motor de inyección de dependencias (por ejemplo, Spring) inyectaría la clas
 
 - Inyección a través de __métodos (API)__: la clase inyectora suministra la dependencia a través de una API determinada para la que está preparada (construida/configurada) la clase dependiente.
 
----
 
 #### Creación de anotaciones
 
 Ahora podría definirse una anotación del tipo `@comparator(BankAccountComparatorById.className)` o `@compareById` que inyecte a `BankAccount` una dependencia `BankAccountComparatorById` en `BankAccount.comparator`.
 
----
 
 ### Inyección de dependencias con anotaciones
 
@@ -2921,7 +2723,6 @@ Ahora podría definirse una anotación del tipo `@comparator(BankAccountComparat
 
 <!--
 
----
 
 #### Ejemplo de retención de anotaciones en Java
 
@@ -2937,7 +2738,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 ```
 
----
 
 ```java
 @Retention(RetentionPolicy.SOURCE)
@@ -2959,7 +2759,6 @@ import java.lang.annotation.RetentionPolicy;
 }
 ```
 
----
 
 ```java
 // Annotating classes A, B, and C
@@ -2978,7 +2777,6 @@ class C {
 };
 ```
 
----
 
 ```java
 public class RetentionPolicyDemo {
@@ -3005,13 +2803,9 @@ public class RetentionPolicyDemo {
 ```
 
 -->
-
----
-
 <!-- Source: refactoring.md -->
-# REFACTORING
+# REFACTORING Y DUPLICACIÓN DE CÓDIGO
 
----
 
 ## Refactoring
 
@@ -3026,8 +2820,6 @@ Hacer _refactoring_ es hacer pequeñas transformaciones en el código que mantie
 > — M. Fowler. **Refactoring. Improving the Design of Existing Code.** Addison-Wesley, 2nd Edition, 2008.
 
 
----
-
 ### Motivos para hacer refactoring
 
 - Duplicación de código
@@ -3037,13 +2829,11 @@ Hacer _refactoring_ es hacer pequeñas transformaciones en el código que mantie
 - Rendimiento
 - Pasan todos los tests (es la oportunidad)
 
----
 
 > __Lecturas recomendadas__
 > - A. Hunt & D. Thomas. **The Pragmatic Programmer.** Addison-Wesley, 1999. Capítulo 40: *Refactoring*
 > - Steve McConnell. **Code Complete: A practical handbook of software construction**, 2nd edition, 2004.
 
----
 
 ### Conceptos relacionados con el refactoring
 
@@ -3057,12 +2847,9 @@ Hacer _refactoring_ es hacer pequeñas transformaciones en el código que mantie
 >  - Refactoring Guru: [Code Smells](https://refactoring.guru/refactoring/smells)
 >  - Refactoring Guru: [Refactoring techniques](https://refactoring.guru/refactoring/techniques)
 
----
-
 
 ¿Cuál es la primera razón para hacer refactoring?
 
----
 
 ### Ejemplos de refactoring
 
@@ -3078,12 +2865,9 @@ Hacer _refactoring_ es hacer pequeñas transformaciones en el código que mantie
 - Hay muchos cambios que requieren modificaciones en paralelo a varias clases
 - Etc.
 
----
-
 
 ## CASO PRÁCTICO: Cálculo de nóminas
 
----
 
 ### Implementación de nóminas v0.1
 
@@ -3101,7 +2885,6 @@ public class Empleado {
 }
 ```
 
----
 
 ```java
 public class Autonomo extends Empleado {
@@ -3125,24 +2908,19 @@ public class Prueba {
 }
 ```
 
----
-
 
 En la implementación anterior, ¿dónde hay código duplicado?
 
----
 
 - Código duplicado en los constructores de las clases y subclases
 - Refactorizar delegando hacia la superclase
 
----
 
 ### Implementación de nóminas v0.2
 
 - Requisito: los trabajadores autónomos cobran por horas (no tienen un salario fijo bruto)
 - Incluimos el método `computeMonthlySalary` para el cálculo de la nómina mensual
 
----
 
 ```java
 public class Empleado {
@@ -3163,7 +2941,6 @@ public class Empleado {
 }
 ```
 
----
 
 ```java
 public class Autonomo extends Empleado {
@@ -3185,7 +2962,6 @@ public class Autonomo extends Empleado {
 }
 ```
 
----
 
 ```java
 public class Prueba {
@@ -3198,18 +2974,14 @@ public class Prueba {
 }
 ```
 
----
-
 
 ¿Están descohesionadas las clases?
 
----
 
 - ¿Todos los empleados deben tener un salario anual `yearlyGrossSalary` bruto?
   Los autónomos no...
 - El método de cálculo del salario está descohesionado
 
----
 
 ### Implementación de nóminas v0.3
 
@@ -3226,7 +2998,6 @@ public class Prueba {
 }
 ```
 
----
 
 ```java
 public abstract class Empleado {
@@ -3245,7 +3016,6 @@ public class Plantilla extends Empleado {
 }
 ```
 
----
 
 ```java
 public class Autonomo extends Empleado {
@@ -3274,7 +3044,6 @@ public class Autonomo extends Empleado {
 }
 ```
 
----
 
 ## Código duplicado
 
@@ -3288,7 +3057,6 @@ public class Autonomo extends Empleado {
 - Cambios (no sólo a nivel de código)
 - Trazabilidad
 
----
 
 ### Causas de la duplicación
 
@@ -3305,7 +3073,6 @@ by A. Hunt & D. Thomas. **The Pragmatic Programmer.** Addison-Wesley, 1999.
 >
 > – Steve McConnell. **Code Complete: A practical handbook of software construction**, 2nd edition, 2004.
 
----
 
 ## 1. Duplicación impuesta
 
@@ -3322,7 +3089,6 @@ La gestión del proyecto así nos lo exige. Algunos ejemplos:
     - C/C++ header files
     - IDL specs
 
----
 
 ### Cómo evitaba Java la duplicación en sus _containers_
 
@@ -3332,7 +3098,6 @@ Para evitarlo, Java usó un _workaround_: todas las clases en Java heredan de `O
 
 Más tarde (a partir del JDK 1.5) introdujo los tipos genéricos y ya no era necesario usar dicho _workaround_ basado en `Object` para evitar la duplicación
 
----
 
 ### Técnicas de solución
 
@@ -3344,12 +3109,9 @@ Más tarde (a partir del JDK 1.5) introdujo los tipos genéricos y ya no era nec
 - Herramientas de __[programación literaria](http://www.literateprogramming.com/)__
 - Ayuda del __IDE__
 
----
-
 
 ¿Cómo reducir la duplicación de código al programar pruebas unitarias?
 
----
 
 ### Property-based testing
 
@@ -3357,7 +3119,6 @@ Más tarde (a partir del JDK 1.5) introdujo los tipos genéricos y ya no era nec
 
 - Leer el Consejo nº 71 del libro de D. Thomas & A. Hunt. **The Pragmatic Programmer: your journey to mastery**, 20th Anniversary Edition, 2nd Edition, Addison-Wesley Professional, 2020.
 
----
 
 #### Ejemplo de Hypothesis en Python
 
@@ -3380,7 +3141,6 @@ Ejemplo de property-based testing con [Hypothesis](https://pypi.org/project/hypo
       assert a_list[i] <= a_list[i + 1]
   ```
 
----
 
 ## 2. Duplicación inadvertida
 
@@ -3397,12 +3157,9 @@ Ejemplo de property-based testing con [Hypothesis](https://pypi.org/project/hypo
   }
 ```
 
----
-
 
 ¿Dónde está la duplicación?
 
----
 
 Realmente `length` ya está definido con `start`y `end`.
 
@@ -3418,17 +3175,13 @@ Realmente `length` ya está definido con `start`y `end`.
   }
 ```
 
----
-
 
 ¿Es conveniente aplicar siempre DRY?
 
----
 
 - A veces se puede optar por violar DRY por razones de rendimiento...
 - [_Memoization_](https://en.wikipedia.org/wiki/Memoization): cachear los resultados de cómputos costosos
 
----
 
 ### Ejemplo: aplicando memoization – versión 2
 
@@ -3453,13 +3206,11 @@ Realmente `length` ya está definido con `start`y `end`.
   }
 ```
 
----
 
 La técnica de memoization es menos problemática si queda dentro de los límites de la clase/módulo.
 
 Otras veces no merece la pena violar DRY por rendimiento: ¡las cachés y los optimizadores de código también hacen su labor!
 
----
 
 ### Principio de acceso uniforme
 
@@ -3470,7 +3221,6 @@ Otras veces no merece la pena violar DRY por rendimiento: ¡las cachés y los op
 
 Conviene aplicar el principio de acceso uniforme para que sea más fácil añadir mejoras de rendimiento (v.g. caching)
 
----
 
 #### Ejemplo: acceso uniforme en C# – versión 3
 
@@ -3496,7 +3246,6 @@ public class Line {
 }
 ```
 
----
 
 #### Ejemplo: acceso uniforme en Scala
 
@@ -3519,7 +3268,6 @@ object NumerosComplejos {
 }
 ```
 
----
 
 Llamadas a métodos sin paréntesis, igual que si fueran atributos:
 
@@ -3540,7 +3288,6 @@ object NumerosComplejos {
 }
 ```
 
----
 
 ## 3. Duplicación por impaciencia
 
@@ -3549,7 +3296,6 @@ object NumerosComplejos {
     - Meter el `main` de Java en cualquier clase
     - Fiasco del año 2000
 
----
 
 ## 4. Duplicación por simultaneidad
 
@@ -3558,7 +3304,6 @@ object NumerosComplejos {
   - CI/CD (_Continuous Integration_ / _Continuous Delivery_)
   - Prácticas DevOps
 
----
 
 ## Reglas para hacer refactoring
 
@@ -3574,13 +3319,8 @@ Según Fowler:
 Yo añado...
 
 - Reflejar cada cambio en un _commit_ separado
-
----
-
 <!-- Source: ortogonalidad.md -->
-# ORTOGONALIDAD
-
----
+# ORTOGONALIDAD Y DEPENDENCIAS
 
 
 ## Ortogonalidad
@@ -3592,18 +3332,15 @@ Dos componentes A y B son ortogonales ($A \perp B$) si los cambios en uno no afe
 - La base de datos debe ser ortogonal a la interfaz de usuario
 - En un helicóptero, los mandos de control no suelen ser ortogonales
 
----
 
 ![Mandos de un helicóptero](./img/helicoptero.png)
 
----
 
 > Helicopters have four basic controls. The cyclic is the stick you hold in your right hand. Move it, and the helicopter moves in the corresponding direction. Your left hand holds the collective pitch lever. Pull up on this and you increase the pitch on all the blades, generating lift. At the end of the pitch lever is the throttle. Finally you have two foot pedals, which vary the amount of tail rotor thrust and so help turn the helicopter.
 >
 > However, when you try it, you discover that life isn’t that simple. The helicopter’s nose drops, and you start to spiral down to the left. Suddenly you discover that you’re flying a system where every control input has secondary effects. Lower the left-hand lever and you need to add compensating backward movement to the right-hand stick and push the right pedal. But then each of these changes affects all of the other controls again. Suddenly you’re juggling an unbelievably complex system, where every change impacts all the other inputs. Your workload is phenomenal: your hands and feet are constantly moving, trying to balance all the interacting forces.
 > -- (Hunt & Thomas, 2020)
 
----
 
 El **cíclico** (mano derecha) hace que el helicóptero se mueve en la dirección correspondiente. El **colectivo** (mano izquierda) aumenta o disminuye el _pitch_ en todas las palas, generando sustentación. Al final del colectivo (_pitch_) está el **acelerador**. Finalmente, dos **pedales** varían la cantidad de empuje del rotor de cola y ayudan a girar el helicóptero.
 
@@ -3611,7 +3348,6 @@ Sin embargo, cuando lo intentas, descubres que la vida no es tan simple. La nari
 
 De repente estás haciendo malabares con un sistema increíblemente complejo, donde cada cambio impacta todas las otras entradas.
 
----
 
 ## Beneficios de la ortogonalidad
 
@@ -3623,7 +3359,6 @@ De repente estás haciendo malabares con un sistema increíblemente complejo, do
 - En teoría, si $A \perp B$, el componente A sirve para $m$ propósitos y B sirve para $n$, entonces $A \cup B$ sirve para $m \times n$ propósitos.
 - La falta de cohesión perjudica la reutilización ⟶  ¿y si hay que hacer una nueva versión gráfica de una aplicación de línea de comandos que lleva incrustada la escritura en consola con `System.out.println`? ¡Puede descohesionar!
 
----
 
 ### Menor riesgo
 
@@ -3631,7 +3366,6 @@ De repente estás haciendo malabares con un sistema increíblemente complejo, do
 - Menor **fragilidad** del sistema global. Los problemas provocados por cambios en un área se limitan a ese área
 - Más fácil de **probar**, pues será más fácil construir pruebas individuales de cada uno de sus componentes (por ejemplo, las técnicas de _[mocking](https://en.wikipedia.org/wiki/Mock_object)_ son más sencillas)
 
----
 
 ## Niveles de aplicación de la ortogonalizad
 
@@ -3649,7 +3383,6 @@ A nivel de _diseño_, los patrones de diseño y las arquitecturas como MVC facil
 
 - Leer el [Topic 10: Orthogonality](https://learning-oreilly-com.bibezproxy.uca.es/library/view/the-pragmatic-programmer/9780135956977/f_0028.xhtml#orthogonality) de D. Thomas & A. Hunt. **The Pragmatic Programmer: your journey to mastery**, 2nd Edition, Addison-Wesley, 2020.
 
----
 
 ## Técnicas de implementación
 
@@ -3663,7 +3396,6 @@ Técnicas de implementación para fomentar la ortogonalidad:
 - **Desacoplar**: Ley de *Demeter* — «No hables con extraños»
 - Usar programación orientada a **aspectos**
 
----
 
 ## Desacoplar - ley de Demeter
 
@@ -3681,7 +3413,6 @@ Al pedir un servicio a un objeto, el servicio debe ser realizado de parte nuestr
   }
 ```
 
----
 
 **Refactorización**: definir un método `User.hasPermission()`
 
@@ -3689,7 +3420,6 @@ Al pedir un servicio a un objeto, el servicio debe ser realizado de parte nuestr
 
 - Leer el [Topic 28: Decoupling](https://learning-oreilly-com.bibezproxy.uca.es/library/view/the-pragmatic-programmer/9780135956977/f_0049.xhtml#coupling) de D. Thomas & A. Hunt. **The Pragmatic Programmer: your journey to mastery**, 20th Anniversary Edition, 2nd Edition, Addison-Wesley Professional, 2020.
 
----
 
 ### Ley de Demeter para funciones
 
@@ -3700,7 +3430,6 @@ Los métodos de un objeto solo deben hacer llamadas a métodos...
 3. de objetos **creados** por ellos mismos
 4. de objetos **declarados** en el mismo método
 
----
 
 ```java
 class Demeter {
@@ -3718,7 +3447,6 @@ class Demeter {
 }
 ```
 
----
 
 #### Excepción: Interfaces _fluent_
 
@@ -3726,7 +3454,6 @@ Hay una excepción notable a la prohibición de encadenar llamadas a funciones d
 
 Las librerías que vienen con el lenguaje suelen ser bastante estables, así que ejemplos de código como el siguiente son aceptables como excepción a esta interpretación de la ley de Demeter:
 
----
 
 ```java
 List<String> myList =
@@ -3740,7 +3467,6 @@ myList
     .forEach(System.out::println);
 ```
 
----
 
 Los métodos `stream`, `filter`, `map`, `sorted` y `forEach` son parte de las nuevas _interfaces funcionales_ de Java para manejar _streams_, incorporadas a las colecciones (v.g. `List`) desde la versión Java 8.
 
@@ -3748,7 +3474,6 @@ Este tipo de interfaces como la del API de streams de Java se conoce como [_flue
 
 > La programación con streams y se tratarán en el bloque sobre **Programación Funcional**
 
----
 
 #### Críticas a la ley de Demeter
 
@@ -3766,7 +3491,6 @@ Este tipo de interfaces como la del API de streams de Java se conoce como [_flue
   }
   ```
 
----
 
 ##### Críticas
 
@@ -3774,7 +3498,6 @@ Este tipo de interfaces como la del API de streams de Java se conoce como [_flue
 - Si cambia la implementación de `Location` de forma que ya no incluye directamente una `TimeZone`, hay que cambiar `plotDate`
 - Añadir un método *delegado* `getTimeZone` a `Selection`. Así `plotDate` no se entera de si la `TimeZone` le llega desde `Recorder` o desde un objeto contenido en `Recorder`.
 
----
 
   ```java
   public void plotDate(Date aDate, TimeZone tz) {
@@ -3788,7 +3511,6 @@ Este tipo de interfaces como la del API de streams de Java se conoce como [_flue
 - Costes de espacio y ejecución de métodos *wrapper* que reenvían la petición al objeto delegado: violar la ley de Demeter para mejorar el **rendimiento**
 - Otros ejemplos de mejora del rendimiento: desnormalización de BBDD
 
----
 
 ## Ortogonalidad en toolkits y bibliotecas
 
@@ -3797,20 +3519,14 @@ Muchas bibliotecas actuales implementan la ortogonalidad a través de metadatos,
 Los metadatos se emplean para proporcionar propósitos específicos, como v.g. persistencia de objetos, transacciones, etc. Por ejemplo, Spring o EJB utilizan anotaciones @ declarativas para expresar la transaccionalidad de una operación o la persistencia de una propiedad de una clase fuera del método que debe ejecutar dichas funcionalidades.
 
 Otro método para implementar la ortogonalidad es usar [Aspectos](aspectos.md) y _Aspect-Oriented Programming_ (AOP). Este método es empleado por el framework Spring.
-
----
-
 <!-- Source: aspectos.md -->
-# ASPECTOS
+# PROGRAMACIÓN CON ASPECTOS
 
-Ortogonalidad con aspectos
-
----
+## Ortogonalidad con aspectos
 
 
 ## CASO PRÁCTICO: Editor de figuras
 
----
 
 ### Ejemplo: editor de figuras
 
@@ -3836,7 +3552,6 @@ class Point implements FigureElement {
 }
 ```
 
----
 
 Hay que actualizar la pantalla tras mover los objetos:
 
@@ -3844,7 +3559,6 @@ Hay que actualizar la pantalla tras mover los objetos:
 
 Hay una colección de figuras que cambian periódicamente. Se deben monitorizar los cambios para refrescar el display.
 
----
 
 ```java
 class Line {
@@ -3862,7 +3576,6 @@ class Line {
 }
 ```
 
----
 
 ```java
 class Point {
@@ -3880,7 +3593,6 @@ class Point {
 }
 ```
 
----
 
 Implementamos una clase que monitoriza los cambios en las figuras:
 
@@ -3902,7 +3614,6 @@ class MoveTracking {
 
 ¿Qué dependencias aparecen?
 
----
 
 ¿Qué dependencias aparecen?
 
@@ -3913,7 +3624,6 @@ class MoveTracking {
 
 Primero vemos una implementación con las dependencias anteriores, sin aspectos...
 
----
 
 #### Versión 1 sin aspectos
 
@@ -3939,7 +3649,6 @@ class Line {
 }
 ```
 
----
 
 ```java
 class Point {
@@ -3957,7 +3666,6 @@ class Point {
 }
 ```
 
----
 
 #### Versión 2 sin aspectos
 
@@ -3983,7 +3691,6 @@ class Line {
 }
 ```
 
----
 
 ```java
 class Point {
@@ -4003,7 +3710,6 @@ class Point {
 }
 ```
 
----
 
 ```java
 class MoveTracking {
@@ -4021,7 +3727,6 @@ class MoveTracking {
 }
 ```
 
----
 
 #### Versión 3 sin aspectos
 
@@ -4033,7 +3738,6 @@ La versión 2 hace que un cambio en cualquier elemento provoque un refresco de t
 
 Mejor monitorizar las figuras que cambian...
 
----
 
 Decidimos modificar la implementación: cambiar el método `setFlag` por `collectOne`, indicando la figura que se mueve.
 
@@ -4055,7 +3759,6 @@ class Line {
 }
 ```
 
----
 
 ```java
 class Point {
@@ -4075,7 +3778,6 @@ class Point {
 }
 ```
 
----
 
 ```java
 class MoveTracking {
@@ -4093,13 +3795,11 @@ class MoveTracking {
 }
 ```
 
----
 
 La no ortogonalidad de `MoveTracking` con respecto a `Line` y `Point` hace que la solicitud de un cambio de implementación (el seguimiento de los cambios en las figuras para el refresco en pantalla) provoque un cambio en los otros módulos (clases).
 
 El cambio de implementación del seguimiento de los cambios para el refresco en pantalla ha dado lugar a modificaciones en todas las clases: `Line`, `Point` y `MoveTracking`
 
----
 
 ## Programación orientada a aspectos
 
@@ -4107,7 +3807,6 @@ La __programación orientada a aspectos__ (_AOP_) es un paradigma de programaci�
 
 ![terminología sobre AOP](./img/aspectj-terminology.png)
 
----
 
 - __aspect__ = modularización de un aspecto de interés (_concern_) que afecta a varias clases o módulos
 - __joinpoint__ = especificación declarativa de un punto en la ejecución de un programa (por ejemplo, la ejecución de un método, el manejo de una excepción, etc.)
@@ -4116,7 +3815,6 @@ La __programación orientada a aspectos__ (_AOP_) es un paradigma de programaci�
   - Tipos de _advice_: _after_, _before_, _around_, etc.
 - __pointcut__ = predicado que define cuándo se aplica un _advice_ de un aspecto en un _jointpoint_ determinado. Se asocia un _advice_ con la expresión de un _pointcut_ y se ejecuta el _advice_ en todos los _joinpoint_ que cumplan la expresión del _pointcut_.
 
----
 
 ### Implementación con aspectos
 
@@ -4138,7 +3836,6 @@ class Line {
 }
 ```
 
----
 
 ```java
 class Point {
@@ -4158,7 +3855,6 @@ class Point {
 
 Vamos a eliminar las dependencias, gracias a la implementación de aspectos...
 
----
 
 #### Versión 1 con aspectos
 
@@ -4183,7 +3879,6 @@ aspect MoveTracking {
 }
 ```
 
----
 
 #### Versión 2 con aspectos
 
@@ -4210,7 +3905,6 @@ aspect MoveTracking {
 }
 ```
 
----
 
 Ejemplos de pointcut:
 
@@ -4227,7 +3921,6 @@ call(public * Figure.* (..))
 
 Versión más ortogonal. Todos los cambios están concentrados en un solo aspecto.
 
----
 
 ```java hl_lines="2 3 9 10 16 17"
 aspect MoveTracking {
@@ -4251,7 +3944,6 @@ aspect MoveTracking {
 }
 ```
 
----
 
 ### Lecturas recomendadas de AspectJ
 
@@ -4262,18 +3954,12 @@ aspect MoveTracking {
 
 - [Introducción a AspectJ](http://www.baeldung.com/aspectj)
 - [Introducción a Spring AOP](http://www.baeldung.com/spring-aop)
-
----
-
 <!-- Source: errores.md -->
 # TRATAMIENTO DE ERRORES
-
----
 
 
 ## CÓDIGOS DE ERROR
 
----
 
 Ejemplo habitual de tratamiento de errores con __códigos de error__ en un lenguaje como C:
 
@@ -4294,7 +3980,6 @@ if (deletePage(page) == E_OK) {
 }
 ```
 
----
 
 ### Imanes de dependencias
 
@@ -4316,12 +4001,9 @@ public enum Error {
 
 Otros ejemplos de imanes de dependencias son las clases con nombres como _Utilidades_, _Tools_, etc.
 
----
-
 
 ## EXCEPCIONES
 
----
 
 Muchos lenguajes usan __excepciones__ en lugar de códigos de error:
 
@@ -4342,13 +4024,11 @@ catch (Exception e) {
 
 Las nuevas excepciones son derivadas de una clase base `Exception`, lo que facilita la definición de nuevos motivos de error.
 
----
 
 ### ¿Dónde se produce el error?
 
 Si se eleva una excepción en el ejemplo anterior, ¿en cuál de las instrucciones del bloque `try` se ha producido?
 
----
 
 ### Separar la función y el tratamiento de errores
 
@@ -4375,7 +4055,6 @@ private void logError(Exception e) {
 
 ¿No queda más fácil de comprender, modificar y depurar?
 
----
 
 ### Excepciones en Java
 
@@ -4389,7 +4068,6 @@ __¿Qué implica elevar una excepción `e` en Java?__
 2. ...hasta que se encuentre un bloque catch para el tipo de `e` y...
 3. ...si no se encuentra, la excepción es capturada por la JVM, que detiene el programa.
 
----
 
 #### Tratamiento de excepciones en Java
 
@@ -4410,7 +4088,6 @@ __¿Qué implica elevar una excepción `e` en Java?__
   }
 ```
 
----
 
 #### Recomendaciones sobre excepciones
 
@@ -4422,7 +4099,6 @@ Incluir el __contexto__ de la ejecución:
 
 Los beneficios de las excepciones _checked_ en Java son mínimos: [¿por qué?](https://testing.googleblog.com/2009/09/checked-exceptions-i-love-you-but-you.html) ⟶ Hay quien recomienda usar solamente excepciones __unchecked__.
 
----
 
 __Cómo afectan al diseño las excepciones checked__
 
@@ -4433,7 +4109,6 @@ Se paga el precio de violar el principio OCP (_Open-Closed Principle_): si lanza
 - C\#, C++, Python o Ruby no ofrecen excepciones _checked_.
 - Scala no usa excepciones _checked_ como Java: [Scala exception handling](https://www.baeldung.com/scala/exception-handling)
 
----
 
 #### Transformación de excepciones
 
@@ -4445,7 +4120,6 @@ __Ejemplo__: Al ejecutar una consulta mediante `executeQuery` en el API de JDBC 
 - ¿Le interesa al cliente del API saber que el error es provocado por una sentencia SQL?
 - ¿Le interesa al cliente del API conocer el tipo de excepción _checked_ que una consulta puede generar?
 
----
 
 __Solución: Transformación en unchecked__
 
@@ -4459,7 +4133,6 @@ Transformar las excepciones checked en unchecked:
   }
 ```
 
----
 
 #### Excepciones encapsuladas
 
@@ -4483,7 +4156,6 @@ Criticar la siguiente implementación:
   }
 ```
 
----
 
 __Código duplicado__: llamada a `reportPortError()` se repite mucho. ¿Cómo evitarlo?
 
@@ -4510,7 +4182,6 @@ public class LocalPort {
 }
 ```
 
----
 
 ```java
 LocalPort port = new LocalPort(12);
@@ -4527,7 +4198,6 @@ try {
 - La encapsulación de excepciones es recomendable cuando se usa un API de terceros, para minimizar las dependencias con respecto al API elegido.
 - También facilita la implementación de __mocks__ del componente que proporciona el API para construir pruebas.
 
----
 
 #### Las excepciones son excepcionales
 
@@ -4537,7 +4207,6 @@ __Ejemplo: Excepciones por ficheros__: ¿Usar excepciones cuando se intenta abri
 
 - Depende de si el fichero debe estar ahí
 
----
 
 - Caso en que se debe lanzar una excepción:
 
@@ -4562,12 +4231,9 @@ __Ejemplo: Excepciones por ficheros__: ¿Usar excepciones cuando se intenta abri
   }
   ```
 
----
-
 
 ## ABUSO DE NULL
 
----
 
 Obtener un _null_ cuando no se espera puede ser un quebradero de cabeza para el tratamiento de errores.
 
@@ -4591,14 +4257,12 @@ public void registerItem(Item item) {
 
 ¿Qué pasa si `persistentStore` es null?
 
----
 
 - Peligro de `NullPointerException`
 - ¿Se nos ha olvidado añadir un `if null`?
 - El problema no es que se haya olvidado uno, sino que hay demasiados
 - En su lugar, elevar una excepción o devolver un objeto _especial_
 
----
 
 ### No devolver null
 
@@ -4613,7 +4277,6 @@ if (employees != null) {
 }
 ```
 
----
 
 Mejor así:
 
@@ -4629,7 +4292,6 @@ public List<Employee> getEmployees() {
 }
 ```
 
----
 
 ### No pasar valores null
 
@@ -4648,7 +4310,6 @@ public class MetricsCalculator
 calculator.xProjection(null, new Point(12, 13))
 ```
 
----
 
 Devolver null es malo, pero ¡pasar un valor null es peor!
 
@@ -4668,7 +4329,6 @@ public class MetricsCalculator
 
 ¿Qué acción realizar ante un `InvalidArgumentException`? ¿Hay alguna buena?
 
----
 
 #### Alternativa con aserciones
 
@@ -4689,12 +4349,9 @@ El uso de `assert` es una buena forma de documentar, pero no resuelve el problem
 
 Pueden usarse __aserciones__ o __contratos__ para resolver esto.
 
----
-
 
 ## OPTIONALS
 
----
 
 - En la mayoría de lenguajes no hay una forma satisfactoria de tratar con _nulls_ pasados como argumento accidentalmente.
 - Para eso están los __options__ u __optionals__, disponibles actualmente en muchos lenguajes como:
@@ -4703,7 +4360,6 @@ Pueden usarse __aserciones__ o __contratos__ para resolver esto.
     - C++17 `std::optional`
 - TypeScript recomienda usar [`undefined`](https://github.com/Microsoft/TypeScript/wiki/Coding-guidelines#null-and-undefined) (algo que no se ha inicializado) en lugar de `null` (algo que no está disponible)
 
----
 
 ### Scala `Option`
 
@@ -4724,7 +4380,6 @@ object Demo {
 }
 ```
 
----
 
 #### Valores vacíos en Scala
 
@@ -4737,7 +4392,6 @@ Diferencias entre [`Null`, `null`, `Nil`, `Nothing`, `None` y `Unit`](https://ww
 - `Nil` es una lista con cero elementos (su tipo es `List[Nothing]`)
 - `None` es uno de los hijos de `Option`
 
----
 
 ```scala
 object Demo {
@@ -4757,7 +4411,6 @@ object Demo {
 }
 ```
 
----
 
 ### Java 8 `Optional`
 
@@ -4766,7 +4419,6 @@ object Demo {
 - Leer [Java 8 Optional in Depth](https://www.mkyong.com/java8/java-8-optional-in-depth/).
 - Leer [Jugando con Optional en Java 8](https://www.adictosaltrabajo.com/2015/03/02/optional-java-8/).
 
----
 
 #### Ejemplo en Java 8 con sintaxis imperativa
 
@@ -4793,7 +4445,6 @@ private static Optional<Double> getDurationOfAlbumWithName(String name) {
 }
 ```
 
----
 
 Al ejecutar varias operaciones seguidas que pueden devolver null, el nivel de anidamiento del código aumenta y queda menos claro (se mezcla código funcional con código de gestión de errores). Solución...
 
@@ -4808,7 +4459,6 @@ Optional<Double> getDurationOfAlbumWithName(String name) {
 }
 ```
 
----
 
 La función `map` comprueba si el `Optional` que recibe está vacío. Si lo está devuelve un `Optional` vacío y, si no, aplica la función anónima que le hemos pasado por parámetro, pasándole el valor del `Optional` (es decir, si el `Optional` está vacío, el método `map` no hace nada).
 Esto sirve para concatenar operaciones sin necesidad de comprobar en cada momento si el `Optional` está vacío.
@@ -4817,7 +4467,6 @@ Cuando queremos encadenar distintas operaciones que devuelvan `Optional`, es nec
 
 Pero... `getDurationOfAlbumWithName()` devuelve un `Optional<Double>`. ¿No debería mejor devolver un `double`?
 
----
 
 ```java
 private static double getDurationOfAlbumWithName(String name) {
@@ -4832,7 +4481,6 @@ Podríamos seguir devolviendo `Optional` por toda la aplicación, pero en algún
 
 Para ello se usa `orElse()` para proporcionar un valor alternativo en caso de que el valor no estuviera presente.
 
----
 
 #### Ejemplo del API Streams en Java:
 
@@ -4854,7 +4502,6 @@ myList.stream()
   .ifPresent(System.out::println);
 ```
 
----
 
 #### Ejemplo sin `Optional`: Programa de prueba
 
@@ -4879,7 +4526,6 @@ public class MobileTesterWithoutOptional {
 }
 ```
 
----
 
 Cantidad de código _boilerplate_ para comprobar los nulos en la clase principal:
 
@@ -4900,7 +4546,6 @@ public class MobileService {
 }
 ```
 
----
 
 Clases de utilidad:
 
@@ -4922,7 +4567,6 @@ public class ScreenResolution {
 }
 ```
 
----
 
 ```java
 public class DisplayFeatures {
@@ -4942,7 +4586,6 @@ public class DisplayFeatures {
 }
 ```
 
----
 
 ```java
 public class Mobile {
@@ -4969,7 +4612,6 @@ public class Mobile {
 }
 ```
 
----
 
 #### Ejemplo con `Optionals`: Uso de `Optional` en el programa de prueba
 
@@ -4996,7 +4638,6 @@ public class MobileTesterWithOptional {
 }
 ```
 
----
 
 Menos código _boilerplate_ en la clase principal:
 
@@ -5011,7 +4652,6 @@ public class MobileService {
 }
 ```
 
----
 
 Clases de utilidad modificadas para que usen `Optional`:
 
@@ -5034,7 +4674,6 @@ public class DisplayFeatures {
 }
 ```
 
----
 
 ```java
 public class Mobile {
@@ -5060,7 +4699,6 @@ public class Mobile {
 }
 ```
 
----
 
 ### Carencias de Optional
 
@@ -5072,7 +4710,6 @@ public class Mobile {
 
 Lecturas para ampliación: clase [Validation en Scala](https://www.innoq.com/en/blog/validate-your-domain-in-scala/)
 
----
 
 #### Ejemplo: División por cero
 
@@ -5095,18 +4732,12 @@ object EitherLeftRightExample extends App {
 ```
 
 __Nota__: No hay implementaciones de `Either` en el JDK, pero sí en extensiones funcionales a Java (v.g. [functionaljλvλ](https://github.com/functionaljava/functionaljava))
-
----
-
 <!-- Source: funcional.md -->
-# PROGRAMACIÓN FUNCIONAL
-
----
+# PROGRAMACIÓN FUNCIONAL Y STREAMS
 
 
 ## INTERFACES FUNCIONALES
 
----
 
 ### Caso práctico: Comparación de personas
 
@@ -5121,7 +4752,6 @@ Deseamos ordenar por criterios distintos cada vez (id, fecha, etc.)
   - No delegar hacia las subclases
   - Delegar en objeto de otra clase que implemente la interfaz `java.util.Comparator`
 
----
 
 Usando composición/delegación:
 
@@ -5137,7 +4767,6 @@ Collections.sort(personas, new OrdenarPersonaPorId());
 
 La __función factorizada__ (la implementación de `Comparator`) es sustituible en tiempo de ejecución mediante inyección de dependencias
 
----
 
 ### Clases anónimas
 
@@ -5153,7 +4782,6 @@ Collections.sort(personas,
 );
 ```
 
----
 
 __Clases anónimas (Java 7)__
 
@@ -5187,7 +4815,6 @@ public class ComparatorTest {
 }
 ```
 
----
 
 __Lambdas (Java 8)__
 
@@ -5218,7 +4845,6 @@ public class ComparatorTest {
 }
 ```
 
----
 
 ### Clases locales o internas
 
@@ -5226,7 +4852,6 @@ public class ComparatorTest {
 - Pueden hacer referencia a identificadores declarados en la clase y a variables de solo lectura (`final`) del método en que se declaran
 - Sirven para clases que solo aparecen una vez en la aplicación
 
----
 
 ```java
 public class EnclosingClass {
@@ -5257,7 +4882,6 @@ public class EnclosingClass {
 }
 ```
 
----
 
 ### Predicados
 
@@ -5267,7 +4891,6 @@ En la biblioteca Guava, los [`Iterators`](https://google.github.io/guava/release
 
 Desde Java 8 existe una clase similar [`Predicate`](https://docs.oracle.com/javase/8/docs/api/java/util/function/Predicate.html).
 
----
 
 ### Ejemplo: partidos de una competición
 
@@ -5286,7 +4909,6 @@ Iterator matchesByTeam = Iterators.filter(matches, condition);
 for (matches: matchesByTeam) { ... };
 ```
 
----
 
 __Sin clases anónimas:__
 
@@ -5306,7 +4928,6 @@ class FilterByTeam implements Predicate<Match> {
 }
 ```
 
----
 
 __Guava y Java 8__
 
@@ -5314,7 +4935,6 @@ Guava emplea `FluentIterable` para poder encadenar varios `Iterable` sin que hay
 
 Lectura recomendada: [From Guava's FluentIterable via StreamSupport to Java 8 Streams](https://verhoevenv.github.io/2015/08/18/fluentiterable-streamsupport-java8.html)
 
----
 
 Comprobar que, en un cierto grupo de la competición, un mismo partido no está repetido ni se enfrenta un equipo contra sí mismo:
 
@@ -5338,15 +4958,11 @@ private void checkMatchesInGroup(List<Match> matchesInGroup) {
 }
 ```
 
-<!--
----
-
 ### Retrollamadas (_callbacks_)
 
 - Un __callback__ o retrollamada es un fragmento de código ejecutable que se pasa como argumento.
 - Hacen falta interfaces funcionales para poder definir retrollamadas
 
----
 
 #### Implementaciones en C/C++
 
@@ -5361,14 +4977,10 @@ private void checkMatchesInGroup(List<Match> matchesInGroup) {
 - _functor_ en C++
     - clase que define `operator()`
     - es una clase y por tanto pueden contener un estado
--->
-
----
 
 
 ## LAMBDAS
 
----
 
 ### Funciónes anónimas o *lambdas*
 
@@ -5377,7 +4989,6 @@ private void checkMatchesInGroup(List<Match> matchesInGroup) {
 - Son funciones anidadas que permiten acceder a variables definidas en el ámbito de la contenedora (variables no locales a la función anónima)
 - Muchos lenguajes las introducen a través de la palabra reservada `lambda`
 
----
 
 ### Expresión lambda
 
@@ -5387,7 +4998,6 @@ Sirven para pasarlas como argumento a funciones de orden superior, momento en el
 
 Por tanto, las funciones anónimas permiten acceder a variables (no locales) definidas en el ámbito de la contenedora.
 
----
 
 ### Lambdas en los lenguajes
 
@@ -5399,7 +5009,6 @@ Mecanismos de los lenguajes para implementar funciones anónimas:
 - En C\#: [delegates](https://msdn.microsoft.com/en-us/library/ms173171.aspx) (métodos anónimos y expresiones lambda)
 - En Python: [generators, comprehensions, lambda expressions](https://docs.python.org/2/howto/functional.html)
 
----
 
 #### Lambdas en Java
 
@@ -5417,7 +5026,6 @@ __Ejemplos__
   (String s) -> { System.out.println(s); }
 ```
 
----
 
 #### Lambdas en Ruby
 
@@ -5444,7 +5052,6 @@ __Ejemplos__
   # 20
 ```
 
----
 
 #### Lambdas en C++
 
@@ -5463,7 +5070,6 @@ __*capture* = entorno de referencia__
 `[&, x]`   – `x` se captura explícitamente por copia; el resto, por referencia
 `[=, &z]`  – `z` se captura explícitamente por referencia; el resto, por copia
 
----
 
 ### Clausuras o _closures_
 
@@ -5472,7 +5078,6 @@ __*capture* = entorno de referencia__
   - La diferencia entre una función normal y una clausura es que una clausura depende de una o varias __variables libres__.
   - Una clausura permite acceder a las variables libres fuera de su ámbito léxico (i.e. alcance), incluso cuando se invoca desde fuera de ese ámbito.
 
----
 
 #### Entorno de referencia de una clausura
 
@@ -5481,7 +5086,6 @@ __*capture* = entorno de referencia__
   - __Variable libre__ (_free_): notación lógica matemática que especifica los lugares de una expresión donde tiene lugar una sustitución
   - __Variable asignada__ (_bound_): variable que era libre previamente pero a la que le ha sido asignado un valor o conjunto de valores
 
----
 
 #### Anónimas y clausuras en C++
 
@@ -5502,7 +5106,6 @@ std::for_each(
 */
 ```
 
----
 
 ```c++
 [capture](parameters) -> return_type { body }
@@ -5515,7 +5118,6 @@ std::for_each(
   - Las variables externas capturadas son inmutables por defecto
   - `mutable` después de los (`parameters`): permite que `body` modifique los objetos capturados por copia
 
----
 
 __Lecturas recomendadas: Lambdas en C++__
 
@@ -5527,7 +5129,6 @@ __Tutoriales recomendado:__
 - [Mejorando código con expresiones lambda](http://www.oracle.com/webfolder/technetwork/tutorials/obe/java/Lambda-QuickStart/index.html\#section3)
 - [Closures en Scala](https://madusudanan.com/blog/scala-tutorials-part-30-closures/)
 
----
 
 #### Anónimas y clausuras en Java
 
@@ -5542,7 +5143,6 @@ Una expresión lambda en Java puede **capturar** (o no)...
 
 <!--
 
----
 
 __Ejemplo: Lambda que captura variables locales `final`__
 
@@ -5557,7 +5157,6 @@ for (int j = 0; j < 999999999; j++) {
 }
 ```
 
----
 
 __Ejemplo: Lambda que captura variables locales no declaradas `final` pero cuyo valor no es modificado__
 
@@ -5575,7 +5174,6 @@ for (int j = 0; j < 999999999; j++) {
 }
 ```
 
----
 
 __Ejemplo: Lambda que captura variables de instancia de la clase contenedora__
 
@@ -5597,7 +5195,6 @@ public class LambdaInstanceCapturing implements Runnable {
 
 -->
 
----
 
 ##### Lambdas y clases anónimas internas
 
@@ -5611,7 +5208,6 @@ En Java, una expresión lambda y una clase anónima interna (_inner class_) tien
   - No se pueden ocultar las variables del ámbito contenedor dentro del cuerpo de la expresión lambda.
   - `this` hace referencia a una instancia de la clase contenedora.
 
----
 
 En el ejemplo siguiente, ¿qué valor devuelve `scopeExperiment()`?:
 
@@ -5639,7 +5235,6 @@ public String scopeExperiment() {
 }
 ```
 
----
 
 El valor será:
 
@@ -5647,7 +5242,6 @@ El valor será:
 resultadoInnerClass  = Valor de la inner class
 ```
 
----
 
 En el ejemplo siguiente, ¿qué valor devuelve `scopeExperiment()`?:
 
@@ -5673,7 +5267,6 @@ public String scopeExperiment() {
 }
 ```
 
----
 
 El valor será:
 
@@ -5681,7 +5274,6 @@ El valor será:
 resultadoLambda = Valor de la contenedora
 ```
 
----
 
 #### Funciones anónimas en Ruby
 
@@ -5705,7 +5297,6 @@ __Sintaxis `{` ... `}`__
 
 El método `map` itera y aplica un bloque repetitivamente a cada elemento de una colección (representado por el parámetro `i`)
 
----
 
 ##### Ejemplo: búsqueda en una lista
 
@@ -5735,7 +5326,6 @@ __Con bloques (sintaxis `do` ... `end`):__
   end
   ```
 
----
 
 __Con bloques (sintaxis `{` ... `}`):__
 
@@ -5749,7 +5339,6 @@ __Con bloques (sintaxis `{` ... `}`):__
 
 El método `find` itera y aplica el test del bloque a cada elemento `song` de la colección.
 
----
 
 ##### Ejecución de bloques
 
@@ -5759,7 +5348,6 @@ El método `find` itera y aplica el test del bloque a cada elemento `song` de la
 - El control vuelve al método después del `yield`
 - Al bloque se le pueden pasar parámetros
 
----
 
 **Ejemplo: fibonacci**
 
@@ -5776,7 +5364,6 @@ fib_up_to(1000) {|f| print f, " " }
 #Salida => 1 1 2 3 5 8 13 21 34 55 89 144 233 377 610 987
 ```
 
----
 
 **Ejemplo de `yield`:**
 
@@ -5789,7 +5376,6 @@ end
 three_times { puts "Hello" }
 ```
 
----
 
 **Ejemplo: implementación de `Array.find`**
 
@@ -5805,7 +5391,6 @@ class Array
 end
 ```
 
----
 
 **Ejemplos: iterar con bloques**
 
@@ -5824,7 +5409,6 @@ end
   #Devuelve => [1, 2, 3, 4]
   ```
 
----
 
 - Iterar sobre un fichero con `each`
 
@@ -5841,7 +5425,6 @@ end
   f.close
   ```
 
----
 
 - Iterar sobre un array con `collect`
 
@@ -5860,7 +5443,6 @@ end
   #Devuelve => [1, 2, 3, 4]
   ```
 
----
 
 ##### Procs y lambdas
 
@@ -5876,7 +5458,6 @@ end
   times_two = ->(x) { x * 2 }
   ```
 
----
 
 - Varias formas de llamar a la lambda (es preferible `call`)
 
@@ -5893,7 +5474,6 @@ end
   times_two.call(10)
   ```
 
----
 
 - Los `proc` no se preocupan de los argumentos:
 
@@ -5910,7 +5490,6 @@ end
   s.call(10,10) # Salida: I care about args
   ```
 
----
 
 - Los `proc` retornan del método actual; los lambda retornan de la función anónima:
 
@@ -5924,7 +5503,6 @@ end
   puts "Proc result: #{my_proc.call}"
   ```
 
----
 
 - Si el `proc` está dentro de un método, la llamada a `return` es equivalente a retornar de ese método:
 
@@ -5950,7 +5528,6 @@ end
   # Prints "Before lambda" and "After lambda"
   ```
 
----
 
 **Diferencias entre `Proc` y `lambda`:**
 
@@ -5958,7 +5535,6 @@ end
 - Los `Proc` retornan del método actual, las lambdas retornan de la propia función lambda
 - Los `Proc` no se preocupan del número correcto de argumentos, las lambdas elevan una excepción
 
----
 
 ##### Paso de bloques como parámetros
 
@@ -5966,7 +5542,6 @@ end
 - ¿Dónde se llama al bloque? Donde el método indique con `yield`
 - El bloque (realmente un objeto `Proc`) se pasa como una especie de parámetro no declarado
 
----
 
 **Ejemplos de paso de bloques:**
 
@@ -5993,7 +5568,6 @@ end
   #  After the yield
   ```
 
----
 
 - Cualquier método puede recibir un bloque como parámetro implícito, pero no lo ejecuta si no hace `yield`:
 
@@ -6008,7 +5582,6 @@ end
   # => No genera salida
   ```
 
----
 
 - Con `yield`:
 
@@ -6024,7 +5597,6 @@ end
   #   Hello
   ```
 
----
 
 - Llamada a un bloque con parámetros:
 
@@ -6047,7 +5619,6 @@ end
   #  After the yield
   ```
 
----
 
 - Hacer explícito el bloque pasado como parámetro usando _ampersand_: explicitamos que se espera que el método reciba un parámetro de tipo bloque
 
@@ -6059,7 +5630,6 @@ end
   end
   ```
 
----
 
 - Convertir un `Proc` o un lambda en un bloque pasado como parámetro:
 
@@ -6075,14 +5645,12 @@ end
   #  After the call
   ```
 
----
 
 __Lecturas recomendadas__
 
 - M. Williams: [Java SE 8: Lambda Quick Start](http://www.oracle.com/webfolder/technetwork/tutorials/obe/java/Lambda-QuickStart/index.html), Oracle Learning Library, 2013.
 - D. Thomas & A. Hunt: [Programming Ruby. The Pragmatic Programmer's Guide](http://www.ruby-doc.org/docs/ProgrammingRuby/), Addison-Wesley, 2005.
 
----
 
 ## STREAMS
 
@@ -6095,7 +5663,6 @@ Las operaciones sobre un stream pueden ser intermediarias o terminales
 - Las operaciones __intermediarias__ devuelven un nuevo stream permitiendo encadenar múltiples operaciones intermediarias sin usar punto y coma
 - Las operaciones __terminales__ son nulas o devuelven un resultado de un tipo diferente, normalmente un valor agregado a partir de cómputos anteriores
 
----
 
 ### Ejemplo v0.1
 
@@ -6119,7 +5686,6 @@ public class Main{
 }
 ```
 
----
 
 ### Streams con interfaces funcionales
 
@@ -6130,7 +5696,6 @@ public class Main{
 
 - Las operaciones aplicadas no pueden modificar el _estado_ del stream original
 
----
 
 En el ejemplo anterior, se puede observar que:
 
@@ -6139,7 +5704,6 @@ En el ejemplo anterior, se puede observar que:
 - Ninguna de las operaciones modifica el estado de `myList` añadiendo o eliminando elementos
 - Sólo se filtran ciertos elementos, se transforman a mayúsculas, se ordenan (por defecto, alfabéticamente) y se imprimen por pantalla
 
----
 
 ### Ejemplo v0.2
 
@@ -6160,20 +5724,15 @@ myList
   .ifPresent(System.out::println);
 ```
 
----
 
 ### Más información
 
 - Winterbe: [Java 8 stream tutorial](https://winterbe.com/posts/2014/07/31/java8-stream-tutorial-examples/)
 - Oracle: [Procesamiento de datos con streams de Java](https://www.oracle.com/lad/technical-resources/articles/java/processing-streams-java-se8.html)
 - Oracle: [Introducción a Expresiones Lambda y API Stream en Java](https://www.oracle.com/lad/technical-resources/articles/java/expresiones-lambda-api-stream-java-part2.html)
-
----
-
 <!-- Source: asertiva.md -->
-# PROGRAMACIÓN ASERTIVA
+# PROGRAMACIÓN ASERTIVA Y CONTRATOS
 
----
 
 ## Programación asertiva
 
@@ -6186,12 +5745,9 @@ Ejemplos de situaciones que _no van a ocurrir nunca_:
 > There is a luxury in self-reproach. When we blame ourselves we feel no one else has a right to blame us.
 > --_Oscar Wilde, The Picture of Dorian Gray_
 
----
-
 
 ## ASERCIONES
 
----
 
 Añadir __aserciones__ al código para chequear esas situaciones:
 
@@ -6206,7 +5762,6 @@ Añadir __aserciones__ al código para chequear esas situaciones:
     }
 ```
 
----
 
 ### Aserciones e invariantes
 
@@ -6216,7 +5771,6 @@ __Invariante__ — Condición que se puede considerar cierta durante la ejecuci�
 
 Por ejemplo, una _invariante de bucle_ es una condición que es cierta al principio y al final de cada ejecución de un bucle
 
----
 
 ### Aserciones en Java
 
@@ -6235,7 +5789,6 @@ assert Expression1 : Expression2;
 - `Expression1` es `boolean`
 - `Expression2` devuelve un valor que es pasado al constructor de `AssertionError`, que usa una representación en forma de `String` del valor como detalle del mensaje
 
----
 
 En versiones antiguas del JDK, notificar al compilador que las acepte:
 
@@ -6250,7 +5803,6 @@ java [ -enableassertions | -ea  ] [:<package name>"..." | :<class name> ]
 java [ -disableassertions | -da ] [:<package name>"..." | :<class name> ]
 ```
 
----
 
 #### ¿Gestión de errores?
 
@@ -6271,7 +5823,6 @@ try {
 }
 ```
 
----
 
 #### Efectos colaterales
 
@@ -6293,7 +5844,6 @@ while (Iterator i.hasNext() {
 
 ¿Por qué? En Java, los objetos (y las estructuras de datos) no son inmutables.
 
----
 
 ### Tipos de invariantes
 
@@ -6311,7 +5861,6 @@ if (i % 3 == 0) {
 }
 ```
 
----
 
 Mejor con aserciones:
 
@@ -6326,7 +5875,6 @@ if (i % 3 == 0) {
 }
 ```
 
----
 
 #### Invariantes de control de flujo
 
@@ -6348,7 +5896,6 @@ switch(suit) {
 }
 ```
 
----
 
 Añadir:
 
@@ -6364,7 +5911,6 @@ default:
   throw new AssertionError(suit);
 ```
 
----
 
 Puntos **inalcanzables**:
 
@@ -6382,7 +5928,6 @@ void foo() {
 
 Son un tipo de invariantes __internas__ que se aplican a todas las instancias de una clase, en todos los momentos, excepto cuando una instancia está en transición de un estado consistente a otro.
 
----
 
 Por ejemplo, en un árbol binario equilibrado, una invariante de clase puede indicar que está ordenado y equilibrado:
 
@@ -6399,7 +5944,6 @@ Por ejemplo, en un árbol binario equilibrado, una invariante de clase puede ind
 
 Es recomendable incluir comprobaciones de invariantes de clase al principio de los métodos de clases cuyo estado es modificable por otras clases (v.g. _setters_).
 
----
 
 ### Inmutabilidad e invariantes
 
@@ -6411,9 +5955,8 @@ La __inmutabilidad__ en los objetos (y estructuras de datos) es una garantía de
 - Por _thread-safety_ para código concurrente
 
 <!--
-
-#### *Idiom* para definir aserciones finales
-
+<details>
+<summary>*Idiom* para definir aserciones finales</summary>
 A veces hace falta guardar datos antes de hacer un cómputo, para poder luego comprobar una condición cuando el cómputo se haya completado.
 
 Ejemplo de cómo hacerlo con una _inner class_ que guarda el estado de variables:
@@ -6439,16 +5982,14 @@ Ejemplo de cómo hacerlo con una _inner class_ que guarda el estado de variables
         assert copy.isConsistent();
      }
 ```
-
+</details>
 -->
 
----
 
 ### Inmutabilidad en los lenguajes
 
-<!--
  - Eiffel no permite que se pueda cambiar el valor de un parámetro (es inmutable)
--->
+
 - En C++, usar `const`
 - En Java: ¿usar `final` para marcar un parámetro constante?
   - Las subclases podrían redefinir los parámetros y volver a hacerlos mutables
@@ -6456,12 +5997,9 @@ Ejemplo de cómo hacerlo con una _inner class_ que guarda el estado de variables
 - Scala: diferencia entre `val` y `var`
 - Muchos lenguajes funcionales (Lisp, Haskell, Erlang, Clojure, etc.) y algunos orientados a objetos (Eiffel) definen la inmutabilidad por defecto
 
----
-
 
 ## CONTRATOS
 
----
 
 ### Contrato
 
@@ -6474,7 +6012,6 @@ Ejemplo de cómo hacerlo con una _inner class_ que guarda el estado de variables
 - Documentar y aceptar los derechos y responsabilidades de cada módulo de software para asegurar la correción de un programa
 - Un programa correcto es aquél que hace nada más y nada menos que lo que dice hacer
 
----
 
 __Precondición__
 
@@ -6487,7 +6024,6 @@ __Postcondición__
 - Qué garantiza la rutina: estado del mundo cuando la rutina/método termina
 - Implica que la rutina debe finalizar: no puede haber bucles infinitos
 
----
 
 __Invariante de clase__
 
@@ -6497,7 +6033,6 @@ __Invariante de clase__
 
 <!--
 
----
 
 ### Ejemplo: Raíz cuadrada en Eiffel
 
@@ -6514,7 +6049,6 @@ sqrt: DOUBLE is
   -- Result should be within error tolerance
 end;
 ```
----
 
 Si el usuario introduce un número negativo en la consola, es responsabilidad del código que llama a `sqrt` que dicho valor no se pase nunca a `sqrt`. Opciones:
 
@@ -6525,7 +6059,6 @@ Si el usuario introduce un número negativo en la consola, es responsabilidad de
 Si se llega a pasar un número negativo, Eiffel imprime el error `sqrt_arg_must_be_positive` en tiempo de ejecución y una traza de la pila.
 En otros lenguajes, como Java, se devolvería un `NaN`.
 
----
 
 ### Ejemplo: Cuenta Bancaria
 
@@ -6549,7 +6082,6 @@ feature
       end
 ```
 
----
 
 ```eiffel
     withdraw (sum: INTEGER) is
@@ -6564,7 +6096,6 @@ feature
       end
 ```
 
----
 
 ```eiffel
 feature {NONE}
@@ -6580,7 +6111,6 @@ end -- class ACCOUNT
 - `feature { NONE }` son privados
 - `make` para definir el constructor
 
----
 
 #### Cuenta Bancaria con contratos
 
@@ -6601,7 +6131,6 @@ feature
         balance = old balance + sum
       end
 ```
----
 
 ```eiffel
     withdraw (sum: INTEGER) is
@@ -6617,7 +6146,6 @@ feature
     may_withdraw ... -- As before
 ```
 
----
 
 ```eiffel
 feature {NONE}
@@ -6635,7 +6163,6 @@ invariant
 end -- class ACCOUNT
 ```
 
----
 
 -->
 
@@ -6667,7 +6194,6 @@ end -- class ACCOUNT
 ```
 -->
 
----
 
 ### Contratos en los lenguajes
 
@@ -6678,7 +6204,6 @@ end -- class ACCOUNT
 - Usar [ApectJ Oval](https://sebthom.github.io/oval/USERGUIDE.html#programming-by-contract) para programar contratos
 - Etc.
 
----
 
 ### Contratos en Scala
 
@@ -6695,7 +6220,6 @@ end -- class ACCOUNT
 
 - Ejercicio: completar el tutorial en Scala sobre [Design by Contract](https://madusudanan.com/blog/scala-tutorials-part-29-design-by-contract/).
 
----
 
 ### ¿Hay contratos en C++?
 
@@ -6706,13 +6230,11 @@ Para interesados:
 - Leer el [working paper](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2022/p2521r2.html) sobre el estado de la propuesta de contratos en C++
 - Ver el video de J. D. García sobre [Contracts programming after C++17](https://www.youtube.com/watch?v=IBas3S2HtdU): Desde el minuto 4'10''
 
----
 
 #### Ejemplo: Java + iContract
 
 Java no permite especificar contratos (los _assert_ no son lo mismo). Así que hay que utilizar extensiones como _iContract_
 
----
 
 __Ejemplo__: Inserción en una lista ordenada
 
@@ -6735,14 +6257,12 @@ public class OrderedList {
 }
 ```
 
----
 
 - Una postcondición puede necesitar expresarse con parámetros pasados a un método para verificar un comportamiento correcto.
 - Si el método puede cambiar el valor del parámetro pasado (parámetro mutable), el contrato puede incumplirse.
 
   - Opción en Java: Usar `variable@pre` de _iContract_
 
----
 
 ### _Dead programs tell no lies_
 
@@ -6753,7 +6273,6 @@ Hay otras técnicas, pero en general el principio básico es: cuando el código 
 - En Java se lanza una `RuntimeException` cuando sucede algo extraño en tiempo de ejecución.
 - Se puede/debe hacer lo mismo con cualquier lenguaje
 
----
 
 <!--
 ### Precondiciones con aserciones
@@ -6823,7 +6342,6 @@ Hay otras técnicas, pero en general el principio básico es: cuando el código 
 ```
 -->
 
-<!--
 ### Cuestiones de Diseño
 
 (LSP) Inheritance and polymorphism are the cornerstones of object-oriented languages and an area where contracts can really shine. Suppose you are using inheritance to create an "is-a-kind-of" relationship, where one class "is-a-kind-of" another class. You probably want to adhere to the Liskov Substitution Principle
@@ -6837,7 +6355,7 @@ Without a contract, all the compiler can do is ensure that a subclass conforms t
   */
   public void setFont(final Font f) {
   // ...
--->
+
 
 ### Aserciones versus contratos en Java
 
@@ -6845,7 +6363,6 @@ Without a contract, all the compiler can do is ensure that a subclass conforms t
 - No hay soporte para valores __antiguos__: si se implementara un contrato mediante aserciones, habría que añadir código a la precondición para guardar la información que quiera usarse en la postcondición. (v.g. `variable@pre` en *iContract* versus `old expression` en Eiffel)
 - El sistema de __runtime__ y las __bibliotecas__ no están diseñadas para dar soporte a contratos, así que estos __no se chequean__. Y es precisamente en la frontera entre el cliente y la biblioteca donde hay más problemas.
 
----
 
 ### Código perezoso
 
@@ -6857,10 +6374,612 @@ Without a contract, all the compiler can do is ensure that a subclass conforms t
 > A routine redeclaration [in a derivative] may only replace the original precondition by one equal or weaker, and the original post-condition by one equal or stronger
 > --Bertrand Meyer
 
----
 
 Los métodos de clase declaran *precondiciones* y *postcondiciones* al redefinir una operación en una subclase derivada.
 
 - Las __precondiciones__ sólo pueden sustituirse por otras más débiles/laxas. Los métodos pueden redefinirse con implementaciones que __aceptan un rango más amplio de entradas__.
 - Las __postcondiciones__ sólo pueden sustituirse por otras más fuertes/estrictas. Los métodos pueden redefinirse con implementaciones que __generan un rango más estrecho de salidas__.
 - Las __invariantes__ sólo pueden sustituirse por otras más fuertes/estrictas. Las clases e interfaces pueden _derivarse_ para _restringir_ el conjunto de estados válidos. Un objeto debe tener un estado _consistente_ con cualquiera de sus superclases o interfaces.
+<!-- Source: eventos.md -->
+# PROGRAMACIÓN ASÍNCRONA Y EVENTOS
+
+
+## Operaciones bloqueantes vs no bloqueantes
+
+La programación asíncrona...
+
+- promueve la definición de operaciones **no bloqueantes**
+- busca mecanismos que simulen la secuencialidad algorítmica a la vez que se mantiene el carácter no bloqueante de las operaciones
+- suele llevarse bien con la FP, no tan bien con la OOP
+
+
+## Modelos de ejecución
+
+![modelos de ejecución](./img/modelos-ejecucion.png)
+
+
+## Estado y continuación
+
+Las funciones no bloqueantes afectan a:
+
+- El **estado** del programa
+- La lógica de **continuación** del programa
+
+Esto complica notablemente el razonamiento y la operativa algorítmica habitual
+
+
+programación secuencial   |  programación asíncrona
+:-------------------------:|:-------------------------:
+![Modelo de programación secuencial](./img/prog-secuencial.png) | ![Modelo de programación asíncrona](./img/prog-asincrona.png)
+
+
+¿Qué problemas hay que resolver en programación asíncrona?
+
+![modelos de ejecución](./img/problemas-asincronia.png)
+
+
+## Modelos de paso de continuaciones
+
+Aumentar la aridad de la función no bloqueante en 1 argumento adicional (la función de **retrollamada**), donde se indica la lógica de continuación.
+
+![Paso de callback](./img/cont-callback.png)
+
+- El comportamiento del cliente _llamador_ puede especificarse con un _listener_ o manejador de eventos
+- La lógica de continuación se puede indicar mediante una retrollamada o _callback_
+
+
+## Listeners
+
+
+### Manejo de eventos
+
+Un _listener_ o _event handler_ es una subrutina para manejar retrollamadas (_callbacks_) que gestiona la entrada recibida como respuesta a un evento generado por el framework/sistema operativo para el que está preparado un programa.
+
+- Los eventos pueden representar acciones de usuario, vencimiento de temporizadores, disponibilidad de mensajes o datos, etc.
+- El framework puede ser parte del sistema operativo, del entorno de programación, de una máquina virtual, etc.
+- En OOP se implementan como **observers**; En FP, se implementan como lambdas.
+
+
+### Ejemplo de listener con y sin lambdas
+
+```java
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+
+/**
+ * This simple Swing program demonstrates how to use Lambda expressions in
+ * action listener.
+ *
+ * @author www.codejava.net
+ */
+public class ListenerLambdaExample extends JFrame {
+
+    private JButton button = new JButton("Click Me!");
+
+    public ListenerLambdaExample() {
+        super("Listener Lambda Example");
+
+        getContentPane().setLayout(new FlowLayout());
+        getContentPane().add(button);
+
+        // Java 7 - tradicional, sin lambdas
+        button.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                System.out.println("Handled by anonymous class listener");
+            }
+        });
+```
+
+
+```java
+        // Java 8 - con lambdas
+        button.addActionListener(e -> System.out.println("Handled by Lambda listener"));
+
+        button.addActionListener(e -> {
+            System.out.println("Handled Lambda listener");
+        });
+
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(300, 100);
+        setLocationRelativeTo(null);
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                new ListenerLambdaExample().setVisible(true);
+            }
+        });
+    }
+}
+```
+
+
+## Callbacks
+
+
+### Retrollamada
+
+Una retrollamada es cualquier referencia a un trozo de código ejecutable (función) que se pasa como argumento a otro trozo de código (función). Se espera que esta segunda función vuelva a llamar (call back) a la primera como parte de su tarea.
+
+__Ejemplos__: Diversas implementaciones de _listeners_ + _callbacks_
+
+- Clases anónimas
+- Expresiones lambda
+- Punteros a función
+- Etc.
+
+### Ejemplo: Ajax + jQuery callbacks
+
+- [Ajax](http://learn.jquery.com/ajax/)
+- [jQuery](http://devdocs.io/jquery/)
+- [jQuery Callbacks object](http://devdocs.io/jquery-callbacks-object/)
+
+
+### Ejemplo: callbacks en Javascript
+
+**Versión síncrona**:
+
+```javascript
+// Versión síncrona
+function main() {
+    r1 = serv1("datos iniciales");
+    r2 = serv2(r1);
+    // También se podría haber escrito:
+    //   r2 = serv2(serv1("datos iniciales"))
+    console.log("Resultado final: { " + r2 + " }");
+}
+
+function serv1(parametros) {
+    return "Tardo en calcular r1 a partir de { " + parametros + " }";
+}
+
+function serv2(resultado1) {
+    return "Tardo en calcular r2 a partir de { " + resultado1 + " }";
+}
+```
+
+
+**Versión asíncrona con _callbacks_:**
+
+```javascript
+// Versión asíncrona.
+// Las funciones asinc1() y asinc2() admiten un callback
+// como segundo parámetro, al cual llamarán pasándole el resultado del cómputo
+function main() {
+    asinc1("datos iniciales", function(r1){
+        // Aquí tenemos el resultado de asinc1
+        asinc2(r1, function(r2) {
+            console.log("Resultado final: { " + r2 + " }");
+        });
+    });
+}
+
+function asinc1(parametros, callback) {
+    r1 = "Tardo en calcular r1 a partir de { " + parametros + " }";
+    callback(r1);
+}
+
+function asinc2(resultado1, callback) {
+    r2 = "Tardo en calcular r2 a partir de { " + resultado1 + " }";
+    callback(r2);
+}
+```
+
+
+##### _Callback hell_:
+
+El uso de callbacks hace el código complejo, repetitivo y difícil de entender, especialmente cuando el tamaño del código crece.
+
+- La anidación empeora si se necesita el resultado de una función para llamar a otra: funciones que son parámetros de otras funciones, que son parámetros de otras, etc.
+- El código fuente se va indentando más y más para luego ir deshaciendo esa indentación a medida que se cierran llaves y paréntesis.
+- La lógica está escrita al revés: las funciones no devuelven resultados, sino que pasan esos resultados como parámetros a otras funciones; las funciones que manejan la respuesta son también pasadas como parámetros
+- El flujo de gestión de errores también se complica y [no pueden usarse excepciones](https://basarat.gitbook.io/typescript/future-javascript/promise#callback-style-code).
+
+
+## Promesas y Futuros
+
+
+### Modelo de promesas y futuros
+
+[Futuros y promesas](https://en.wikipedia.org/wiki/Futures_and_promises) en wikipedia
+
+- **Futuro**: marcador de posición (_placeholder_), de solo lectura, para una variable que representa el resultado de un cómputo asíncrono
+- **Promesa**: contenedor de una asignación escribible (solo para inicialización), que fija el valor de un _futuro_.
+
+Los futuros y promesas sirven para desacoplar un valor (el futuro) de cómo éste se calculó (la promesa), permitiendo así la paralelización de los cálculos.
+
+
+## Futuros
+
+
+### Futuros en Java
+
+En Java hay definida una interfaz explícita para los futuros:
+
+- Desde Java 5: [`java.util.concurrent.Future`](https://docs.oracle.com/javase/9/docs/api/java/util/concurrent/Future.html)
+- Se pueden encadenar cálculos usando futuros __computables__ o __escuchables__, que sirven para indicar a un __thread__ que ejecute una determinada tarea y, cuando termine, se dirija a hacer otra tarea usando el resultado de la tarea anterior.
+  - En Guava: [`ListenableFuture`](https://github.com/google/guava/wiki/ListenableFutureExplained)
+  - Desde Java 8 (inspirado por Guava): [`java.util.concurrent.CompletableFuture`](https://docs.oracle.com/javase/9/docs/api/java/util/concurrent/CompletableFuture.html)
+
+Un `CompletableFuture` es un futuro que debe completarse explícitamente (i.e. fijar su valor y su estado) y puede servir para dar soporte a otras funciones y acciones dependientes, que se disparan tras su compleción.
+
+
+**Ejemplo: `Future` en Java**
+
+```java
+import java.util.concurrent.*;
+
+public class Main {
+    // Callable<V> = Interfaz funcional que representa a una operación sin args
+    // y que devuelve un resultado de tipo V (permite checked exceptions)
+    public static class MyCallable implements Callable<Integer> {
+        @Override
+        public Integer call() throws Exception {
+            Thread.sleep(1000);
+            return 1;
+        }
+    }
+
+    public static void main(String[] args) throws Exception{
+        ExecutorService exec = Executors.newSingleThreadExecutor();
+        Future<Integer> f = exec.submit(new MyCallable());
+        System.out.println(f.isDone()); //Falso
+        System.out.println(f.get()); //Espera hasta que termine la tarea, luego imprime
+    }
+}
+```
+
+
+**Ejemplo: `CompletableFuture` en Java**
+
+```java
+import java.util.concurrent.*;
+import java.util.function.*;
+
+public class Main {
+
+    // Supplier<T> = Interfaz funcional que representa a una operación sin args y que
+    // devuelve un resultado de tipo T (no permite checked exceptions)
+
+    public static class MySupplier implements Supplier<Integer> {
+        @Override
+        public Integer get() {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                //No hacer nada
+            }
+            return 1;
+        }
+    }
+```
+
+
+```java
+    public static class PlusOne implements Function<Integer, Integer> {
+        @Override
+        public Integer apply(Integer x) {
+            return x + 1;
+        }
+    }
+
+    public static void main(String[] args) throws Exception {
+        ExecutorService exec = Executors.newSingleThreadExecutor();
+        CompletableFuture<Integer> f = CompletableFuture.supplyAsync(
+                                          new MySupplier(), exec);
+        System.out.println(f.isDone()); // Falso
+        CompletableFuture<Integer> f2 = f.thenApply(new PlusOne());
+        System.out.println(f2.get()); // Espera hasta que termine el cálculo, luego imprime
+    }
+}
+```
+
+
+## Promesas
+
+
+### Modelo de promesas
+
+![Promesas](./img/promesas.png)
+
+
+El cliente recibe como respuesta inmediata una __abstracción de datos__ (la `Promise`) que representa un compromiso de valor futuro, con __inyectores__ (`then`, `catch`) para incluir la __lógica de continuación__.
+
+Las promesas se pueden __resolver__ (_resolve_) o __rechazar__ (_reject_)
+
+
+### Funcionamiento de una promesa
+
+![Promesas](./img/promesas-funcionamiento.png)
+
+
+### Promesas en Javascript
+
+```javascript
+const promise = new Promise((resolve, reject) => {
+    // las funciones resolve/reject controlan el destino de la promesa
+});
+```
+
+
+**Ejemplo con promesas**:
+
+```javascript
+// Versión con promesas
+// Ahora asinc1 y asinc2 se supone que devuelven una promesa (que solo resuelve)
+function main() {
+    asinc1("datos iniciales")
+    .then(function(r1){ return asinc2(r1); })
+    .then(function(r2){
+        console.log("Resultado final: " + r2);
+    }).catch(function(err){
+        console.log("Error: "+ err.message)
+    });
+}
+```
+
+
+```javascript
+// Lo anterior puede escribirse más conciso:
+function main() {
+    asinc1("datos iniciales")
+    .then(asinc2)
+    .then(function(r2){
+        console.log("Resultado final: " + r2);
+    }).catch(function(err){
+        console.log("Error: "+ err.message)
+    });
+}
+
+function asinc1(parametros) {
+    return new Promise((resolve, reject) => {
+        resolve("Tardo en calcular r1 a partir de { " + parametros + " }");
+    });
+}
+
+function asinc2(resultado1) {
+    return new Promise((resolve, reject) => {
+        resolve("Tardo en calcular r2 a partir de { " + resultado1 + " }");
+    });
+}
+```
+
+
+```javascript
+// Si asinc2 devolviera un error
+function asinc2(resultado1) {
+    return new Promise((resolve, reject) => {
+        reject( new Error("Ha habido un error al calcular r2 a partir de { "
+                     + resultado1 + " }"));
+    });
+}
+```
+
+__Salida__:
+
+`Error: Ha habido un error al calcular r2 a partir de { Tardo en calcular r1 a partir de { datos iniciales } }`
+
+
+```javascript
+// Si asinc1 devolviera un error
+function asinc1(parametros) {
+    return new Promise((resolve, reject) => {
+        reject( new Error("Ha habido un error al calcular r1 a partir de { "
+                       + parametros + " }"));
+    });
+}
+```
+
+__Salida__:
+
+`Error: Ha habido un error al calcular r1 a partir de { datos iniciales }`
+
+
+**Solución al _callback hell_**:
+
+- Las promesas evitan la anidación y hacen más simple el manejo de errores.
+- La ventaja de las promesas es que se pueden [encadenar](https://basarat.gitbook.io/typescript/future-javascript/promise#chain-ability-of-promises).
+
+
+**Inyectores:**
+
+- Una promesa tiene un método `then()` que...
+
+  - recibe una __función__, que será ejecutada automáticamente cuando la promesa se resuelva. Dicha función recibirá como parámetro el valor de la promesa (el resultado esperado).
+  - devuelve una __nueva promesa__, que se resolverá cuando se ejecute la función que le habíamos asociado.
+
+- Se pueden encadenar varios `.then()` para simular un código secuencial, conforme se van resolviendo promesas.
+
+
+**Inyectores:**
+
+- Una promesa tiene un método `catch()` que:
+
+  - recibe una __función__, que será ejecutada automáticamente cuando la promesa se rechace.
+  - devuelve una __nueva promesa__, creando una cadena de promesas
+
+- Se puede agregar la gestión de errores de cualquier parte de la cadena de llamadas asíncronas con un solo `.catch()`
+- Cualquier error síncrono generado en un `then` o un `catch` hace que la promesa se rechace, y se llame al `catch` más apropiado
+
+
+### Sintaxis async/await
+
+- El prefijo `await` hace que se espere a que se llame a la función asíncrona antes de continuar con la ejecución del programa.
+- Esto genera un flujo de ejecución de la lógica del programa más fácil de leer y de seguir, pausando la ejecución hasta que se cumpla la promesa.
+
+`async`/`await` es azúcar sintáctico para usar promesas con una nueva sintaxis que las oculta y las hace parecer código síncrono:
+
+  - Un `await` delante de una llamada a función entiende que esa función devuelve una promesa.
+  - La ejecución se pausa y sólo se reanuda cuando la promesa se haya resuelto.
+  - Entonces `await` devuelve como resultado el valor de la promesa.
+
+
+**Ejemplo con async/await en Javascript**
+
+```javascript
+async function main() {
+    r1 = await asinc1("datos iniciales");
+    r2 = await asinc2(r1);
+    console.log("Resultado final: { " + r2 + " }");
+}
+```
+
+Comparar la versión asíncrona async/await con la versión síncrona inicial:
+
+```javascript
+function main() {
+    r1 = serv1("datos iniciales");
+    r2 = serv2(r1);
+    console.log("Resultado final: { " + r2 + " }");
+}
+```
+
+
+## Eventos
+
+
+### Modelo de eventos
+
+Las operaciones disparan eventos de diferentes tipos, que son escuchados por los manejadores (_listeners_) de eventos, que habrán sido registrados previamente en un bus de eventos.
+
+
+![Eventos](./img/eventos.png)
+
+
+**Ventajas**:
+
+- Aplicaciones más interactivas
+- Mejor uso de los recursos
+
+### Estrategias
+
+Estrategias para escribir aplicaciones basadas en eventos:
+
+1. Máquinas de estados finitos (FSM)
+2. Implementaciones del patrón _Observer_
+3. Sistemas de publicación/suscripción (PubSub)
+4. Streams y programación reactiva
+
+
+#### 1. Máquinas de estados
+
+Una FSM es una especificación de cómo manejar eventos
+
+![FSM](./img/fsm.png)
+
+
+#### 2. Patrón Observer
+
+- **Observable**: fuente de eventos
+- **Observadores**: lista de clientes interesados en los eventos
+
+Los observadores se registran ellos mismos en cada observable $\Rightarrow$ produce acoplamiento.
+
+Las acciones de callback son gestionadas por los observables, que suele mantener una lista interna de observadores $\Rightarrow$ produce cuellos de botella.
+
+
+__Estructura del patrón Observer:__
+
+![Observer](./img/observer-class.png)
+
+
+__Comportamiento del patrón Observer:__
+
+![Observer](./img/observer-seq.png)
+
+
+#### 3. PubSub
+
+- Los sistemas de _PubSub_ son _observers_ generalizados
+- Los publicadores y los suscriptores se conectan por **canales** o **colas**
+- Suelen implementarse en bibliotecas de mensajería o _**Message Queues**_ (MQ)
+- Cada **canal** tiene un nombre, empleado por publicadores y sucriptores para desacoplarse entre sí
+- La comunicación puede hacerse asíncrona
+
+
+__Ejemplos de bibliotecas de PubSub/MQ:__
+
+- RabbitMQ
+- ZeroMQ
+- NATS
+- Apache ActiveMQ
+- etc.
+
+__Protocolos de MQ:__
+
+- AMQP
+- MQTT
+- STOMP
+- etc.
+
+
+¿Cómo crear sistemas que respondan a combinaciones de eventos?
+Hay que añadir la dimensión del __tiempo__ al procesamiento de los eventos
+
+Los eventos deben disparar reacciones en el código, pero no es fácil conectar las acciones con los eventos. Para facilitarlo, se usan _streams_...
+
+
+#### 4. Streams y Rx
+
+Los datos fluyen por pipelines y se consumen siguiendo modelos _push_ o _pull_
+
+![Streams](./img/streams.png)
+
+Un stream trata a los eventos como colleciones de datos, de forma que pueden ser tratados como cualquier otra colección: manipularlos, combinarlos, filtrarlos, etc.
+
+Además, los streams pueden ser asíncronos.
+
+
+### Programación reactiva (Rx)
+
+Es un paradigma, parte de la programación asíncrona: la disponibilidad de información nueva conduce la lógica del programa, en vez de dejar que el control de flujo sea dirigido por un hilo de ejecución.
+
+- Modelo de **Observables**: tratar a los streams de eventos asíncronos con las mismas operaciones sencillas de composición que se usan para las colecciones de datos.
+- Bibliotecas de programación Rx: [reactivex.io](http://reactivex.io/)
+- [Principios](http://reactivex.io/intro.html) de la programación reactiva
+
+
+#### Características de la programación reactiva
+
+- Tratar con _streams_ de datos asíncronos procedentes de cualquier fuente: interacción de usuarios, estructuras de datos, etc.
+- Usar funciones para crear, combinar, filtrar, etc. esos streams: paradigma funcional
+- Los eventos emitidos por un stream siguen una ordenación temporal: un valor, un error  o una señal de _stream completado_
+- La captura de esos eventos es asíncrona (mediante callbacks, listeners, promesas, futuros etc.)
+
+
+#### Observables
+
+Los Observables se pueden:
+
+- Crear: `Create`, `Defer`, `From`, `Interval`, `Just`, `Range`, `Repeat`, `Start`, `Timer`
+- Transformar: `Buffer`, `FlatMap`, `GroupBy`, `Map`, `Scan`, `Window`
+- Filtrar: `Debounce`, `Distinct`, `ElementAt`, `Filter`, `IgnoreElements`, `Last`, `Sample`, `Skip`, `SkipLast`, `Take`, `TakeLast`
+- Combinar: `And`/`Then`/`When`, `CombineLatest`, `Join`, `Merge`, `StartWith`, `Switch`, `Zip`
+- Etc... [Operadores Rx](http://reactivex.io/documentation/operators.html)
+
+
+¿Qué añade un Observable al patrón Observer?
+
+Añade a un __Observer asíncrono/push__ la semántica de un __Iterable síncrono/pull__:
+
+- `onCompleted()`: para que el publicador avise al suscriptor que no hay más datos disponibles en el stream (los Iterables simplemente acaban su iteración)
+- `onError()`: para que el productor avise al suscriptor que ha ocurrido un error (en su lugar, los Iterables elevan excepciones)
+
+
+#### Ejemplos de frameworks de streams
+
+- Apache Kafka
+- NATS Streaming
+- Spark Streaming
+- Amazon Kinesis
+- Apache Pulsar
+- Etc.
+
+
+__Lecturas recomendadas__
+
+- Thomas & Hunt. The Pragmatic Programmer, 2nd edition, 2022. Capítulo: *Transforming Programming*
+- [The introduction to Reactive Programming you've been missing (by @andrestaltz)](https://gist.github.com/staltz/868e7e9bc2a7b8c1f754)
+- [How to Write Clean Codes by Using Pipe Operations in Python?](https://www.turing.com/kb/write-clean-codes-by-using-pipe-operations-in-python)

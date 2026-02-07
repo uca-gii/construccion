@@ -1,6 +1,10 @@
 ---
 marp: true
-title: Apuntes IISS
+author:
+- Juan Manuel Dodero
+date: Enero 2026
+subject: Implementación e Implantación de Sistemas Software, curso 2025/26
+title: Ortogonalidad y dependencias
 description: Apuntes de Implementación e Implantación de Sistemas Software
 math: mathjax
 ---
@@ -22,7 +26,7 @@ emph {
 }
 </style>
 
-# ORTOGONALIDAD
+# ORTOGONALIDAD Y DEPENDENCIAS
 
 ---
 
