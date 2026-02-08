@@ -25,6 +25,14 @@ h2 {
 emph {
   color: #E87B00;
 }
+.cols {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+.cols > div {
+  align-self: start;
+}
 </style>
 
 # REFACTORING Y DUPLICACIÓN DE CÓDIGO
@@ -318,9 +326,8 @@ public class Autonomo extends Empleado {
 
 ## Código duplicado
 
-> __Lectura recomendada__
-> - A. Hunt & D. Thomas. <emph>The Pragmatic Programmer.</emph> Addison-Wesley, 1999.
-> Capítulo *DRY—The Evils of Duplication*
+<div class="cols">
+<div>
 
 ### ¿Por qué no duplicar?
 
@@ -328,7 +335,8 @@ public class Autonomo extends Empleado {
 - Cambios (no sólo a nivel de código)
 - Trazabilidad
 
----
+</div>
+<div>
 
 ### Causas de la duplicación
 
@@ -337,13 +345,47 @@ public class Autonomo extends Empleado {
 3. __Impaciencia__: No puedo esperar
 4. __Simultaneidad__: Ha sido otro
 
-### Principio DRY – *Don't Repeat Yourself!*
+</div>
+</div>
 
-by A. Hunt & D. Thomas. <emph>The Pragmatic Programmer.</emph> Addison-Wesley, 1999.
+> __Lectura recomendada__
+> A. Hunt & D. Thomas. <emph>The Pragmatic Programmer.</emph> Addison-Wesley, 1999.
+> Capítulo *DRY—The Evils of Duplication*
+
+---
+
+### El peligro del copy&paste
 
 > Copy and paste is a design error
 >
-> – Steve McConnell. <emph>Code Complete: A practical handbook of software construction</emph>, 2nd edition, 2004.
+> -- Steve McConnell. <emph>Code Complete: A practical handbook of software construction</emph>, 2nd edition, 2004.
+
+---
+
+### Principio DRY – *Don't Repeat Yourself!*
+
+- DRY no tiene que ver con el código, sino con el __conocimiento__. No se trata de no repetir código, sino de no repetir la lógica.
+
+> Every piece of __knowledge__ must have a single, unambiguous, authoritative representation within a system.
+> -- Andrew Hunt & David Thomas. <emph>The Pragmatic Programmer.</emph> Addison-Wesley, 1999.
+
+- Evitar <emph>abstracciones prematuras</emph>
+- Preguntarse por el motivo de la duplicación
+
+> Duplication is far cheaper than the wrong abstraction.
+> -- Sandi Metz, RaisConf 2014.
+
+<!--
+Si dos fragmentos de código parecen idénticos pero representan conceptos de negocio diferentes, no son una violación del DRY. 
+
+- Cuando los desarrolladores ven código similar (por ejemplo, un formulario de registro y un formulario de contacto), su instinto es crear una abstracción compartida (un componente genérico) para "ser DRY"
+- Al hacer esto, acoplas dos conceptos de negocio distintos. Si el formulario de contacto necesita un cambio, te ves obligado a modificar la abstracción compartida, añadiendo condicionales que complican la lógica para el formulario de registro
+
+La pregunta que debes hacerte no es "¿estas líneas se parecen?", sino "¿cambian por la misma razón?"
+
+Principio AHA: "Avoid Hasty Abstractions" (Evitar abstracciones precipitadas)
+
+-->
 
 ---
 
@@ -357,10 +399,17 @@ La gestión del proyecto así nos lo exige. Algunos ejemplos:
 - Documentación del código:
     - Código incrustado en javadocs
 - Casos de prueba:
-    - Pruebas unitarias con jUnit
+    - Pruebas unitarias con jUnit (Cuidado!)
 - Características del lenguaje:
     - C/C++ header files
     - IDL specs
+
+<!--
+
+Google: La legibilidad es más importante que la eliminación de la duplicación de código
+
+Google dice que la duplicación en el código de pruebas unitarias no es un problema, sino una señal de que las pruebas son legibles y fáciles de entender. Si intentas eliminar la duplicación en el código de pruebas, podrías estar sacrificando la legibilidad por el bien de la DRYness. 
+-->
 
 ---
 
@@ -485,10 +534,16 @@ p {
 
 ¿Es conveniente aplicar siempre DRY?
 
+<!--
+En tiempo de IA, el coste de la duplicación de código es principalmente el mantenimiento (esfuerzo humano). La IA puede ayudar con esto. Pero el coste de elegir una abstracción incorrecta no disminuye. La IA todavía tiene dificultades con los sistemas sobreacoplados.
+-->
+
 ---
 
-- A veces se puede optar por violar DRY por razones de rendimiento...
-- [_Memoization_](https://en.wikipedia.org/wiki/Memoization): cachear los resultados de cómputos costosos
+- ¿DRY es tan importante en tiempos de la IA?
+  - Si se usa IA, ¿cuál es el coste de mantener código duplicado vs el coste de mantener sistemas muy acoplados?
+- Otras veces se puede optar por violar DRY por razones de rendimiento...
+  - [_Memoization_](https://en.wikipedia.org/wiki/Memoization): cachear los resultados de cómputos costosos
 
 ---
 
