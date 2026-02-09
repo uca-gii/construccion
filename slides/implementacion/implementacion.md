@@ -1,3 +1,5 @@
+# IMPLEMENTACIÓN DE SISTEMAS SOFTWARE
+
 ## Índice
 
 - [Programación con objetos](#programación-con-objetos)
@@ -10,7 +12,6 @@
 - [Programación funcional y streams](#programación-funcional-y-streams)
 - [Programación asertiva y contratos](#programación-asertiva-y-contratos)
 - [Programación asíncrona y eventos](#programación-asíncrona-y-eventos)
-
 
 <!-- Source: oop.md -->
 # PROGRAMACIÓN CON OBJETOS
@@ -66,6 +67,10 @@ En relación a los principios de _alta cohesión_ y _bajo acoplamiento_, critica
 >
 > --- E. Yourdon & L. Constantine. **Structured Design: Fundamentals of a Discipline of Computer Program and Systems Design.** Prentice Hall, 2nd edition, 1986.
 
+## Discusión sobre la implementación
+
+[v0.1](#versión-inicial-lista-v01) • [críticas](#críticas-a-lista-v01) $\rightarrow$ [v0.2](#implementación-alternativa-lista-v02) • [críticas](#críticas-a-lista-v02) $\rightarrow$ [v0.3](#implementación-alternativa-lista-v03) • [críticas](#críticas-a-lista-v03) $\rightarrow$ [v0.4](#implementación-alternativa-lista-v04) $\rightarrow$ [resumen](#resumen-de-problemas)
+
 
 ### Críticas a Lista v0.1
 
@@ -75,8 +80,8 @@ En relación a los principios de _alta cohesión_ y _bajo acoplamiento_, critica
 
 #### Problemáticas de Lista v0.1
 
-- Baja **cohesión**
-- Alta **variabilidad** no bien tratada $\rightarrow$ poca **flexibilidad**
+- **Cohesión** baja
+- **Variabilidad** no bien tratada $\rightarrow$ poca **flexibilidad**
 
 
 ## Implementación alternativa: Lista v0.2
@@ -124,8 +129,8 @@ public interface List<T> {
 
 #### Problemáticas de Lista v0.2
 
-- Muchas **dependencias** (provocadas por el exceso de herencia) $\rightarrow$ excesivo **acoplamiento**
-- Poca **flexibilidad**
+- **Acoplamiento** excesivo: muchas **dependencias** (provocadas por el exceso de herencia)
+- **Flexibilidad** escasa
 
 
 ## Implementación alternativa: Lista v0.3
@@ -153,15 +158,18 @@ Criticar la implementación:
 
 #### Problemáticas de Lista v0.3
 
-- Elevada **complejidad**. Si hay que crear nuevos tipos de recorrido, se abusará de la herencia como _estructura_
-- La **variabilidad** no está bien tratada $\rightarrow$ poca **flexibilidad**, mala **reutilización**
+- **Acoplamiento** elevado: Si hay que crear nuevos tipos de recorrido, se abusará de la herencia para crear _estructuras_ complejas
+- **Variabilidad** no está bien tratada: poca **flexibilidad**, baja **reutilización**
 
 
 ¿Cómo se resuelve esto en las bibliotecas típicas que conocéis
 (v.g. C++ STL, Java Collections, etc.)?
 
 >[!NOTE]
-> Iteradores
+><details>
+><summary>Bibliotecas</summary>
+>Iteradores
+></details>
 
 
 ## Implementación alternativa: Lista v0.4
@@ -207,6 +215,16 @@ public interface Iterator<E> {
 - Mayor   **cohesión**: Las responsabilidades están ahora separadas: `List` almacena, `Iterator` recorre. `List` está más cohesionada
 - Para hacer `List` más cohesionada, se ha tenido que introducir una **dependencia** (acoplamiento)
 - Uso de **delegación** (o _composición_) en lugar de la herencia: la responsabilidad de recorrer se ha delegado hacia otro sitio
+
+
+## Resumen de problemas
+
+| Problema | desde v0.1 ... | ... hasta v0.4 |
+|:----------|:------|:------|
+| **Cohesión** | Baja: `List<T>` aglutina almacenamiento y recorrido | Alta: `List<T>` solo almacena; `Iterator<T>` recorre |
+| **Variabilidad** | No tratada: difícil cambiar la forma de recorrer | Fácil crear nuevos `Iterator` sin tocar `List` |
+| **Flexibilidad** | Poca: cambios en recorrido afectan a `List` | Mayor: Cambios aislados en `Iterator` |
+| **Acoplamiento** | Alto: `List` depende de cómo se recorre | Bajo: separación clara de responsabilidades |
 
 
 ## Ocultar la implementación
@@ -3047,9 +3065,8 @@ public class Autonomo extends Empleado {
 
 ## Código duplicado
 
-> __Lectura recomendada__
-> - A. Hunt & D. Thomas. **The Pragmatic Programmer.** Addison-Wesley, 1999.
-> Capítulo *DRY—The Evils of Duplication*
+<div class="cols">
+<div>
 
 ### ¿Por qué no duplicar?
 
@@ -3057,6 +3074,8 @@ public class Autonomo extends Empleado {
 - Cambios (no sólo a nivel de código)
 - Trazabilidad
 
+</div>
+<div>
 
 ### Causas de la duplicación
 
@@ -3065,13 +3084,42 @@ public class Autonomo extends Empleado {
 3. __Impaciencia__: No puedo esperar
 4. __Simultaneidad__: Ha sido otro
 
-### Principio DRY – *Don't Repeat Yourself!*
+</div>
+</div>
 
-by A. Hunt & D. Thomas. **The Pragmatic Programmer.** Addison-Wesley, 1999.
+> __Lectura recomendada__
+> A. Hunt & D. Thomas. **The Pragmatic Programmer.** Addison-Wesley, 1999.
+> Capítulo *DRY—The Evils of Duplication*
+
+
+### El peligro del copy&paste
 
 > Copy and paste is a design error
 >
-> – Steve McConnell. **Code Complete: A practical handbook of software construction**, 2nd edition, 2004.
+> -- Steve McConnell. **Code Complete: A practical handbook of software construction**, 2nd edition, 2004.
+
+
+### Principio DRY – *Don't Repeat Yourself!*
+
+- DRY no tiene que ver con el código, sino con el __conocimiento__. No se trata de no repetir código, sino de no repetir la lógica.
+
+> Every piece of __knowledge__ must have a single, unambiguous, authoritative representation within a system.
+> -- Andrew Hunt & David Thomas. **The Pragmatic Programmer.** Addison-Wesley, 1999.
+
+- Evitar **abstracciones prematuras**
+- Preguntarse por el motivo de la duplicación
+
+> Duplication is far cheaper than the wrong abstraction.
+> -- Sandi Metz, RaisConf 2014.
+
+Si dos fragmentos de código parecen idénticos pero representan conceptos de negocio diferentes, no son una violación del DRY.
+
+- Cuando los desarrolladores ven código similar (por ejemplo, un formulario de registro y un formulario de contacto), su instinto es crear una abstracción compartida (un componente genérico) para "ser DRY"
+- Al hacer esto, acoplas dos conceptos de negocio distintos. Si el formulario de contacto necesita un cambio, te ves obligado a modificar la abstracción compartida, añadiendo condicionales que complican la lógica para el formulario de registro
+
+La pregunta que debes hacerte no es "¿estas líneas se parecen?", sino "¿cambian por la misma razón?"
+
+Principio AHA: "Avoid Hasty Abstractions" (Evitar abstracciones precipitadas)
 
 
 ## 1. Duplicación impuesta
@@ -3084,10 +3132,15 @@ La gestión del proyecto así nos lo exige. Algunos ejemplos:
 - Documentación del código:
     - Código incrustado en javadocs
 - Casos de prueba:
-    - Pruebas unitarias con jUnit
+    - Pruebas unitarias con jUnit (Cuidado!)
 - Características del lenguaje:
     - C/C++ header files
     - IDL specs
+
+>[!NOTE]
+>Google: La legibilidad es más importante que la eliminación de la duplicación de código
+
+Google dice que la duplicación en el código de pruebas unitarias no es un problema, sino una señal de que las pruebas son legibles y fáciles de entender. Si intentas eliminar la duplicación en el código de pruebas, podrías estar sacrificando la legibilidad por el bien de la DRYness.
 
 
 ### Cómo evitaba Java la duplicación en sus _containers_
@@ -3178,9 +3231,14 @@ Realmente `length` ya está definido con `start`y `end`.
 
 ¿Es conveniente aplicar siempre DRY?
 
+>[!NOTE]
+>En tiempo de IA, el coste de la duplicación de código es principalmente el mantenimiento (esfuerzo humano). La IA puede ayudar con esto. Pero el coste de elegir una abstracción incorrecta no disminuye. La IA todavía tiene dificultades con los sistemas sobreacoplados.
 
-- A veces se puede optar por violar DRY por razones de rendimiento...
-- [_Memoization_](https://en.wikipedia.org/wiki/Memoization): cachear los resultados de cómputos costosos
+
+- ¿DRY es tan importante en tiempos de la IA?
+  - Si se usa IA, ¿cuál es el coste de mantener código duplicado vs el coste de mantener sistemas muy acoplados?
+- Otras veces se puede optar por violar DRY por razones de rendimiento...
+  - [_Memoization_](https://en.wikipedia.org/wiki/Memoization): cachear los resultados de cómputos costosos
 
 
 ### Ejemplo: aplicando memoization – versión 2

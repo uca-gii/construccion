@@ -117,6 +117,12 @@ En relación a los principios de _alta cohesión_ y _bajo acoplamiento_, critica
 
 ---
 
+<style scoped>
+p {
+  text-align: center;
+}
+</style>
+
 ## Abstracción
 
 - La clase abstracta `List<T>` diferencia entre el *qué* y el *cómo*
@@ -127,6 +133,10 @@ En relación a los principios de _alta cohesión_ y _bajo acoplamiento_, critica
 > Cohesion refers to the degree to which the elements inside a module belong together
 >
 > --- E. Yourdon & L. Constantine. <emph>Structured Design: Fundamentals of a Discipline of Computer Program and Systems Design.</emph> Prentice Hall, 2nd edition, 1986.
+
+## Discusión sobre la implementación
+
+[v0.1](#versión-inicial-lista-v01) • [críticas](#críticas-a-lista-v01) $\rightarrow$ [v0.2](#implementación-alternativa-lista-v02) • [críticas](#críticas-a-lista-v02) $\rightarrow$ [v0.3](#implementación-alternativa-lista-v03) • [críticas](#críticas-a-lista-v03) $\rightarrow$ [v0.4](#implementación-alternativa-lista-v04) $\rightarrow$ [resumen](#resumen-de-problemas)
 
 ---
 
@@ -146,8 +156,8 @@ h3 {
 
 #### Problemáticas de Lista v0.1
 
-- Baja **cohesión**
-- Alta **variabilidad** no bien tratada $\rightarrow$ poca **flexibilidad**
+- **Cohesión** baja
+- **Variabilidad** no bien tratada $\rightarrow$ poca **flexibilidad**
 
 ---
 
@@ -213,8 +223,8 @@ h3 {
 
 #### Problemáticas de Lista v0.2
 
-- Muchas **dependencias** (provocadas por el exceso de herencia) $\rightarrow$ excesivo **acoplamiento**
-- Poca **flexibilidad**
+- **Acoplamiento** excesivo: muchas **dependencias** (provocadas por el exceso de herencia)
+- **Flexibilidad** escasa
 
 ---
 
@@ -260,8 +270,8 @@ h3 {
 
 #### Problemáticas de Lista v0.3
 
-- Elevada **complejidad**. Si hay que crear nuevos tipos de recorrido, se abusará de la herencia como _estructura_
-- La **variabilidad** no está bien tratada $\rightarrow$ poca **flexibilidad**, mala **reutilización**
+- **Acoplamiento** elevado: Si hay que crear nuevos tipos de recorrido, se abusará de la herencia para crear _estructuras_ complejas
+- **Variabilidad** no está bien tratada: poca **flexibilidad**, baja **reutilización**
 
 ---
 
@@ -276,7 +286,12 @@ p {
 ¿Cómo se resuelve esto en las bibliotecas típicas que conocéis
 (v.g. C++ STL, Java Collections, etc.)?
 
-<!-- Iteradores -->
+<!--
+<details>
+<summary>Bibliotecas</summary>
+Iteradores
+</details>
+-->
 
 ---
 
@@ -324,6 +339,17 @@ public interface Iterator<E> {
 - Mayor   **cohesión**: Las responsabilidades están ahora separadas: `List` almacena, `Iterator` recorre. `List` está más cohesionada
 - Para hacer `List` más cohesionada, se ha tenido que introducir una **dependencia** (acoplamiento)
 - Uso de **delegación** (o _composición_) en lugar de la herencia: la responsabilidad de recorrer se ha delegado hacia otro sitio
+
+---
+
+## Resumen de problemas
+
+| Problema | desde v0.1 ... | ... hasta v0.4 |
+|:----------|:------|:------|
+| **Cohesión** | Baja: `List<T>` aglutina almacenamiento y recorrido | Alta: `List<T>` solo almacena; `Iterator<T>` recorre |
+| **Variabilidad** | No tratada: difícil cambiar la forma de recorrer | Fácil crear nuevos `Iterator` sin tocar `List` |
+| **Flexibilidad** | Poca: cambios en recorrido afectan a `List` | Mayor: Cambios aislados en `Iterator` |
+| **Acoplamiento** | Alto: `List` depende de cómo se recorre | Bajo: separación clara de responsabilidades |
 
 ---
 
