@@ -905,6 +905,109 @@ public class Aventura {
 
 ---
 
+<style scoped>
+.cols {
+  display: grid;
+  grid-template-columns: 60% 40%;
+}
+</style>
+
+#### Aventura v0.3 en C++
+
+<div class="cols">
+<div>
+
+```cpp
+template <typename T>
+concept SabeLuchar = requires(T t) { t.luchar(); };
+
+template <typename T>
+concept SabeNadar = requires(T t) { t.nadar(); };
+
+template <typename T>
+concept SabeVolar = requires(T t) { t.volar(); };
+
+// Clase base normal
+struct PersonajeDeAccion {
+    void luchar() { std::cout << "Pum! (Luchando)\n"; }
+};
+
+struct Heroe : public PersonajeDeAccion {
+    void nadar() { std::cout << "Splash! (Nadando)\n"; }
+    void volar() { std::cout << "Whoosh! (Volando)\n"; }
+};
+```
+
+</div>
+<div>
+
+- En lugar de `interface` (Java), definimos qué requiere el tipo
+- `Heroe` hereda código de `PersonajeDeAccion`, pero NO necesita declarar `implements SabeNadar, SabeVolar`
+- `Heroe` cumple los concepts automáticamente por tener los métodos
+
+</div>
+</div>
+
+---
+
+<style scoped>
+.cols {
+  display: grid;
+  grid-template-columns: 60% 40%;
+}
+</style>
+
+<div class="cols">
+<div>
+
+```cpp
+// Usamos 'auto&' para pasar por referencia (evitar copias).
+
+void t(SabeLuchar auto& x) { 
+    x.luchar(); 
+}
+
+void u(SabeNadar auto& x) { 
+    x.nadar(); 
+}
+
+void v(SabeVolar auto& x) { 
+    x.volar(); 
+}
+
+void w(PersonajeDeAccion& x) { 
+    x.luchar(); 
+}
+```
+
+</div>
+<div>
+
+- `t`, `u`, `v` usan <emph>concepts</emph>: aceptan cualquier tipo T que satisfaga el concept
+- `w` usa <emph>herencia clásica</emph>: acepta solo `PersonajeDeAccion` o sus hijos explícitos.
+
+</div>
+</div>
+
+---
+
+```cpp
+int main() {
+    Heroe i;
+
+    t(i); // Heroe hereda luchar(), así que cumple SabeLuchar
+    u(i); // Heroe tiene nadar(), cumple SabeNadar
+    v(i); // Heroe tiene volar(), cumple SabeVolar
+    w(i); // Heroe es hijo de PersonajeDeAccion
+
+    return 0;
+}
+```
+
+- Con `concept` se resuelve en tiempo de compilación, sin necesidad de casting
+
+---
+
 ## Uso de la herencia
 
 - Herencia de **interfaz** vs. herencia de **comportamiento** o **implementación**:
