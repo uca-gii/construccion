@@ -573,6 +573,13 @@ Ambos permiten que una clase derivada tenga un método con el mismo nombre que e
 - new permite redefinición pero la marca como intencional y rompe el polimorfismo
 
 
+¿Sobre qué mecanismo funciona el polimorfismo?
+
+>[!NOTE]
+>Sobre el tipado (no sobre la herencia).
+Herencia = (sub)tipado + comportamiento
+
+
 ## Tipado
 
 - Tipado estático vs. dinámico

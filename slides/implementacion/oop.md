@@ -765,6 +765,23 @@ Ambos permiten que una clase derivada tenga un método con el mismo nombre que e
 
 ---
 
+<style scoped>
+p {
+  text-align: center;
+  font-size: 125%;
+  color: green;
+}
+</style>
+
+¿Sobre qué mecanismo funciona el polimorfismo?
+
+<!--
+Sobre el tipado (no sobre la herencia).
+Herencia = (sub)tipado + comportamiento
+-->
+
+---
+
 ## Tipado
 
 - Tipado estático vs. dinámico
