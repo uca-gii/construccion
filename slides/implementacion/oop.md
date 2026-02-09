@@ -990,7 +990,8 @@ struct Heroe : public PersonajeDeAccion {
 <div>
 
 ```cpp
-// Usamos 'auto&' para pasar por referencia (evitar copias).
+// Usamos 'auto&' para pasar por
+// referencia (evitar copias).
 
 void t(SabeLuchar auto& x) { 
     x.luchar(); 
