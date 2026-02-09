@@ -573,10 +573,21 @@ Ambos permiten que una clase derivada tenga un método con el mismo nombre que e
 - new permite redefinición pero la marca como intencional y rompe el polimorfismo
 
 
+## Tipado
+
+- Tipado estático vs. dinámico
+  - Tipado estático: el tipo de cada variable se conoce en tiempo de compilación
+  - Tipado dinámico (_duck typing_): el tipo de cada variable se conoce en tiempo de ejecución
+
+- Contrato nominal vs. estructural
+  - Contrato nominal: hay que escribir un tipo explícito
+  - Contrato estructural: el tipo se deduce de la estructura de métodos
+
+
 <div class="cols">
 <div>
 
-## Moldes o _casting_ de tipos
+### Moldes o _casting_ de tipos
 
 - *Upcasting:* Interpretar un objeto de una clase derivada como del mismo tipo que la clase base
 - *Downcasting:* Interpretar un objeto de una clase base como del mismo tipo que una clase derivada suya
@@ -758,11 +769,14 @@ void w(PersonajeDeAccion& x) {
 </div>
 <div>
 
-- `t`, `u`, `v` usan **concepts**: aceptan cualquier tipo T que satisfaga el concept
-- `w` usa **herencia clásica**: acepta solo `PersonajeDeAccion` o sus hijos explícitos.
+- `t`, `u`, `v` usan concepts (**tipado estructural**): aceptan cualquier tipo T que satisfaga el concept
+- `w` usa herencia clásica con **tipado nominal**: acepta solo `PersonajeDeAccion` o sus hijos explícitos (como en Java).
 
 </div>
 </div>
+
+>[!NOTE]
+>`void u(SabeNadar auto& x)` significa: genera una versión de esta función para el tipo de x, pero solo compila si x cumple los requisitos estructurales de `SabeNadar`"
 
 
 ```cpp
