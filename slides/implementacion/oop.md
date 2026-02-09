@@ -705,7 +705,7 @@ Carries seven people.
 ---
 
 - El tipo del segundo objeto de la lista es `ConvertibleCar`, pero `DescribeCar` no accede a la versión de `ShowDetails` definida en `ConvertibleCar` (debido a `new`).
-- El tipo del tercer objeto de la lista es `Minivar`, que redefine con `override` el método `ShowDetails` declarado en la clase base.
+- El tipo del tercer objeto de la lista es `Minivan`, que redefine con `override` el método `ShowDetails` declarado en la clase base.
 
 ---
 
@@ -748,14 +748,40 @@ Carries seven people.
 - En `TextCars2`, el tipo de los objetos creados coincide con el tipo declarado.
 - En `TextCars3`, el tipo de los objetos creados es una subclase de la clase del tipo declarado.
 
+<!--
+¿En qué se parece el modificador `new` de C# a `final` en Java?
+
+Ambos controlan el comportamiento de la herencia, pero tienen finalidades opuestas:
+
+- `final` en Java: Impide que una clase derivada sobrescriba (override) el método. El método no puede ser redefinido.
+- `new` en C#: Oculta un método de la clase base con una nueva implementación. Permite que un método con la misma firma exista en la clase derivada sin ser un verdadero override polimórfico.
+
+Ambos permiten que una clase derivada tenga un método con el mismo nombre que el de la clase base, sin seguir el comportamiento de override estándar. Sin embargo:
+
+- final prohíbe cualquier redefinición
+- new permite redefinición pero la marca como intencional y rompe el polimorfismo
+
+-->
+
 ---
 
-## Moldes o _casting_
+<style scoped>
+.cols {
+  display: grid;
+  grid-template-columns: 45% 55%;
+}
+</style>
+
+<div class="cols">
+<div>
+
+## Moldes o _casting_ de tipos
 
 - *Upcasting:* Interpretar un objeto de una clase derivada como del mismo tipo que la clase base
 - *Downcasting:* Interpretar un objeto de una clase base como del mismo tipo que una clase derivada suya
 
----
+</div>
+<div>
 
 ### Ejemplo de casting: Aventura v0.1
 
@@ -781,6 +807,9 @@ public class Creador {
   }
 }
 ```
+
+</div>
+</div>
 
 ---
 
@@ -812,7 +841,17 @@ public class Aventura {
 
 ---
 
-### Ejemplo de casting: Aventura v0.2
+<style scoped>
+.cols {
+  display: grid;
+  grid-template-columns: 40% 60%;
+}
+</style>
+
+#### Ejemplo de casting: Aventura v0.2
+
+<div class="cols">
+<div>
 
 ```java
 interface SabeLuchar {
@@ -830,14 +869,15 @@ class PersonajeDeAccion {
 class Heroe
     extends PersonajeDeAccion
     implements SabeLuchar,
-              SabeNadar,
-              SabeVolar {
+               SabeNadar,
+               SabeVolar {
   public void nadar() {}
   public void volar() {}
 }
 ```
 
----
+</div>
+<div>
 
 ```java
 public class Aventura {
@@ -860,6 +900,9 @@ public class Aventura {
 }
 ```
 
+</div>
+</div>
+
 ---
 
 ## Uso de la herencia
@@ -869,7 +912,7 @@ public class Aventura {
   - ¿Hay herencia sólo de comportamiento? Pista: pensar en C++
   
 - Herencia como **tipo** vs herencia como **estructura**:
-  - En herencia de tipos, cada subclase es un subtipo. Debe satisfacerse el principio de **sustitución** de Liskov (LSP, _Liskov Substitution Principle_): toda operación que funciona para un objeto de la clase $C$ también debe funcionar para un objeto de una subclase de $C$
+  - En herencia de tipos, cada subclase es un subtipo. Debe satisfacerse el principio de **sustitución** de Liskov: toda operación que funciona para un objeto de la clase $C$ también debe funcionar para un objeto de una subclase de $C$
   - Usar la herencia como una forma de estructurar programas es **erróneo**, pues provoca que no se satisfaga la propiedad LSP.
 
 ---
@@ -888,7 +931,7 @@ p {
 
 ## Polimorfismo paramétrico
 
-- **Genéricos**
+- Tipos **genéricos**
   - Ada
   - C++ generics
   - Java _templates_ (desde JDK 1.5)
@@ -911,7 +954,7 @@ h2 {
 
 ---
 
-### Mal Ejemplo 1 (Java): herencia como estructura
+### Mal ejemplo 1 (Java): herencia como estructura
 
 ```java
 class Account {
