@@ -912,7 +912,7 @@ public class Aventura {
   - ¿Hay herencia sólo de comportamiento? Pista: pensar en C++
   
 - Herencia como **tipo** vs herencia como **estructura**:
-  - En herencia de tipos, cada subclase es un subtipo. Debe satisfacerse el principio de **sustitución** de Liskov: toda operación que funciona para un objeto de la clase $C$ también debe funcionar para un objeto de una subclase de $C$
+  - En herencia de tipos, cada subclase es un subtipo. Debe satisfacerse el principio de **sustitución** de Liskov: toda operación que funciona para un objeto de la clase $C$ también debe funcionar para un objeto de una subclase de $C$ (subtipado de comportamiento _fuerte_)
   - Usar la herencia como una forma de estructurar programas es **erróneo**, pues provoca que no se satisfaga la propiedad LSP.
 
 ---

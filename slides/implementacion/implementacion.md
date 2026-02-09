@@ -1,5 +1,3 @@
-# IMPLEMENTACIÓN DE SISTEMAS SOFTWARE
-
 ## Índice
 
 - [Programación con objetos](#programación-con-objetos)
@@ -167,9 +165,9 @@ Criticar la implementación:
 
 >[!NOTE]
 ><details>
-><summary>Bibliotecas</summary>
->Iteradores
-></details>
+<summary>Bibliotecas</summary>
+Iteradores
+</details>
 
 
 ## Implementación alternativa: Lista v0.4
@@ -449,16 +447,16 @@ Si no se añade `@Override`, podemos confundirnos y hacer un _overload_ accident
 ```csharp
 class Car
 {
-    public void DescribeCar()
-    {
-        System.Console.WriteLine("Four wheels and an engine.");
-        ShowDetails();
-    }
+  public void DescribeCar()
+  {
+    System.Console.WriteLine("Four wheels and an engine.");
+    ShowDetails();
+  }
 
-    public virtual void ShowDetails()
-    {
-        System.Console.WriteLine("Standard transportation.");
-    }
+  public virtual void ShowDetails()
+  {
+    System.Console.WriteLine("Standard transportation.");
+  }
 }
 ```
 
@@ -466,18 +464,18 @@ class Car
 ```csharp
 class ConvertibleCar : Car
 {
-    public new void ShowDetails()
-    {
-        System.Console.WriteLine("A roof that opens up.");
-    }
+  public new void ShowDetails()
+  {
+    System.Console.WriteLine("A roof that opens up.");
+  }
 }
 
 class Minivan : Car
 {
-    public override void ShowDetails()
-    {
-        System.Console.WriteLine("Carries seven people.");
-    }
+  public override void ShowDetails()
+  {
+    System.Console.WriteLine("Carries seven people.");
+  }
 }
 ```
 
@@ -485,16 +483,18 @@ class Minivan : Car
 ```csharp
 public static void TestCars1()
 {
-    System.Console.WriteLine("\nTestCars1\n----------");
+  System.Console.WriteLine("\nTestCars1\n----------");
 
-    var cars = new List<Car> { new Car(), new ConvertibleCar(),
+  var cars = new List<Car> {
+        new Car(),
+        new ConvertibleCar(),
         new Minivan() };
 
-    foreach (var car in cars)
-    {
-        car.DescribeCar();
-        System.Console.WriteLine("----------");
-    }
+  foreach (var car in cars)
+  {
+    car.DescribeCar();
+    System.Console.WriteLine("----------");
+  }
 }
 ```
 
@@ -519,7 +519,7 @@ Carries seven people.
 
 
 - El tipo del segundo objeto de la lista es `ConvertibleCar`, pero `DescribeCar` no accede a la versión de `ShowDetails` definida en `ConvertibleCar` (debido a `new`).
-- El tipo del tercer objeto de la lista es `Minivar`, que redefine con `override` el método `ShowDetails` declarado en la clase base.
+- El tipo del tercer objeto de la lista es `Minivan`, que redefine con `override` el método `ShowDetails` declarado en la clase base.
 
 
 ```csharp
@@ -560,12 +560,29 @@ Carries seven people.
 - En `TextCars2`, el tipo de los objetos creados coincide con el tipo declarado.
 - En `TextCars3`, el tipo de los objetos creados es una subclase de la clase del tipo declarado.
 
+¿En qué se parece el modificador `new` de C# a `final` en Java?
 
-## Moldes o _casting_
+Ambos controlan el comportamiento de la herencia, pero tienen finalidades opuestas:
+
+- `final` en Java: Impide que una clase derivada sobrescriba (override) el método. El método no puede ser redefinido.
+- `new` en C#: Oculta un método de la clase base con una nueva implementación. Permite que un método con la misma firma exista en la clase derivada sin ser un verdadero override polimórfico.
+
+Ambos permiten que una clase derivada tenga un método con el mismo nombre que el de la clase base, sin seguir el comportamiento de override estándar. Sin embargo:
+
+- final prohíbe cualquier redefinición
+- new permite redefinición pero la marca como intencional y rompe el polimorfismo
+
+
+<div class="cols">
+<div>
+
+## Moldes o _casting_ de tipos
 
 - *Upcasting:* Interpretar un objeto de una clase derivada como del mismo tipo que la clase base
 - *Downcasting:* Interpretar un objeto de una clase base como del mismo tipo que una clase derivada suya
 
+</div>
+<div>
 
 ### Ejemplo de casting: Aventura v0.1
 
@@ -591,6 +608,9 @@ public class Creador {
   }
 }
 ```
+
+</div>
+</div>
 
 
 ```java
@@ -619,7 +639,10 @@ public class Aventura {
 - Hay que rediseñar la solución por ser insegura
 
 
-### Ejemplo de casting: Aventura v0.2
+#### Ejemplo de casting: Aventura v0.2
+
+<div class="cols">
+<div>
 
 ```java
 interface SabeLuchar {
@@ -637,13 +660,15 @@ class PersonajeDeAccion {
 class Heroe
     extends PersonajeDeAccion
     implements SabeLuchar,
-              SabeNadar,
-              SabeVolar {
+               SabeNadar,
+               SabeVolar {
   public void nadar() {}
   public void volar() {}
 }
 ```
 
+</div>
+<div>
 
 ```java
 public class Aventura {
@@ -666,6 +691,9 @@ public class Aventura {
 }
 ```
 
+</div>
+</div>
+
 
 ## Uso de la herencia
 
@@ -674,7 +702,7 @@ public class Aventura {
   - ¿Hay herencia sólo de comportamiento? Pista: pensar en C++
 
 - Herencia como **tipo** vs herencia como **estructura**:
-  - En herencia de tipos, cada subclase es un subtipo. Debe satisfacerse el principio de **sustitución** de Liskov (LSP, _Liskov Substitution Principle_): toda operación que funciona para un objeto de la clase $C$ también debe funcionar para un objeto de una subclase de $C$
+  - En herencia de tipos, cada subclase es un subtipo. Debe satisfacerse el principio de **sustitución** de Liskov: toda operación que funciona para un objeto de la clase $C$ también debe funcionar para un objeto de una subclase de $C$ (subtipado de comportamiento _fuerte_)
   - Usar la herencia como una forma de estructurar programas es **erróneo**, pues provoca que no se satisfaga la propiedad LSP.
 
 
@@ -683,7 +711,7 @@ public class Aventura {
 
 ## Polimorfismo paramétrico
 
-- **Genéricos**
+- Tipos **genéricos**
   - Ada
   - C++ generics
   - Java _templates_ (desde JDK 1.5)
@@ -699,7 +727,7 @@ public class Aventura {
 ## Usos incorrectos de la herencia
 
 
-### Mal Ejemplo 1 (Java): herencia como estructura
+### Mal ejemplo 1 (Java): herencia como estructura
 
 ```java
 class Account {
