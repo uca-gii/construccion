@@ -629,16 +629,16 @@ Si no se añade `@Override`, podemos confundirnos y hacer un _overload_ accident
 ```csharp
 class Car  
 {  
-    public void DescribeCar()  
-    {  
-        System.Console.WriteLine("Four wheels and an engine.");  
-        ShowDetails();  
-    }  
-  
-    public virtual void ShowDetails()  
-    {  
-        System.Console.WriteLine("Standard transportation.");  
-    }  
+  public void DescribeCar()  
+  {  
+    System.Console.WriteLine("Four wheels and an engine.");  
+    ShowDetails();  
+  }  
+
+  public virtual void ShowDetails()  
+  {  
+    System.Console.WriteLine("Standard transportation.");  
+  }  
 }  
 ```
 
@@ -647,18 +647,18 @@ class Car
 ```csharp
 class ConvertibleCar : Car  
 {  
-    public new void ShowDetails()  
-    {  
-        System.Console.WriteLine("A roof that opens up.");  
-    }  
+  public new void ShowDetails()  
+  {  
+    System.Console.WriteLine("A roof that opens up.");  
+  }  
 }  
   
 class Minivan : Car  
 {  
-    public override void ShowDetails()  
-    {  
-        System.Console.WriteLine("Carries seven people.");  
-    }  
+  public override void ShowDetails()  
+  {  
+    System.Console.WriteLine("Carries seven people.");  
+  }  
 } 
 ```
 
@@ -667,16 +667,18 @@ class Minivan : Car
 ```csharp
 public static void TestCars1()  
 {  
-    System.Console.WriteLine("\nTestCars1\n----------");  
-  
-    var cars = new List<Car> { new Car(), new ConvertibleCar(),
-        new Minivan() };  
-  
-    foreach (var car in cars)  
-    {  
-        car.DescribeCar();  
-        System.Console.WriteLine("----------");  
-    }  
+  System.Console.WriteLine("\nTestCars1\n----------");
+
+  var cars = new List<Car> {
+        new Car(),
+        new ConvertibleCar(),
+        new Minivan() };
+
+  foreach (var car in cars)  
+  {  
+    car.DescribeCar();  
+    System.Console.WriteLine("----------");
+  }  
 }  
 ```
 
