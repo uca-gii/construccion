@@ -226,6 +226,9 @@ public class Autonomo extends Empleado {
 }
 ```
 
+<!--
+Hasta la versión Java 25, super() no podía ser llamado en medio del constructor, sino que tenía que ser la primera línea del constructor. Desde el JDK 25, se ha flexibilizado esta restricción y ahora es posible llamar a super() en cualquier parte del constructor, lo que permite una mayor flexibilidad en la inicialización de objetos.
+-->
 ---
 
 ```java
