@@ -615,12 +615,33 @@ Ver la configuración de la red creada
 `docker network inspect docker-compose-ejemplo1_mynet`
 
 
-# Ejercicio propuesto
+# Ejercicio 1
 
 * Crear un fichero `docker-compose.yml` con dos servicios: wordpress + mariadb (usar imágenes de bitnami).
 * Hacer que el servicio wordpress utilice el puerto 82.
-* El servicio wordpress debe depender del servicio mariadb.
+* El servicio wordpress debe depender del servicio mariadb para arrancar cuando mariadb esté funcionando.
 * Hacer que ambos contenedores usen volúmenes para persistir información.
 * Hacer que ambos contenedores usen una red llamada `redDocker`.
 * Comprobar que puede acceder a `localhost:82` y mostrar la correcta configuración de Wordpress.
 * Borrar los contenedores y comprobar si la información persiste.
+
+
+# Ejercicio 2
+
+- Crear un fichero `docker-compose.yml` con dos servicios: matomo y mysql (imágenes: matomo:apache; mysql:8.0).
+- Crear un fichero `Dockerfile` para matomo con las siguientes configuraciones:
+  - Aumentar el límite de memoria a 512M mediante la variable `PHP_MEMORY_LIMIT`.
+  - Aumentar el tamaño máximo de subida de archivos a 512M. Crear un fichero de configuración PHP personalizado en la ruta `/usr/local/etc/php/conf.d/zzz-matomo.ini`.
+- Usar dependencias entre contenedores para que el contenedor de matomo espere a que el contenedor de mysql esté listo.
+- Usar variables de entorno para configurar la base de datos.
+- Usar volúmenes para persistir la información de ambos contenedores.
+
+---
+
+### Ejercicio 2: Comprobar que:
+
+1) Comprobar que el contenedor de matomo funciona correctamente
+2) Continuar con la configuración para comprobar que la información del sistema es la indicada desde el Dockerfile (paso 2 de la configuración de Matomo)
+3) Continuar con la configuración para comprobar que la información de la base de datos es la indicada desde las variables de entorno y es correcta (pasos 3 y 4)
+4) Finalizar la configuración de Matomo (el resto de la información aportada no es relevante para el ejercicio pero debe completarse)
+5) Borrar los contenedores y demostrar si la información persiste.
