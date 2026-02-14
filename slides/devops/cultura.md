@@ -22,7 +22,6 @@ h2 {
 h3 {
   color: #005877;
 }
-
 img[alt~="center"] {
   display: block;
   margin: 0 auto;
@@ -624,3 +623,84 @@ Aprovechando las feature flags, podemos ejecutar experimentos como A/B testing p
 <emph>IaC</emph> | práctica en la que la infraestructura de sistemas, redes y otros recursos tecnológicos se gestiona y <emph>aprovisiona</emph> utilizando código y archivos de configuración en lugar de realizar configuraciones manuales o a través de interfaces gráficas
 <emph>Provisioning</emph> |  proceso de preparar y configurar de manera automática los recursos de infraestructura necesarios para ejecutar una aplicación o servicio
 <emph>Feature flags</emph> |  técnica de desarrollo de software que permite habilitar o deshabilitar características específicas de una aplicación durante o después del despliegue
+
+---
+
+![bg 100% left:33%](img/12factor-app.png)
+
+## Metodología 12-Factor App
+
+- Guia para apps SaaS modernas: portables, escalables, mantenibles.
+- Define principios para codebase, configuración, dependencias y procesos.
+- https://12factor.net/
+
+---
+
+<style scoped>
+section {
+  .cols {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+  .cols > div {
+    align-self: start;
+  }
+}
+h3 {
+  text-align: center;
+}  
+</style>
+
+### 12 factores para apps SaaS modernas
+
+<div class="cols">
+<div>
+
+1. <emph>Codebase</emph>: una base de codigo por app, versionada.
+2. <emph>Dependencies</emph>: declarar y aislar dependencias explícitamente.
+3. <emph>Config</emph>: configuración fuera del codigo, via variables de entorno.
+4. <emph>Backing services</emph>: tratar servicios externos como recursos adjuntos.
+5. <emph>Build, release, run</emph>: separar etapas de build y ejecución.
+6. <emph>Processes</emph>: ejecutar como procesos stateless, sin compartir estado.
+
+</div>
+<div>
+
+7. <emph>Port binding</emph>: exponer servicios por un puerto propio.
+8. <emph>Concurrency</emph>: escalar por procesos, no por hilos internos.
+9. <emph>Disposability</emph>: inicio rápido y apagado limpio.
+10. <emph>Dev/prod parity</emph>: entornos dev y prod lo más parecidos posible.
+11. <emph>Logs</emph>: logs como flujo de eventos, no archivos locales.
+12. <emph>Admin processes</emph>: tareas admin como procesos puntuales.
+
+</div>
+</div>
+
+---
+<style scoped>
+section {
+  display: flex;
+  text-align: center;
+  flex-direction: column;
+  justify-content: flex-start;  /* alinea al inicio (arriba) */
+}  
+</style>
+
+![bg 75%](img/12factor-app.png)
+
+## Metodología <br> 12-Factor App
+
+<!--
+
+Las herramientas de DevOps y CI/CD (Docker, K8s, etc.) no son solo utilidades aisladas, sino piezas necesarias para cumplir un estándar de arquitectura moderna (SaaS) robusta y escalable.
+
+*   **Factor I (Codebase)**: **Git** y **GitHub/GitLab** como la base del flujo de trabajo y el control de versiones.
+*   **Factor III (Config)**: Herramientas como **Ansible** y **Terraform** permiten tratar la IaC y gestionar configuraciones declarativas, alineándose con el mandato de separar la configuración del código.
+*   **Factor V (Build, Release, Run)**: Herramientas como **Jenkins**, **CircleCI** y **GitHub Actions** automatizan la separación estricta entre las etapas de construcción, lanzamiento y ejecución que exige el Factor V.
+*   **Factor VIII (Concurrency)**: **Kubernetes** como la herramienta para gestionar "pods" y escalar automáticamente, lo cual responde al Factor VIII (Concurrencia mediante el modelo de procesos).
+*   **Factor IX (Disposability)**: La capacidad de Kubernetes para recuperar contenedores cuando "las cosas van mal" o realizar "rolling updates" soporta el principio de Desechabilidad (Disposability) de los procesos.
+*   **Factor X (Dev/prod parity)**: **Docker** como la solución para "empaquetar aplicaciones y dependencias en una unidad estandarizada", eliminando el problema de "funciona en mi máquina". Esto es la realización directa del Factor X (Paridad entre desarrollo y producción).
+*   **Factor XI (Logs)**: El stack **ELK** (Elasticsearch, Logstash, Kibana) y **Prometheus** pueden transformar el "caos de los logs" en datos visualizables y centralizados, cumpliendo con el principio de tratar los logs como flujos de eventos (*event streams*) en lugar de archivos estáticos.
+
+-->
