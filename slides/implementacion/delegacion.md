@@ -1198,6 +1198,12 @@ p {
 
 ¿Un `trait` de Scala es un _mixin_?
 
+<!--
+Puede serlo, pero no todo trait necesariamente se usa como mixin.
+- Al mezclarlo en una clase con `extends ... with ...`, actúa como mixin.
+- Pero también muchos traits se usan como abstracciones de tipo/interfaz.
+-->
+
 ---
 
 ### Ejemplo: mezcla de traits con comportamiento
