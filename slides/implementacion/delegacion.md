@@ -662,84 +662,47 @@ class Orquesta implements Iterable<Instrumento> {
 
 #### Cambio de requisitos
 
-- Supongamos que queremos sustituir la implementación basada en una `List` por otra (quizá más eficiente) basada en un `Map`
+- Supongamos que queremos poder iterar solo sobre un grupo de instrumentos de un mismo tipo (viento, cuerda, percusión). Hacerlo sobre una colección lineal es ineficiente.
+- Proponemos sustituir la implementación actual (basada en una `List`) por otra (quizá más eficiente) basada en un `Map`
 
-- Consultar la interfaz de `Map`: [`java.util.Map`](http://docs.oracle.com/javase/6/docs/api/java/util/Map.html) de Java 6 o [`java.util.Map<K,V>`](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html) de Java 11...
+- Consultamos la interfaz de `Map`: [`java.util.Map`](http://docs.oracle.com/javase/6/docs/api/java/util/Map.html) o [`java.util.Map<K,V>`](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html)...
 
-¡ `Map` no implementa `Iterable` !
+  ¡Sorpresa!...  `Map` no implementa `Iterable`
+
+---
+
+**Pegas**:
+
+- Tenemos que implementar la interfaz `Iterable` en `Orquesta` para que el cliente siga funcionando sin cambios.
+- El método `Orquesta::iterator()` queda un poco ineficiente al tener que iterar sobre todos los valores de un `Map`. 
+
+A pesar de esto, ¿construimos un `Map` en lugar de una `List` para almacenar los instrumentos?
+
+#### Más de lo que necesitamos
+
+`Map<K,V>` ofrece más de lo que necesitamos: ¡hay un `clear()` en el `Map`!
 
 ---
 
 #### Tensión de frontera
 
-Existe una cierta tensión proveedor-cliente en la **frontera** de la interfaz
+Existe una cierta tensión proveedor-cliente en la **frontera** de una interfaz
 
 - Los proveedores de packages y frameworks quieren ampliar aplicabilidad
 - Los clientes quieren una interfaz centrada en sus necesidades particulares
 
-Si construimos un `Map` y lo pasamos...
+Es mejor ocultar lo que no necesitamos:
 
-- Ninguno de los receptores deberá poder borrar algo del map. Pero ¡hay un `clear()` en el `Map`!
-- Algunos de los métodos de `Map` esperan un `Object`: `containsKey(Object key)`, `containsValue(Object value)`
-
----
-
-¿La interfaz `Map` es siempre satisfactoria? ¿seguro que no va a cambiar?
-
-<div class="cols">
-<div>
-
-JDK < 5.0:
-
-```java
-  Map sensors = new HashMap();
-  sensors.put(1, new Sensor());
-  sensors.put(2, new Sensor());
-  ...
-  Sensor s = (Sensor)sensors.get(id);
-```
-
-</div>
-<div>
-
-JDK >= 5.0:
-
-```java
-  Map<Integer,Sensor> sensors =
-      new HashMap<Integer,Sensor>();
-  sensors.put(1, new Sensor());
-  sensors.put(2, new Sensor());
-  ...
-  Sensor s = sensors.get(id);
-```
-
-</div>
-</div>
-
----
-
-#### Conclusión
-
-`Map<Integer,Sensor>` ofrece más de lo que necesitamos
-
-```java
-  public class Sensors {
-    private Map sensors = new HashMap();
-    public Sensor getById(String id) {
-      return (Sensor) sensors.get(id);
-    }
-    //...
-  }
-```
-
-- La interfaz `Map` queda oculta en `Sensors`
-- Se filtran los métodos que no nos sirven
+- Ocultar la implementación en una interfaz
+- Filtrar los métodos que no nos sirven
 - Más fácil de hacer evolucionar sin impacto en el resto de la aplicación
-- El casting queda confinado en la clase `Sensors`, que es más seguro
 
 ---
 
 ### Implementación alternativa: Orquesta v0.7
+
+<div class="cols">
+<div>
 
 ```java
 class Orquesta implements Iterable<Instrumento> {
@@ -767,27 +730,8 @@ class Orquesta implements Iterable<Instrumento> {
 }
 ```
 
----
-
-```java
-public class Instrumentos implements Iterable<Instrumento> {
-  private List instrumentos;
-  public Instrumentos(int numero) {
-    instrumentos = new ArrayList<Instrumento>(numero);
-  }
-  public Iterator<Instrumento> iterator() {
-      return instrumentos.iterator();
-  }
-  public boolean addInstrument(Instrumento i) {
-    return instrumentos.add(i);
-  }
-  public boolean removeInstrument(Instrumento i) {
-    return instrumentos.remove(i);
-  }
-}
-```
-
----
+</div>
+<div>
 
 ```java
 public class PruebaOrquesta {
@@ -803,9 +747,87 @@ public class PruebaOrquesta {
 }
 ```
 
-Esta implementación podemos adaptarla más fácilmente para cambiar el `List` por un `Map`, pues la responsabilidad de ser iterable queda confinada en `Instrumentos`, que desacopla `Orquesta` y la implementación elegida (`List`, `Map`, etc.) para la colección de instrumentos.
+Añadimos método para saber el tipo:
 
-Esto ya es más <emph>diseño</emph> que implementación (separación de responsabilidades)...
+```java
+abstract class Instrumento {
+  ...
+  public String tipo() {
+    return getClass().getSimpleName().toLowerCase();
+  }
+}
+```
+
+</div>
+</div>
+
+---
+
+<style scoped>
+.cols {
+  display: grid;
+  grid-template-columns: 55% 45%;
+}
+</style>
+
+<div class="cols">
+<div>
+
+```java
+public class Instrumentos
+       implements Iterable<Instrumento> {
+  private Map<String,List<Instrumento>> instrumentos;
+
+  public Instrumentos(int numero) {
+    instrumentos = 
+        new LinkedHashMap<String,List<Instrumento>>(numero);
+  }
+
+  public Iterator<Instrumento> iterator() {
+    List<Instrumento> todos = 
+        new ArrayList<Instrumento>();
+    for (List<Instrumento> grupo: instrumentos.values())
+      todos.addAll(grupo);
+    return todos.iterator();
+  }
+```
+
+</div>
+<div>
+
+```java
+  public boolean addInstrument(Instrumento i) {
+    String tipo = i.tipo();
+    List<Instrumento> grupo =
+          instrumentos.get(tipo);
+    if (grupo == null) {
+      grupo = new ArrayList<Instrumento>();
+      instrumentos.put(tipo, grupo);
+    }
+    return grupo.add(i);
+  }
+  public boolean removeInstrument(Instrumento i) {
+    String tipo = i.tipo();
+    List<Instrumento> grupo =
+          instrumentos.get(tipo);
+    if (grupo == null)
+      return false;
+    boolean removed = grupo.remove(i);
+    if (grupo.isEmpty())
+      instrumentos.remove(tipo);
+    return removed;
+  }
+}
+```
+
+</div>
+</div>
+
+---
+
+Esta implementación desacopla `Orquesta` de la estructura concreta de almacenamiento, pues la responsabilidad de ser iterable queda confinada en `Instrumentos`, que encapsula y filtra la implementación elegida (`List`, `Map`, etc.) para la colección de instrumentos.
+
+Esto ya es más re-<emph>diseño</emph> que implementación (separación de responsabilidades)...
 
 ---
 
@@ -1254,6 +1276,59 @@ p {
 
 - Desde Java 8, las interfaces pueden incorporar [métodos por defecto](https://www.baeldung.com/java-static-default-methods) que hacen que las interfaces de Java se comporten más como un trait.
 - Sirven para implementar herencia múltiple
+
+---
+
+<style scoped>
+.cols {
+  display: grid;
+  grid-template-columns: 45% 55%;
+}
+</style>
+
+#### Ejemplo de métodos `default`
+
+Resolver la ambigüedad en la herencia múltiple con métodos `default`
+
+<div class="cols">
+<div>
+
+```java
+interface Volador {
+  default void mover() {
+    System.out.println("Moviendo por aire");
+  }
+}
+
+interface Nadador {
+  default void mover() {
+    System.out.println("Moviendo por agua");
+  }
+}
+```
+
+</div>
+<div>
+
+```java
+class Pato implements Volador, Nadador {
+  @Override
+  public void mover() {
+    // Obligatorio resolver el conflicto
+    Volador.super.mover(); // o Nadador.super.mover()
+    System.out.println("... como un pato");
+  }
+}
+
+// Válido desde JDK 25...
+void main() {
+  var pato = new Pato();
+  pato.mover();
+}
+```
+
+</div>
+</div>
 
 ---
 
