@@ -107,7 +107,6 @@ p {
 - Demasiados parámetros en una función
 - Jerarquías de herencia en paralelo
 - Muchas sentencias _case_ en paralelo
-- Hay muchos cambios en una clase que tienden a estar compartimentalizados (afectan solo a una parte)
 - Hay muchos cambios que requieren modificaciones en paralelo a varias clases
 - Etc.
 
@@ -394,18 +393,16 @@ Principio AHA: "Avoid Hasty Abstractions" (Evitar abstracciones precipitadas)
 
 ## 1. Duplicación impuesta
 
-La gestión del proyecto así nos lo exige. Algunos ejemplos:
-
 - Representaciones múltiples de la información:
-    - Varias implementaciones de un TAD que necesita guardar elementos de distintos tipos, cuando el lenguaje no permite genericidad
-    - Esquema de BD configurado en la BD y en código fuente a través de un [ORM](http://www.agiledata.org/essays/mappingObjects.html)
+  - Varias implementaciones de un TAD que necesita guardar elementos de distintos tipos, cuando el lenguaje no permite genericidad
+  - Esquema de BD configurado en la BD y en código fuente a través de un [ORM](http://www.agiledata.org/essays/mappingObjects.html)
 - Documentación del código:
-    - Código incrustado en javadocs
+  - Código incrustado en javadocs
 - Casos de prueba:
-    - Pruebas unitarias con jUnit (Cuidado!)
+  - Pruebas unitarias con jUnit (Cuidado!)
 - Características del lenguaje:
-    - C/C++ header files
-    - IDL specs
+  - C/C++ header files
+  - IDL specs
 
 <!--
 
@@ -422,7 +419,7 @@ Cuando el lenguaje no tenía capacidad de usar tipos genéricos (hasta el JDK 1.
 
 Para evitarlo, Java usó un _workaround_: todas las clases en Java heredan de `Object`. Así una clase que implementara un TAD contenedor de elementos de otra clase, tan solo tenía que declarar los elementos contenidos de tipo `Object`.
 
-Más tarde (a partir del JDK 1.5) introdujo los tipos genéricos y ya no era necesario usar dicho _workaround_ basado en `Object` para evitar la duplicación
+A partir del JDK 1.5, se introdujeron los tipos genéricos y ya no era necesario usar dicho _workaround_, que se mantuvo por compatibilidad con versiones anteriores.
 
 ---
 
