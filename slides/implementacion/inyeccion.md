@@ -22,6 +22,17 @@ h2 {
   color: darkblue;
   text-align: center;
 }
+emph {
+  color: #E87B00;
+}
+.cols {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+.cols > div {
+  align-self: start;
+}
 </style>
 
 # INYECCIÓN DE DEPENDENCIAS
@@ -44,37 +55,93 @@ p {
 
 Retocamos un poco la implementación de la orquesta para introducir partituras...
 
+<div class="cols">
+<div>
+
 ```java
-public class Partitura implements Iterable<String> {
+public class Partitura 
+             implements Iterable<String> {
   private String score;
   public Partitura(String score) {
     this.score = score;
   }
   public Iterator<String> iterator() {
-    return Arrays.stream(score.split(" ")).iterator();
+    return Arrays.stream(score.split(" "))
+           .iterator();
   }
 }
+```
 
+</div>
+<div>
+
+```java
 public abstract class Instrumento {
-    protected String nombre;
-    protected Partitura partitura = new Partitura("G D7 C D7 G");
+  protected String nombre;
+  protected Partitura partitura =
+              new Partitura("G D7 C D7 G");
 
-    public abstract String tocar(String nota);
-    public String afinar() { return "Afinando "+nombre; }
-    public String tocarPartitura() {
-      StringBuffer sb = new StringBuffer();
-      partitura.forEach( nota -> sb.append(tocar(nota)) );
-      return sb.toString();
-      //for (String nota: partitura)
-      //  tocar(nota);
-    }
+  public abstract String tocar(String nota);
+  public String tipo() {
+    return getClass().getSimpleName().toLowerCase();
+  }
+  public String afinar() {
+    return "Afinando "+nombre;
+  }
+  public String tocarPartitura() {
+    StringBuffer sb = new StringBuffer();
+    partitura.forEach(
+      nota -> sb.append(tocar(nota))
+    );
+    return sb.toString();
+    //for (String nota: partitura)
+    //  tocar(nota);
+  }
+}
+```
+
+</div>
+</div>
+
+---
+
+```java
+public class Viento extends Instrumento {
+  public Viento(String nombre) {
+    this.nombre = nombre;
+  }
+  public String tocar(String nota) { soplar(nota); return nota; }
+  private void soplar() { System.out.println(nombre+" soplando "+partitura); }
+  private void soplar(String nota) { System.out.println(nombre+" soplando "+nota); }
+}
+
+public class Cuerda extends Instrumento {
+  public Cuerda(String nombre) {
+    this.nombre = nombre;
+  }
+  public String tocar(String nota) { rasgar(nota); return nota; }
+  private void rasgar() { System.out.println(nombre+" rasgando "+partitura); }
+  private void rasgar(String nota) { System.out.println(nombre+" rasgando "+nota); }
+}
+
+public class Percusion extends Instrumento {
+  public Percusion(String nombre) {
+    this.nombre = nombre;
+  }
+  public String tocar(String nota) { golpear(nota); return nota; }
+  private void golpear() { System.out.println(nombre+ "golpeando "+partitura); }
+  private void golpear(String nota) { System.out.println(nombre+" golpeando "+nota); }
 }
 ```
 
 ---
 
+<div class="cols">
+<div>
+
 ```java
-class Orquesta implements Iterable<Instrumento> {
+public class Orquesta
+             implements Iterable<Instrumento> {
   private Instrumentos instrumentos;
   public Orquesta() {
       instrumentos = new Instrumentos(3);
@@ -101,56 +168,42 @@ class Orquesta implements Iterable<Instrumento> {
 }
 ```
 
----
+</div>
+<div>
 
 ```java
-class Viento extends Instrumento {
-    public Viento(String nombre) {
-      this.nombre = nombre;
-    }
-    public String tocar(String nota) { soplar(nota); return nota; }
-    public void soplar() { System.out.println(nombre+" soplando "+partitura); }
-    public void soplar(String nota) { System.out.println(nombre+" soplando "+nota); }
-}
-
-class Cuerda extends Instrumento {
-    public Cuerda(String nombre) {
-      this.nombre = nombre;
-    }
-    public String tocar(String nota) { rasgar(nota); return nota; }
-    public void rasgar() { System.out.println(nombre+" rasgando "+partitura); }
-    public void rasgar(String nota) { System.out.println(nombre+" rasgando "+nota); }
-}
-
-class Percusion extends Instrumento {
-    public Percusion(String nombre) {
-      this.nombre = nombre;
-    }
-    public String tocar(String nota) { golpear(nota); return nota; }
-    public void golpear() { System.out.println(nombre+ "golpeando "+partitura); }
-    public void golpear(String nota) { System.out.println(nombre+" golpeando "+nota); }
+public class Instrumentos
+             implements Iterable<Instrumento> {
+  /* Es lo mismo si se implementa internamente con 
+     una List o con un Map, pues esta clase oculta
+     la implementación concreta de la colección de
+     instrumentos */
 }
 ```
 
----
-
 ```java
-public class Instrumentos implements Iterable<Instrumento> {
-  private List instrumentos;
-  public Instrumentos(int numero) {
-    instrumentos = new ArrayList<Instrumento>(numero);
+import java.util.Iterator;
+import java.util.Map;
+import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.ArrayList;
+import java.util.Arrays;
+
+public class PruebaOrquesta {
+  public void main() {
+    Orquesta orquesta = new Orquesta();
+    orquesta.addInstrumento(new Viento("trompeta"));
+    orquesta.addInstrumento(new Cuerda("violín"));
+    orquesta.addInstrumento(new Percusion("bombo"));
+    for (Instrumento i: orquesta)
+      System.out.println ( orquesta.afinar(i) );
+    orquesta.tocar();
   }
-  public Iterator<Instrumento> iterator() {
-      return instrumentos.iterator();
-  }
-  public boolean addInstrument(Instrumento i) {
-    return instrumentos.add(i);
-  }
-  public boolean removeInstrument(Instrumento i) {
-    return instrumentos.remove(i);
-  }
-}
+}  
 ```
+
+</div>
+</div>
 
 ---
 <style>
@@ -179,6 +232,8 @@ Instrumento -r-> Partitura
 
 Orquesta -r-> Instrumentos
 
+Orquesta .d.> Instrumento
+
 Instrumentos *-d-> Instrumento
 
 PruebaOrquesta .r.> Orquesta
@@ -203,16 +258,16 @@ together{
 
 ```java
 public class PruebaOrquesta {
-    public static void main(String[] args) {
-      Orquesta orquesta = new Orquesta();
-      orquesta.addInstrumento(new Viento("trompeta"));
-      orquesta.addInstrumento(new Cuerda("guitarra"));
-      orquesta.addInstrumento(new Percusion("tambor"));
-      for (Instrumento i: orquesta)
-          System.out.println ( orquesta.afinar(i) );
-      orquesta.tocar();
-    }
-}
+  public void main() {
+    Orquesta orquesta = new Orquesta();
+    orquesta.addInstrumento(new Viento("trompeta"));
+    orquesta.addInstrumento(new Cuerda("violín"));
+    orquesta.addInstrumento(new Percusion("bombo"));
+    for (Instrumento i: orquesta)
+        System.out.println ( orquesta.afinar(i) );
+    orquesta.tocar();
+  }
+}  
 ```
 
 Los `new` de `PruebaOrquesta` siguen introduciendo dependencias de `PruebaOrquesta` con respecto a los tipos concretos de `Instrumento`.
@@ -245,6 +300,8 @@ Instrumento <|-down- Percusion
 Instrumento -r-> Partitura
 
 Orquesta -r-> Instrumentos
+
+Orquesta .d.> Instrumento
 
 Instrumentos *-d-> Instrumento
 
@@ -331,8 +388,7 @@ p {
 </style>
 
 ¿Quién le añade los instrumentos a la orquesta?
-¿Quién le pone el cascabel (partitura) al gato (instrumento)?
-¿A qué gato (orquesta o instumento)?
+¿Quién asigna la partitura? ¿A la orquesta o al instrumento?
 
 ---
 
@@ -352,12 +408,14 @@ El framework DI inyecta dependencias de forma universal, no de modo particular a
 
 ### Inyección con Spring Framework
 
-A través de un fichero de configuración `orquesta.xml` le indicamos los valores inyectables:
+En un fichero de configuración `orquesta.xml` le indicamos los valores inyectables:
+
+<div class="cols">
+<div>
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
-  "http://www.springframework.org/dtd/spring-beans.dtd">
+<!DOCTYPE beans PUBLIC "..." ...>
 <beans>
   <bean id="trompeta"
     class="Viento"/>
@@ -369,7 +427,8 @@ A través de un fichero de configuración `orquesta.xml` le indicamos los valore
     class="Cuerda"/>
 ```
 
----
+</div>
+<div>
 
 ```xml
   <bean id="cuarteto"
@@ -389,6 +448,9 @@ A través de un fichero de configuración `orquesta.xml` le indicamos los valore
   </bean>
 </beans>
 ```
+
+</div>
+</div>
 
 ---
 
@@ -445,38 +507,20 @@ public class MyClass {
 Un _contenedor_ de dependencias en el framework debe responsabilizarse de crear las instancias de `Logger` e inyectarlas en su sitio (normalmente vía _reflexión_ o _introspección_)
 
 ---
+<style scoped>
+p {
+  color: darkblue;
+  text-align: center;
+}
+</style>
 
 ## Anotaciones
 
----
-
-### Anotaciones @ en Java
-
-JSR 330 es un estándar de Java para describir las dependencias de una clase con `@Inject` y otras anotaciones. Hay diversas implementaciones de [JSR 330](http://javax-inject.github.io/javax-inject/).
-
-```java hl_lines="2 4 5"
-public class MyPart {
-  @Inject private Logger logger;
-  // inject class for database access
-  @Inject private DatabaseAccessClass dao;
-  @Inject
-  public void createControls(Composite parent) {
-    logger.info("UI will start to build");
-    Label label = new Label(parent, SWT.NONE);
-    label.setText("Eclipse 4");
-    Text text = new Text(parent, SWT.NONE);
-    text.setText(dao.getNumber());
-  }
-}
-```
-
-La clase `MyPart` sigue usando `new` para ciertos elementos de la interfaz. Esto significa que no pensamos reemplazarlos ni siquiera para hacer pruebas.
+Otra manera de inyectar dependencias
 
 ---
 
-### Otra manera de inyectar dependencias
-
-jUnit 4 usa anotaciones para programar casos de prueba:
+### Anotaciones @ de Java en jUnit 4
 
 ```java
 import org.junit.*;
@@ -538,16 +582,30 @@ Supongamos que queremos obtener un listado ordenado por fecha de creación de to
 Resolvemos mediante inyección de dependencias...
 
 ---
+<style scoped>
+.cols {
+  display: grid;
+  grid-template-columns: 25% 75%;
+}
+</style>
 
 #### Con herencia de interfaz y delegación
 
 `BankAcccount.java`:
 
+<div class="cols">
+<div>
+
 ```java
 import java.util.*;
 import java.io.*;
 import java.time.*;
+````
 
+</div>
+<div>
+
+```java
 public final class BankAccount implements Comparable<BankAccount> {
   private final String id;
   private LocalDate creationDate;
@@ -568,7 +626,23 @@ public final class BankAccount implements Comparable<BankAccount> {
   }
 ```
 
+</div>
+</div>
+
 ---
+
+<style scoped>
+.cols {
+  display: grid;
+  grid-template-columns: 25% 75%;
+}
+</style>
+
+<div class="cols">
+<div>
+
+</div>
+<div>
 
 ```java
   public void setComparator(Comparator cmp) {
@@ -597,12 +671,15 @@ public final class BankAccount implements Comparable<BankAccount> {
 }
 ```
 
+</div>
+</div>
+
 ---
 
 `BankAcccountComparatorById.java`:
 
 ```java
-import java.util.*;
+import java.util.Comparator;
 
 class BankAccountComparatorById implements Comparator<BankAccount> {
     public int compare(BankAccount o1, BankAccount o2) {
@@ -614,7 +691,7 @@ class BankAccountComparatorById implements Comparator<BankAccount> {
 `BankAcccountComparatorByCreationDate.java`:
 
 ```java
-import java.util.*;
+import java.util.Comparator;
 
 class BankAccountComparatorByCreationDate implements Comparator<BankAccount> {
     public int compare(BankAccount o1, BankAccount o2) {
@@ -647,6 +724,7 @@ Ahora podría definirse una anotación del tipo `@comparator(BankAccountComparat
 
 - Java: Ejemplo de cómo [crear una anotación a medida en Java](https://www.baeldung.com/java-custom-annotation)
 - Typescript: las anotaciones se llaman **decorators** y son más sencillas de programar
+- Python: No confundir con los decorators de Python, que son algo diferente
 
 <!--
 
