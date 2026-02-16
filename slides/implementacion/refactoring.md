@@ -356,14 +356,6 @@ public class Autonomo extends Empleado {
 
 ---
 
-### El peligro del copy&paste
-
-> Copy and paste is a design error
->
-> -- Steve McConnell. <emph>Code Complete: A practical handbook of software construction</emph>, 2nd edition, 2004.
-
----
-
 ### Principio DRY – *Don't Repeat Yourself!*
 
 - DRY no tiene que ver con el código, sino con el __conocimiento__. No se trata de no repetir código, sino de no repetir la lógica.
@@ -534,47 +526,59 @@ p {
 
 ¿Es conveniente aplicar siempre DRY?
 
-<!--
-En tiempo de IA, el coste de la duplicación de código es principalmente el mantenimiento (esfuerzo humano). La IA puede ayudar con esto. Pero el coste de elegir una abstracción incorrecta no disminuye. La IA todavía tiene dificultades con los sistemas sobreacoplados.
--->
-
 ---
 
-- ¿DRY es tan importante en tiempos de la IA?
-  - Si se usa IA, ¿cuál es el coste de mantener código duplicado vs el coste de mantener sistemas muy acoplados?
-- Otras veces se puede optar por violar DRY por razones de rendimiento...
+- A veces se puede optar por violar DRY por razones de rendimiento...
   - [_Memoization_](https://en.wikipedia.org/wiki/Memoization): cachear los resultados de cómputos costosos
+  - La técnica de memoization es menos problemática si queda dentro de los límites de la clase/módulo.
+  - Otras razones de rendimiento: las cachés y los optimizadores de código también hacen su labor
 
 ---
 
 ### Ejemplo: aplicando memoization – versión 2
 
 ```java
-  public class Line {
-    private boolean changed;
-    private double length;
-    private Point start;
-    private Point end;
+public class Line {
+  private boolean changed;
+  private double length;
+  private Point start;
+  private Point end;
 
-    public void setStart(Point p) { start = p; changed = true; }
-    public void setEnd(Point p)   { end   = p; changed = true; }
-    public Point getStart() { return start; }
-    public Point getEnd() { return end; }
-    public double getLength() {
-       if (changed) {
-          length = start.distanceTo(end);
-          changed = false;
-       }
-       return length;
+  public void setStart(Point p) { start = p; changed = true; }
+  public void setEnd(Point p)   { end   = p; changed = true; }
+  public Point getStart() { return start; }
+  public Point getEnd() { return end; }
+  public double getLength() {
+    if (changed) {
+      length = start.distanceTo(end);
+      changed = false;
     }
+    return length;
   }
+}
 ```
 
 ---
 
-La técnica de memoization es menos problemática si queda dentro de los límites de la clase/módulo.
+<style scoped>
+p {
+  text-align: center;
+  font-size: 125%;
+  color: green;
+}
+</style>
 
-Otras veces no merece la pena violar DRY por rendimiento: ¡las cachés y los optimizadores de código también hacen su labor!
+¿Es tan importante DRY en tiempos de la IA?
+
+<!--
+En tiempo de IA, el coste de la duplicación de código es principalmente el mantenimiento (esfuerzo humano). La IA puede ayudar con esto. Pero el coste de elegir una abstracción incorrecta no disminuye. La IA todavía tiene dificultades con los sistemas sobreacoplados.
+-->
+
+---
+
+- Si se usa IA, ¿cuál es el coste de mantener código duplicado vs el coste de mantener sistemas muy acoplados?
+  - El coste de la duplicación de código es principalmente el mantenimiento (esfuerzo humano). La IA puede ayudar con esto.
+  - Pero el coste de elegir una abstracción incorrecta no disminuye. La IA todavía tiene dificultades con los sistemas sobreacoplados.
 
 ---
 
@@ -584,8 +588,7 @@ Otras veces no merece la pena violar DRY por rendimiento: ¡las cachés y los op
 >
 > – B. Meyer. <emph>Object-Oriented Software Construction.</emph> Prentice-Hall, 2nd edition, 1997.
 
-
-Conviene aplicar el principio de acceso uniforme para que sea más fácil añadir mejoras de rendimiento (v.g. caching)
+Conviene aplicar el principio de acceso uniforme para que sea más fácil añadir mejoras de rendimiento (por ejemplo, caching)
 
 ---
 
@@ -628,7 +631,7 @@ class Complejo(real: Double, imaginaria: Double) {
 }
 
 object NumerosComplejos {
-  def main() : Unit = {
+  def main(): Unit = {
     val c = new Complejo(1.2, 3.4)
     println("Número complejo: " + c.toString())
     println("Parte imaginaria: " + c.im())
@@ -649,7 +652,7 @@ class Complejo(real: Double, imaginaria: Double) {
 }
 
 object NumerosComplejos {
-  def main() : Unit = {
+  def main(): Unit = {
     val c = new Complejo(1.2, 3.4)
     println("Número complejo: " + c)
     println("Parte imaginaria: " + c.im)
@@ -661,17 +664,23 @@ object NumerosComplejos {
 
 ## 3. Duplicación por impaciencia
 
-- Los peligros del *copy&paste*
-- "Vísteme despacio que tengo prisa" (_shortcuts make for long delays_). Ejemplos:
-    - Meter el `main` de Java en cualquier clase
-    - Fiasco del año 2000
+### El peligro del copy&paste
+
+> Copy and paste is a design error
+>
+> -- Steve McConnell. <emph>Code Complete: A practical handbook of software construction</emph>, 2nd edition, 2004.
+
+### Las prisas y los ahorros
+
+"Vísteme despacio que tengo prisa" (_shortcuts make for long delays_).
+Ejemplo: Fiasco del año 2000
 
 ---
 
 ## 4. Duplicación por simultaneidad
 
 - No resoluble a nivel de técnicas de construcción
-- Hace falta metodología, gestión de equipos + herramientas de comunicación
+- Hace falta metodologías de integración, gestión de equipos y herramientas de comunicación
   - CI/CD (_Continuous Integration_ / _Continuous Delivery_)
   - Prácticas DevOps
 
@@ -688,6 +697,6 @@ Según Fowler:
    - dividir un método
    - renombrar una variable
 
-Yo añado...
+Añadimos...
 
 - Reflejar cada cambio en un _commit_ separado
