@@ -150,6 +150,8 @@ class Cuerda extends Instrumento {
 <div>
 
 ```java
+import java.util.ArrayList;
+
 public class Orquesta {
   ArrayList<Instrumento> instrumentos;
   public Orquesta() {
@@ -217,6 +219,8 @@ Seguir criticando la implementación...
 <div>
 
 ```java
+import java.util.ArrayList;
+
 class Orquesta {
   ArrayList<Instrumento> instrumentos;
   public Orquesta() {
@@ -453,6 +457,8 @@ p {
 <div>
 
 ```java
+import java.util.List;
+
 class Orquesta {
   protected List<Instrumento> instrumentos;
   public Orquesta() {
@@ -482,17 +488,17 @@ class Orquesta {
 
 ```java
 public class PruebaOrquesta {
-    public static void main(String[] args) {
-      Orquesta orquesta = new Orquesta();
-      orquesta.addInstrumento(new Viento());
-      orquesta.addInstrumento(new Cuerda());
-      orquesta.addInstrumento(new Percusion());
-      for (Iterator<Instrumento> i =
-            orquesta.instrumentos.iterator();
-            i.hasNext(); )
-          orquesta.afinar(i.next());
-      orquesta.tocar();
-    }
+  public static void main(String[] args) {
+    Orquesta orquesta = new Orquesta();
+    orquesta.addInstrumento(new Viento());
+    orquesta.addInstrumento(new Cuerda());
+    orquesta.addInstrumento(new Percusion());
+    for (Iterator<Instrumento> i =
+          orquesta.instrumentos.iterator();
+          i.hasNext(); )
+        orquesta.afinar(i.next());
+    orquesta.tocar();
+  }
 }
 ```
 
@@ -516,7 +522,7 @@ h4 {
 
 #### Cambio propuesto
 
-Usar delegación, interfaces y el ***for each*** (disponible desde el JDK 1.5), que permite iterar sobre una colección que implemente la interfaz `Iterable`
+Usar delegación, interfaces y el nuevo `for` (disponible desde el JDK 1.5), que permite iterar sobre una colección que implemente la interfaz `Iterable`
 
 ---
 

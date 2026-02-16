@@ -13,6 +13,7 @@
 - [Programación asertiva y contratos](#programación-asertiva-y-contratos)
 - [Programación asíncrona y eventos](#programación-asíncrona-y-eventos)
 
+
 <!-- Source: oop.md -->
 # PROGRAMACIÓN CON OBJETOS
 
@@ -2371,36 +2372,91 @@ La respuesta está en la **inyección de dependencias**...
 
 Retocamos un poco la implementación de la orquesta para introducir partituras...
 
+<div class="cols">
+<div>
+
 ```java
-public class Partitura implements Iterable<String> {
+public class Partitura
+             implements Iterable<String> {
   private String score;
   public Partitura(String score) {
     this.score = score;
   }
   public Iterator<String> iterator() {
-    return Arrays.stream(score.split(" ")).iterator();
+    return Arrays.stream(score.split(" "))
+           .iterator();
   }
 }
+```
 
+</div>
+<div>
+
+```java
 public abstract class Instrumento {
-    protected String nombre;
-    protected Partitura partitura = new Partitura("G D7 C D7 G");
+  protected String nombre;
+  protected Partitura partitura =
+              new Partitura("G D7 C D7 G");
 
-    public abstract String tocar(String nota);
-    public String afinar() { return "Afinando "+nombre; }
-    public String tocarPartitura() {
-      StringBuffer sb = new StringBuffer();
-      partitura.forEach( nota -> sb.append(tocar(nota)) );
-      return sb.toString();
-      //for (String nota: partitura)
-      //  tocar(nota);
-    }
+  public abstract String tocar(String nota);
+  public String tipo() {
+    return getClass().getSimpleName().toLowerCase();
+  }
+  public String afinar() {
+    return "Afinando "+nombre;
+  }
+  public String tocarPartitura() {
+    StringBuffer sb = new StringBuffer();
+    partitura.forEach(
+      nota -> sb.append(tocar(nota))
+    );
+    return sb.toString();
+    //for (String nota: partitura)
+    //  tocar(nota);
+  }
+}
+```
+
+</div>
+</div>
+
+
+```java
+public class Viento extends Instrumento {
+  public Viento(String nombre) {
+    this.nombre = nombre;
+  }
+  public String tocar(String nota) { soplar(nota); return nota; }
+  private void soplar() { System.out.println(nombre+" soplando "+partitura); }
+  private void soplar(String nota) { System.out.println(nombre+" soplando "+nota); }
+}
+
+public class Cuerda extends Instrumento {
+  public Cuerda(String nombre) {
+    this.nombre = nombre;
+  }
+  public String tocar(String nota) { rasgar(nota); return nota; }
+  private void rasgar() { System.out.println(nombre+" rasgando "+partitura); }
+  private void rasgar(String nota) { System.out.println(nombre+" rasgando "+nota); }
+}
+
+public class Percusion extends Instrumento {
+  public Percusion(String nombre) {
+    this.nombre = nombre;
+  }
+  public String tocar(String nota) { golpear(nota); return nota; }
+  private void golpear() { System.out.println(nombre+ "golpeando "+partitura); }
+  private void golpear(String nota) { System.out.println(nombre+" golpeando "+nota); }
 }
 ```
 
 
+<div class="cols">
+<div>
+
 ```java
-class Orquesta implements Iterable<Instrumento> {
+public class Orquesta
+             implements Iterable<Instrumento> {
   private Instrumentos instrumentos;
   public Orquesta() {
       instrumentos = new Instrumentos(3);
@@ -2427,59 +2483,47 @@ class Orquesta implements Iterable<Instrumento> {
 }
 ```
 
+</div>
+<div>
 
 ```java
-class Viento extends Instrumento {
-    public Viento(String nombre) {
-      this.nombre = nombre;
-    }
-    public String tocar(String nota) { soplar(nota); return nota; }
-    public void soplar() { System.out.println(nombre+" soplando "+partitura); }
-    public void soplar(String nota) { System.out.println(nombre+" soplando "+nota); }
-}
-
-class Cuerda extends Instrumento {
-    public Cuerda(String nombre) {
-      this.nombre = nombre;
-    }
-    public String tocar(String nota) { rasgar(nota); return nota; }
-    public void rasgar() { System.out.println(nombre+" rasgando "+partitura); }
-    public void rasgar(String nota) { System.out.println(nombre+" rasgando "+nota); }
-}
-
-class Percusion extends Instrumento {
-    public Percusion(String nombre) {
-      this.nombre = nombre;
-    }
-    public String tocar(String nota) { golpear(nota); return nota; }
-    public void golpear() { System.out.println(nombre+ "golpeando "+partitura); }
-    public void golpear(String nota) { System.out.println(nombre+" golpeando "+nota); }
+public class Instrumentos
+             implements Iterable<Instrumento> {
+  /* Es lo mismo si se implementa internamente con
+     una List o con un Map, pues esta clase oculta
+     la implementación concreta de la colección de
+     instrumentos */
 }
 ```
 
-
 ```java
-public class Instrumentos implements Iterable<Instrumento> {
-  private List instrumentos;
-  public Instrumentos(int numero) {
-    instrumentos = new ArrayList<Instrumento>(numero);
-  }
-  public Iterator<Instrumento> iterator() {
-      return instrumentos.iterator();
-  }
-  public boolean addInstrument(Instrumento i) {
-    return instrumentos.add(i);
-  }
-  public boolean removeInstrument(Instrumento i) {
-    return instrumentos.remove(i);
+import java.util.Iterator;
+import java.util.Map;
+import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.ArrayList;
+import java.util.Arrays;
+
+public class PruebaOrquesta {
+  public void main() {
+    Orquesta orquesta = new Orquesta();
+    orquesta.addInstrumento(new Viento("trompeta"));
+    orquesta.addInstrumento(new Cuerda("violín"));
+    orquesta.addInstrumento(new Percusion("bombo"));
+    for (Instrumento i: orquesta)
+      System.out.println ( orquesta.afinar(i) );
+    orquesta.tocar();
   }
 }
 ```
+
+</div>
+</div>
 
 
 ### Diagrama de clases
 
-![PlantUML diagram](https://kroki.io/plantuml/svg/eNptkbEOwjAMRHd_hWek9AtQVYmJiU7saWpBpTYBOxED9N9JKS2NyHh37yzHqcRr9mHowfRaBOuoOh9Y4xMQxTgmGAF0I5618ThTRxtlGMh69-GsG5oIIt6W-lTaUvuXat3DKjx3k85nh0Dc6nxWE5sgnbPpXMWq_C0NcOJ7oPimOdiQkvQEd6pNAYCaAzV6nVBwUeKi8mlS9-5C_ko8HeR7zKSy2n9GsuaYm5QQGTO2KrJt_Mc3f-SkjQ)
+![PlantUML diagram](https://kroki.io/plantuml/svg/eNptkbEOwjAMRPd8hWek9AsQqsTERCf2tLGgUpuA7YgB-u-klNIGMp7f3Sl2ShZDEvpONZ1hhiqqVgIZeCgAbjyhGpQyNQuZRmByHVyUoUcn_u1zvq-jEeA6x8fQ2rV9auvvTsOpHXWe7QOSNXlWITWBW-_SXk16tzxaqSPdAsadJrBy8ooVtkhYUsmw0Vb_8IoC1mYpoFgwqzxN4uLPKBek8VafOyeR7_hvkGww5JoSR2YYUyU6G7_4BR8Vrds)
 
 <details>
 <summary>PlantUML source</summary>
@@ -2502,6 +2546,8 @@ Instrumento <|-down- Percusion
 Instrumento -r-> Partitura
 
 Orquesta -r-> Instrumentos
+
+Orquesta .d.> Instrumento
 
 Instrumentos *-d-> Instrumento
 
@@ -2529,15 +2575,15 @@ together{
 
 ```java
 public class PruebaOrquesta {
-    public static void main(String[] args) {
-      Orquesta orquesta = new Orquesta();
-      orquesta.addInstrumento(new Viento("trompeta"));
-      orquesta.addInstrumento(new Cuerda("guitarra"));
-      orquesta.addInstrumento(new Percusion("tambor"));
-      for (Instrumento i: orquesta)
-          System.out.println ( orquesta.afinar(i) );
-      orquesta.tocar();
-    }
+  public void main() {
+    Orquesta orquesta = new Orquesta();
+    orquesta.addInstrumento(new Viento("trompeta"));
+    orquesta.addInstrumento(new Cuerda("violín"));
+    orquesta.addInstrumento(new Percusion("bombo"));
+    for (Instrumento i: orquesta)
+        System.out.println ( orquesta.afinar(i) );
+    orquesta.tocar();
+  }
 }
 ```
 
@@ -2548,7 +2594,7 @@ Si quisiéramos probar la orquesta con otros instrumentos, tendríamos que modif
 
 #### Diagrama de clases - Dependencias
 
-![PlantUML diagram](https://kroki.io/plantuml/svg/eNp9kjEOwjAMRXefwhIbUjgBQpWYmOjEnjZWqUQTcBwxAHcnJVCICIzf_30rtlN50SxhOEB70N5jHVUvgTVeANG3jgluALrxwroVTNTGRhkGsuIenHVDE0HE4ys-hj6p5VUZd7YKd_2oy946EBtd9mriNvje2byvYrV6Pxpgy6dAcaZkfJA-y3mcK5MDADUHavTUYcGLFb5U2f0f77u9RChNjDMm85NJk_9npg0kDMR1JHvi8QDP42XJqfxVyNZyK3XKiEIxpiqyJv6bO870y7E)
+![PlantUML diagram](https://kroki.io/plantuml/svg/eNp9ksEOwiAQRO98xSbeTPALjGniyZM9eadlU5tY0GWJB-2_S0Xbouhxd95MYKBwrIh9dxL1STkHZZha9qTgJgBcbQlFL4SqHJOqGSK1M2H0HRq2T87YrgogwPltH0xzan2X2l6NhEM7zHlt65G0ymslUu1da02aK0lupkMLsaeLx3CnKMxIN9NWepVoSaSDpdTyQy_JY6WmAAoB7ymv_re3zZEDFMuABaH-ycRS_jNjORETbBvkI9LwNq93TZzj-muRNNbnkhIiswyuAo0OX-oBgIHU_w)
 
 <details>
 <summary>PlantUML source</summary>
@@ -2571,6 +2617,8 @@ Instrumento <|-down- Percusion
 Instrumento -r-> Partitura
 
 Orquesta -r-> Instrumentos
+
+Orquesta .d.> Instrumento
 
 Instrumentos *-d-> Instrumento
 
@@ -2647,8 +2695,7 @@ Dependencia `Orquesta` $\dashrightarrow$ `Instrumento`:
 
 
 ¿Quién le añade los instrumentos a la orquesta?
-¿Quién le pone el cascabel (partitura) al gato (instrumento)?
-¿A qué gato (orquesta o instumento)?
+¿Quién asigna la partitura? ¿A la orquesta o al instrumento?
 
 
 ## Framework DI
@@ -2666,12 +2713,14 @@ El framework DI inyecta dependencias de forma universal, no de modo particular a
 
 ### Inyección con Spring Framework
 
-A través de un fichero de configuración `orquesta.xml` le indicamos los valores inyectables:
+En un fichero de configuración `orquesta.xml` le indicamos los valores inyectables:
+
+<div class="cols">
+<div>
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
-  "http://www.springframework.org/dtd/spring-beans.dtd">
+<!DOCTYPE beans PUBLIC "..." ...>
 <beans>
   <bean id="trompeta"
     class="Viento"/>
@@ -2683,6 +2732,8 @@ A través de un fichero de configuración `orquesta.xml` le indicamos los valore
     class="Cuerda"/>
 ```
 
+</div>
+<div>
 
 ```xml
   <bean id="cuarteto"
@@ -2702,6 +2753,9 @@ A través de un fichero de configuración `orquesta.xml` le indicamos los valore
   </bean>
 </beans>
 ```
+
+</div>
+</div>
 
 
 La inyección de la dependencia concreta la hace el contenedor (_spring_ en este ejemplo):
@@ -2757,33 +2811,10 @@ Un _contenedor_ de dependencias en el framework debe responsabilizarse de crear 
 
 ## Anotaciones
 
-
-### Anotaciones @ en Java
-
-JSR 330 es un estándar de Java para describir las dependencias de una clase con `@Inject` y otras anotaciones. Hay diversas implementaciones de [JSR 330](http://javax-inject.github.io/javax-inject/).
-
-```java hl_lines="2 4 5"
-public class MyPart {
-  @Inject private Logger logger;
-  // inject class for database access
-  @Inject private DatabaseAccessClass dao;
-  @Inject
-  public void createControls(Composite parent) {
-    logger.info("UI will start to build");
-    Label label = new Label(parent, SWT.NONE);
-    label.setText("Eclipse 4");
-    Text text = new Text(parent, SWT.NONE);
-    text.setText(dao.getNumber());
-  }
-}
-```
-
-La clase `MyPart` sigue usando `new` para ciertos elementos de la interfaz. Esto significa que no pensamos reemplazarlos ni siquiera para hacer pruebas.
+Otra manera de inyectar dependencias
 
 
-### Otra manera de inyectar dependencias
-
-jUnit 4 usa anotaciones para programar casos de prueba:
+### Anotaciones @ de Java en jUnit 4
 
 ```java
 import org.junit.*;
@@ -2837,11 +2868,19 @@ Resolvemos mediante inyección de dependencias...
 
 `BankAcccount.java`:
 
+<div class="cols">
+<div>
+
 ```java
 import java.util.*;
 import java.io.*;
 import java.time.*;
+````
 
+</div>
+<div>
+
+```java
 public final class BankAccount implements Comparable<BankAccount> {
   private final String id;
   private LocalDate creationDate;
@@ -2862,6 +2901,15 @@ public final class BankAccount implements Comparable<BankAccount> {
   }
 ```
 
+</div>
+</div>
+
+
+<div class="cols">
+<div>
+
+</div>
+<div>
 
 ```java
   public void setComparator(Comparator cmp) {
@@ -2890,11 +2938,14 @@ public final class BankAccount implements Comparable<BankAccount> {
 }
 ```
 
+</div>
+</div>
+
 
 `BankAcccountComparatorById.java`:
 
 ```java
-import java.util.*;
+import java.util.Comparator;
 
 class BankAccountComparatorById implements Comparator<BankAccount> {
     public int compare(BankAccount o1, BankAccount o2) {
@@ -2906,7 +2957,7 @@ class BankAccountComparatorById implements Comparator<BankAccount> {
 `BankAcccountComparatorByCreationDate.java`:
 
 ```java
-import java.util.*;
+import java.util.Comparator;
 
 class BankAccountComparatorByCreationDate implements Comparator<BankAccount> {
     public int compare(BankAccount o1, BankAccount o2) {
@@ -2936,6 +2987,7 @@ Ahora podría definirse una anotación del tipo `@comparator(BankAccountComparat
 
 - Java: Ejemplo de cómo [crear una anotación a medida en Java](https://www.baeldung.com/java-custom-annotation)
 - Typescript: las anotaciones se llaman **decorators** y son más sencillas de programar
+- Python: No confundir con los decorators de Python, que son algo diferente
 
 <!--
 
@@ -3077,7 +3129,6 @@ Hacer _refactoring_ es hacer pequeñas transformaciones en el código que mantie
 - Demasiados parámetros en una función
 - Jerarquías de herencia en paralelo
 - Muchas sentencias _case_ en paralelo
-- Hay muchos cambios en una clase que tienden a estar compartimentalizados (afectan solo a una parte)
 - Hay muchos cambios que requieren modificaciones en paralelo a varias clases
 - Etc.
 
@@ -3293,13 +3344,6 @@ public class Autonomo extends Empleado {
 > Capítulo *DRY—The Evils of Duplication*
 
 
-### El peligro del copy&paste
-
-> Copy and paste is a design error
->
-> -- Steve McConnell. **Code Complete: A practical handbook of software construction**, 2nd edition, 2004.
-
-
 ### Principio DRY – *Don't Repeat Yourself!*
 
 - DRY no tiene que ver con el código, sino con el __conocimiento__. No se trata de no repetir código, sino de no repetir la lógica.
@@ -3325,18 +3369,16 @@ Principio AHA: "Avoid Hasty Abstractions" (Evitar abstracciones precipitadas)
 
 ## 1. Duplicación impuesta
 
-La gestión del proyecto así nos lo exige. Algunos ejemplos:
-
 - Representaciones múltiples de la información:
-    - Varias implementaciones de un TAD que necesita guardar elementos de distintos tipos, cuando el lenguaje no permite genericidad
-    - Esquema de BD configurado en la BD y en código fuente a través de un [ORM](http://www.agiledata.org/essays/mappingObjects.html)
+  - Varias implementaciones de un TAD que necesita guardar elementos de distintos tipos, cuando el lenguaje no permite genericidad
+  - Esquema de BD configurado en la BD y en código fuente a través de un [ORM](http://www.agiledata.org/essays/mappingObjects.html)
 - Documentación del código:
-    - Código incrustado en javadocs
+  - Código incrustado en javadocs
 - Casos de prueba:
-    - Pruebas unitarias con jUnit (Cuidado!)
+  - Pruebas unitarias con jUnit (Cuidado!)
 - Características del lenguaje:
-    - C/C++ header files
-    - IDL specs
+  - C/C++ header files
+  - IDL specs
 
 >[!NOTE]
 >Google: La legibilidad es más importante que la eliminación de la duplicación de código
@@ -3350,7 +3392,7 @@ Cuando el lenguaje no tenía capacidad de usar tipos genéricos (hasta el JDK 1.
 
 Para evitarlo, Java usó un _workaround_: todas las clases en Java heredan de `Object`. Así una clase que implementara un TAD contenedor de elementos de otra clase, tan solo tenía que declarar los elementos contenidos de tipo `Object`.
 
-Más tarde (a partir del JDK 1.5) introdujo los tipos genéricos y ya no era necesario usar dicho _workaround_ basado en `Object` para evitar la duplicación
+A partir del JDK 1.5, se introdujeron los tipos genéricos y ya no era necesario usar dicho _workaround_, que se mantuvo por compatibilidad con versiones anteriores.
 
 
 ### Técnicas de solución
@@ -3432,43 +3474,46 @@ Realmente `length` ya está definido con `start`y `end`.
 
 ¿Es conveniente aplicar siempre DRY?
 
->[!NOTE]
->En tiempo de IA, el coste de la duplicación de código es principalmente el mantenimiento (esfuerzo humano). La IA puede ayudar con esto. Pero el coste de elegir una abstracción incorrecta no disminuye. La IA todavía tiene dificultades con los sistemas sobreacoplados.
 
-
-- ¿DRY es tan importante en tiempos de la IA?
-  - Si se usa IA, ¿cuál es el coste de mantener código duplicado vs el coste de mantener sistemas muy acoplados?
-- Otras veces se puede optar por violar DRY por razones de rendimiento...
+- A veces se puede optar por violar DRY por razones de rendimiento...
   - [_Memoization_](https://en.wikipedia.org/wiki/Memoization): cachear los resultados de cómputos costosos
+  - La técnica de memoization es menos problemática si queda dentro de los límites de la clase/módulo.
+  - Otras razones de rendimiento: las cachés y los optimizadores de código también hacen su labor
 
 
 ### Ejemplo: aplicando memoization – versión 2
 
 ```java
-  public class Line {
-    private boolean changed;
-    private double length;
-    private Point start;
-    private Point end;
+public class Line {
+  private boolean changed;
+  private double length;
+  private Point start;
+  private Point end;
 
-    public void setStart(Point p) { start = p; changed = true; }
-    public void setEnd(Point p)   { end   = p; changed = true; }
-    public Point getStart() { return start; }
-    public Point getEnd() { return end; }
-    public double getLength() {
-       if (changed) {
-          length = start.distanceTo(end);
-          changed = false;
-       }
-       return length;
+  public void setStart(Point p) { start = p; changed = true; }
+  public void setEnd(Point p)   { end   = p; changed = true; }
+  public Point getStart() { return start; }
+  public Point getEnd() { return end; }
+  public double getLength() {
+    if (changed) {
+      length = start.distanceTo(end);
+      changed = false;
     }
+    return length;
   }
+}
 ```
 
 
-La técnica de memoization es menos problemática si queda dentro de los límites de la clase/módulo.
+¿Es tan importante DRY en tiempos de la IA?
 
-Otras veces no merece la pena violar DRY por rendimiento: ¡las cachés y los optimizadores de código también hacen su labor!
+>[!NOTE]
+>En tiempo de IA, el coste de la duplicación de código es principalmente el mantenimiento (esfuerzo humano). La IA puede ayudar con esto. Pero el coste de elegir una abstracción incorrecta no disminuye. La IA todavía tiene dificultades con los sistemas sobreacoplados.
+
+
+- Si se usa IA, ¿cuál es el coste de mantener código duplicado vs el coste de mantener sistemas muy acoplados?
+  - El coste de la duplicación de código es principalmente el mantenimiento (esfuerzo humano). La IA puede ayudar con esto.
+  - Pero el coste de elegir una abstracción incorrecta no disminuye. La IA todavía tiene dificultades con los sistemas sobreacoplados.
 
 
 ### Principio de acceso uniforme
@@ -3477,8 +3522,7 @@ Otras veces no merece la pena violar DRY por rendimiento: ¡las cachés y los op
 >
 > – B. Meyer. **Object-Oriented Software Construction.** Prentice-Hall, 2nd edition, 1997.
 
-
-Conviene aplicar el principio de acceso uniforme para que sea más fácil añadir mejoras de rendimiento (v.g. caching)
+Conviene aplicar el principio de acceso uniforme para que sea más fácil añadir mejoras de rendimiento (por ejemplo, caching)
 
 
 #### Ejemplo: acceso uniforme en C# – versión 3
@@ -3519,7 +3563,7 @@ class Complejo(real: Double, imaginaria: Double) {
 }
 
 object NumerosComplejos {
-  def main() : Unit = {
+  def main(): Unit = {
     val c = new Complejo(1.2, 3.4)
     println("Número complejo: " + c.toString())
     println("Parte imaginaria: " + c.im())
@@ -3539,7 +3583,7 @@ class Complejo(real: Double, imaginaria: Double) {
 }
 
 object NumerosComplejos {
-  def main() : Unit = {
+  def main(): Unit = {
     val c = new Complejo(1.2, 3.4)
     println("Número complejo: " + c)
     println("Parte imaginaria: " + c.im)
@@ -3550,16 +3594,22 @@ object NumerosComplejos {
 
 ## 3. Duplicación por impaciencia
 
-- Los peligros del *copy&paste*
-- "Vísteme despacio que tengo prisa" (_shortcuts make for long delays_). Ejemplos:
-    - Meter el `main` de Java en cualquier clase
-    - Fiasco del año 2000
+### El peligro del copy&paste
+
+> Copy and paste is a design error
+>
+> -- Steve McConnell. **Code Complete: A practical handbook of software construction**, 2nd edition, 2004.
+
+### Las prisas y los ahorros
+
+"Vísteme despacio que tengo prisa" (_shortcuts make for long delays_).
+Ejemplo: Fiasco del año 2000
 
 
 ## 4. Duplicación por simultaneidad
 
 - No resoluble a nivel de técnicas de construcción
-- Hace falta metodología, gestión de equipos + herramientas de comunicación
+- Hace falta metodologías de integración, gestión de equipos y herramientas de comunicación
   - CI/CD (_Continuous Integration_ / _Continuous Delivery_)
   - Prácticas DevOps
 
@@ -3575,7 +3625,7 @@ Según Fowler:
    - dividir un método
    - renombrar una variable
 
-Yo añado...
+Añadimos...
 
 - Reflejar cada cambio en un _commit_ separado
 <!-- Source: ortogonalidad.md -->
