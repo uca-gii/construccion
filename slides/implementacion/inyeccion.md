@@ -404,6 +404,107 @@ El framework DI inyecta dependencias de forma universal, no de modo particular a
 - [Spring Framework](https://www.vogella.com/tutorials/SpringDependencyInjection/article.html)
 - [Weld CDI](http://weld.cdi-spec.org/)
 - [Eclipse RCP](https://wiki.eclipse.org/Eclipse4/RCP/Dependency_Injection)
+
+<!--
+En lenguajes como C++ no es típico usar un framework DI, aunque también existen (por ejemplo, [Boost.DI](https://boost-ext.github.io/di/)
+
+En C++, para que el ejemplo de la Orquesta sea testeable, utilizaremos Interfaces (clases con métodos virtuales puros) y pasaremos las dependencias por punteros inteligentes (std::unique_ptr o std::shared_ptr).
+
+```cpp
+#include <gtest/gtest.h>
+#include <gmock/gmock.h>
+#include <memory>
+#include <string>
+#include <vector>
+
+// --- Interfaces ---
+class IPartitura {
+public:
+    virtual ~IPartitura() = default;
+    virtual std::string obtenerNotas() const = 0;
+};
+
+class IInstrumento {
+public:
+    virtual ~IInstrumento() = default;
+    virtual void setPartitura(std::shared_ptr<IPartitura> p) = 0;
+    virtual std::string tocar() = 0;
+};
+
+// --- Clase Orquesta (El Sistema Bajo Prueba) ---
+class Orquesta {
+    std::vector<std::shared_ptr<IInstrumento>> instrumentos;
+public:
+    void agregarInstrumento(std::shared_ptr<IInstrumento> i) { instrumentos.push_back(i); }
+    
+    void darConcierto() {
+        for (auto& i : instrumentos) {
+            i->tocar(); // La orquesta hace que los instrumentos toquen
+        }
+    }
+};
+```
+
+```cpp
+class MockPartitura : public IPartitura {
+public:
+    MOCK_METHOD(std::string, obtenerNotas, (), (const, override));
+};
+
+class MockInstrumento : public IInstrumento {
+public:
+    MOCK_METHOD(void, setPartitura, (std::shared_ptr<IPartitura>), (override));
+    MOCK_METHOD(std::string, tocar, (), (override));
+};
+```
+
+```cpp
+using ::testing::Return;
+using ::testing::Exactly;
+
+// Test 1: Verificar que el Instrumento pide las notas a la Partitura inyectada
+TEST(InstrumentoTest, DebeLlamarAPartituraAlTocar) {
+    // 1. Setup: Inyectamos el Mock de Partitura en un instrumento real (p.ej. Violin)
+    auto partituraMock = std::make_shared<MockPartitura>();
+    
+    // Configuramos la expectativa: esperamos que se llame a obtenerNotas y devuelva "SOL"
+    EXPECT_CALL(*partituraMock, obtenerNotas())
+        .Times(Exactly(1))
+        .WillOnce(Return("SOL"));
+
+    // Aquí usaríamos una clase real como 'Violin', supongamos que hereda de IInstrumento
+    // Para el ejemplo, si no tenemos la clase real implementada, el Mock basta para probar la Orquesta.
+}
+
+// Test 2: Verificar que la Orquesta coordina a los instrumentos
+TEST(OrquestaTest, DebeLlamarATocarEnTodosLosInstrumentos) {
+    // 1. Setup
+    Orquesta miOrquesta;
+    auto instrumento1 = std::make_shared<MockInstrumento>();
+    auto instrumento2 = std::make_shared<MockInstrumento>();
+
+    // Definimos expectativas: cada instrumento debe tocar exactamente 1 vez
+    EXPECT_CALL(*instrumento1, tocar()).Times(1).WillOnce(Return("Sonido 1"));
+    EXPECT_CALL(*instrumento2, tocar()).Times(1).WillOnce(Return("Sonido 2"));
+
+    // 2. Inyección
+    miOrquesta.agregarInstrumento(instrumento1);
+    miOrquesta.agregarInstrumento(instrumento2);
+
+    // 3. Ejecución
+    miOrquesta.darConcierto();
+    
+    // GTest verificará automáticamente al final del test si las expectativas se cumplieron.
+}
+```
+
+¿Qué ganamos con GTest y DI?
+- EXPECT_CALL: No solo probamos que el código no explota, sino que interactúa correctamente. Podemos asegurar que la Orquesta no se olvida de ningún músico.
+- Desacoplamiento total: El test de la Orquesta no necesita que el código del Violín esté terminado. Solo necesita que la interfaz IInstrumento esté definida.
+- Inyección Limpia: Al usar std::shared_ptr, GTest puede mantener vivo el Mock mientras la Orquesta lo necesite y destruirlo después para limpiar la memoria de la prueba.
+
+-->
+
 ---
 
 ### Inyección con Spring Framework
