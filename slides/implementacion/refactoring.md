@@ -351,7 +351,7 @@ public class Autonomo extends Empleado {
 </div>
 
 > __Lectura recomendada__
-> A. Hunt & D. Thomas. <emph>The Pragmatic Programmer.</emph> Addison-Wesley, 1999.
+> A. Hunt & D. Thomas. <emph>The Pragmatic Programmer.</emph> Addison-Wesley, 2019.
 > Capítulo *DRY—The Evils of Duplication*
 
 ---
