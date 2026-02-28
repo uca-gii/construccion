@@ -24,6 +24,14 @@ h2 {
 emph {
   color: #E87B00;
 }
+.cols {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+.cols > div {
+  align-self: start;
+}
 </style>
 
 # ORTOGONALIDAD Y DEPENDENCIAS
@@ -82,7 +90,10 @@ De repente estás haciendo malabares con un sistema increíblemente complejo, do
 
 ---
 
-## Niveles de aplicación de la ortogonalizad
+## Aplicación de la ortogonalizad
+
+<div class="cols">
+<div>
 
 La ortogonalidad es aplicable a:
 
@@ -92,7 +103,13 @@ La ortogonalidad es aplicable a:
 - bibliotecas
 - la documentación
 
+</div>
+<div>
+
 A nivel de _diseño_, los patrones de diseño y las arquitecturas como MVC facilitan la construcción de componentes ortogonales.
+
+</div>
+</div>
 
 ### Lectura recomendada
 
@@ -142,6 +159,9 @@ Al pedir un servicio a un objeto, el servicio debe ser realizado de parte nuestr
 
 ### Ley de Demeter para funciones
 
+<div class="cols">
+<div>
+
 Los métodos de un objeto solo deben hacer llamadas a métodos...
 
 1. **propios**
@@ -149,7 +169,8 @@ Los métodos de un objeto solo deben hacer llamadas a métodos...
 3. de objetos **creados** por ellos mismos
 4. de objetos **declarados** en el mismo método
 
----
+</div>
+<div>
 
 ```java
 class Demeter {
@@ -167,18 +188,25 @@ class Demeter {
 }
 ```
 
+</div>
+</div>
+
 ---
 
 #### Excepción: Interfaces _fluent_
 
-Hay una excepción notable a la prohibición de encadenar llamadas a funciones de la ley de Demeter. Esta regla no aplica si es muy poco probable que haya cambios en las cosas que se encadenan. En la práctica, cualquier parte de tu aplicación debe considerarse como algo que es probable que cambie; cualquier elemento de una biblioteca de un tercero debe considerarse volátil, en particular si quienes mantienen dicha biblioteca suelen cambiar su API de una versión a otra.
+Hay una excepción notable a la prohibición de encadenar llamadas a funciones de la ley de Demeter. Esta regla no aplica si es muy poco probable que haya cambios en las cosas que se encadenan.
 
-Las librerías que vienen con el lenguaje suelen ser bastante estables, así que ejemplos de código como el siguiente son aceptables como excepción a esta interpretación de la ley de Demeter:
+En la práctica, cualquier parte de tu aplicación debe considerarse como algo que es probable que cambie; cualquier elemento de una biblioteca de un tercero debe considerarse volátil, en particular si quienes mantienen dicha biblioteca suelen cambiar su API de una versión a otra.
 
 ---
 
+Ejemplos de código como el siguiente son aceptables como excepción a esta interpretación de la ley de Demeter.
+
+¿Por qué?
+
 ```java
-List<String> myList =
+java.util.List<String> myList =
     Arrays.asList("a1", "a2", "b1", "c2", "c1");
 
 myList
@@ -189,13 +217,19 @@ myList
     .forEach(System.out::println);
 ```
 
+<!--
+Todos los métodos encadenados devuelven objetos del mismo tipo `Stream`
+-->
+
 ---
 
 Los métodos `stream`, `filter`, `map`, `sorted` y `forEach` son parte de las nuevas _interfaces funcionales_ de Java para manejar _streams_, incorporadas a las colecciones (v.g. `List`) desde la versión Java 8.
 
 Este tipo de interfaces como la del API de streams de Java se conoce como [_fluent interfaces_](https://en.wikipedia.org/wiki/Fluent_interface).
 
-> La programación con streams y se tratarán en el bloque sobre **Programación Funcional**
+<!--
+La programación con streams y se tratarán en el bloque sobre Programación Funcional
+-->
 
 ---
 
