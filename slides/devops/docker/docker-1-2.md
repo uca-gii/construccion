@@ -68,7 +68,9 @@ Se puede crear un  _container_ para la aplicación, de modo que se ejecuten igua
 
 ### 4. Un sistema de virtualización
 
-__Virtual machine__: _Include the application, the necessary binaries and libraries, and an entire guest operating system –– all of which can amount to tens of GBs._
+<!--__Virtual machine__: _Include the application, the necessary binaries and libraries, and an entire guest operating system –– all of which can amount to tens of GBs._-->
+
+__Virtual machine__: _Incluye la aplicación, las librerías y archivos necesarios, y un sistema operativo completo, lo que puede llegar a ocupar varios GBs._
 
 ![Virtual machine](img/docker-011.png)
 
@@ -76,7 +78,9 @@ __Virtual machine__: _Include the application, the necessary binaries and librar
 
 ## Virtualización
 
-__Container__: _Include the application and all of its dependencies –– but share the kernel with other containers, running as isolated processes in user space on the host operating system. Docker containers are not tied to any specific infrastructure: they run on any computer, on any infrastructure, and in any cloud._
+<!--__Container__: _Include the application and all of its dependencies –– but share the kernel with other containers, running as isolated processes in user space on the host operating system. Docker containers are not tied to any specific infrastructure: they run on any computer, on any infrastructure, and in any cloud._-->
+
+__Contenedor__: _Incluye la aplicación y todas sus dependencias, pero comparte el kernel con otros contenedores, ejecutándose como procesos aislados en el espacio de usuario del sistema operativo anfitrión. Los contenedores de Docker no están atados a ninguna infraestructura específica: se ejecutan en cualquier ordenador, en cualquier infraestructura y en cualquier nube._
 
 ![Container](img/docker-012.png)
 
@@ -98,7 +102,7 @@ __Container__: _Include the application and all of its dependencies –– but s
 
 - Los contenedores crean un __entorno virtual__ para las aplicaciones
 - Ocupan  menos __espacio__  que una máquina virtual al no tener que almacenar el sistema completo.
-- El tiempo de __arranque__ de un container  es inferior a 1 segundo.
+- El tiempo de __arranque__ de un container es muchísimo menor que el de una VM.
 - Para __integrar__ máquinas virtuales en un host, debemos establecer la red. En los contenedores de Docker la integración es directa. 
 
 ---
