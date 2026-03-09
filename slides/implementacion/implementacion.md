@@ -1,4 +1,4 @@
-# IMPLEMENTACIÓN
+# IMPLEMENTACIÓN DE SISTEMAS SOFTWARE
 
 ## Índice
 
@@ -1349,6 +1349,8 @@ class Cuerda extends Instrumento {
 <div>
 
 ```java
+import java.util.ArrayList;
+
 public class Orquesta {
   ArrayList<Instrumento> instrumentos;
   public Orquesta() {
@@ -1396,6 +1398,8 @@ Seguir criticando la implementación...
 <div>
 
 ```java
+import java.util.ArrayList;
+
 class Orquesta {
   ArrayList<Instrumento> instrumentos;
   public Orquesta() {
@@ -1573,6 +1577,8 @@ public class PruebaOrquesta {
 <div>
 
 ```java
+import java.util.List;
+
 class Orquesta {
   protected List<Instrumento> instrumentos;
   public Orquesta() {
@@ -1602,17 +1608,17 @@ class Orquesta {
 
 ```java
 public class PruebaOrquesta {
-    public static void main(String[] args) {
-      Orquesta orquesta = new Orquesta();
-      orquesta.addInstrumento(new Viento());
-      orquesta.addInstrumento(new Cuerda());
-      orquesta.addInstrumento(new Percusion());
-      for (Iterator<Instrumento> i =
-            orquesta.instrumentos.iterator();
-            i.hasNext(); )
-          orquesta.afinar(i.next());
-      orquesta.tocar();
-    }
+  public static void main(String[] args) {
+    Orquesta orquesta = new Orquesta();
+    orquesta.addInstrumento(new Viento());
+    orquesta.addInstrumento(new Cuerda());
+    orquesta.addInstrumento(new Percusion());
+    for (Iterator<Instrumento> i =
+          orquesta.instrumentos.iterator();
+          i.hasNext(); )
+        orquesta.afinar(i.next());
+    orquesta.tocar();
+  }
 }
 ```
 
@@ -1628,7 +1634,7 @@ Seguir criticando la implementación...
 
 #### Cambio propuesto
 
-Usar delegación, interfaces y el ***for each*** (disponible desde el JDK 1.5), que permite iterar sobre una colección que implemente la interfaz `Iterable`
+Usar delegación, interfaces y el nuevo `for` (disponible desde el JDK 1.5), que permite iterar sobre una colección que implemente la interfaz `Iterable`
 
 
 ### Implementación alternativa: Orquesta v0.5
@@ -2711,6 +2717,107 @@ El framework DI inyecta dependencias de forma universal, no de modo particular a
 - [Weld CDI](http://weld.cdi-spec.org/)
 - [Eclipse RCP](https://wiki.eclipse.org/Eclipse4/RCP/Dependency_Injection)
 
+<!--
+En lenguajes como C++ no es típico usar un framework DI, aunque también existen (por ejemplo, [Boost.DI](https://boost-ext.github.io/di/)
+
+En C++, para que el ejemplo de la Orquesta sea testeable, utilizaremos Interfaces (clases con métodos virtuales puros) y pasaremos las dependencias por punteros inteligentes (std::unique_ptr o std::shared_ptr).
+
+```cpp
+#include <gtest/gtest.h>
+#include <gmock/gmock.h>
+#include <memory>
+#include <string>
+#include <vector>
+
+// --- Interfaces ---
+class IPartitura {
+public:
+    virtual ~IPartitura() = default;
+    virtual std::string obtenerNotas() const = 0;
+};
+
+class IInstrumento {
+public:
+    virtual ~IInstrumento() = default;
+    virtual void setPartitura(std::shared_ptr<IPartitura> p) = 0;
+    virtual std::string tocar() = 0;
+};
+
+// --- Clase Orquesta (El Sistema Bajo Prueba) ---
+class Orquesta {
+    std::vector<std::shared_ptr<IInstrumento>> instrumentos;
+public:
+    void agregarInstrumento(std::shared_ptr<IInstrumento> i) { instrumentos.push_back(i); }
+
+    void darConcierto() {
+        for (auto& i : instrumentos) {
+            i->tocar(); // La orquesta hace que los instrumentos toquen
+        }
+    }
+};
+```
+
+```cpp
+class MockPartitura : public IPartitura {
+public:
+    MOCK_METHOD(std::string, obtenerNotas, (), (const, override));
+};
+
+class MockInstrumento : public IInstrumento {
+public:
+    MOCK_METHOD(void, setPartitura, (std::shared_ptr<IPartitura>), (override));
+    MOCK_METHOD(std::string, tocar, (), (override));
+};
+```
+
+```cpp
+using ::testing::Return;
+using ::testing::Exactly;
+
+// Test 1: Verificar que el Instrumento pide las notas a la Partitura inyectada
+TEST(InstrumentoTest, DebeLlamarAPartituraAlTocar) {
+    // 1. Setup: Inyectamos el Mock de Partitura en un instrumento real (p.ej. Violin)
+    auto partituraMock = std::make_shared<MockPartitura>();
+
+    // Configuramos la expectativa: esperamos que se llame a obtenerNotas y devuelva "SOL"
+    EXPECT_CALL(*partituraMock, obtenerNotas())
+        .Times(Exactly(1))
+        .WillOnce(Return("SOL"));
+
+    // Aquí usaríamos una clase real como 'Violin', supongamos que hereda de IInstrumento
+    // Para el ejemplo, si no tenemos la clase real implementada, el Mock basta para probar la Orquesta.
+}
+
+// Test 2: Verificar que la Orquesta coordina a los instrumentos
+TEST(OrquestaTest, DebeLlamarATocarEnTodosLosInstrumentos) {
+    // 1. Setup
+    Orquesta miOrquesta;
+    auto instrumento1 = std::make_shared<MockInstrumento>();
+    auto instrumento2 = std::make_shared<MockInstrumento>();
+
+    // Definimos expectativas: cada instrumento debe tocar exactamente 1 vez
+    EXPECT_CALL(*instrumento1, tocar()).Times(1).WillOnce(Return("Sonido 1"));
+    EXPECT_CALL(*instrumento2, tocar()).Times(1).WillOnce(Return("Sonido 2"));
+
+    // 2. Inyección
+    miOrquesta.agregarInstrumento(instrumento1);
+    miOrquesta.agregarInstrumento(instrumento2);
+
+    // 3. Ejecución
+    miOrquesta.darConcierto();
+
+    // GTest verificará automáticamente al final del test si las expectativas se cumplieron.
+}
+```
+
+¿Qué ganamos con GTest y DI?
+- EXPECT_CALL: No solo probamos que el código no explota, sino que interactúa correctamente. Podemos asegurar que la Orquesta no se olvida de ningún músico.
+- Desacoplamiento total: El test de la Orquesta no necesita que el código del Violín esté terminado. Solo necesita que la interfaz IInstrumento esté definida.
+- Inyección Limpia: Al usar std::shared_ptr, GTest puede mantener vivo el Mock mientras la Orquesta lo necesite y destruirlo después para limpiar la memoria de la prueba.
+
+-->
+
+
 ### Inyección con Spring Framework
 
 En un fichero de configuración `orquesta.xml` le indicamos los valores inyectables:
@@ -3340,7 +3447,7 @@ public class Autonomo extends Empleado {
 </div>
 
 > __Lectura recomendada__
-> A. Hunt & D. Thomas. **The Pragmatic Programmer.** Addison-Wesley, 1999.
+> A. Hunt & D. Thomas. **The Pragmatic Programmer.** Addison-Wesley, 2019.
 > Capítulo *DRY—The Evils of Duplication*
 
 
@@ -3642,20 +3749,21 @@ Dos componentes A y B son ortogonales ($A \perp B$) si los cambios en uno no afe
 - En un helicóptero, los mandos de control no suelen ser ortogonales
 
 
-![Mandos de un helicóptero](./img/helicoptero.png)
-
-
-> Helicopters have four basic controls. The cyclic is the stick you hold in your right hand. Move it, and the helicopter moves in the corresponding direction. Your left hand holds the collective pitch lever. Pull up on this and you increase the pitch on all the blades, generating lift. At the end of the pitch lever is the throttle. Finally you have two foot pedals, which vary the amount of tail rotor thrust and so help turn the helicopter.
->
-> However, when you try it, you discover that life isn’t that simple. The helicopter’s nose drops, and you start to spiral down to the left. Suddenly you discover that you’re flying a system where every control input has secondary effects. Lower the left-hand lever and you need to add compensating backward movement to the right-hand stick and push the right pedal. But then each of these changes affects all of the other controls again. Suddenly you’re juggling an unbelievably complex system, where every change impacts all the other inputs. Your workload is phenomenal: your hands and feet are constantly moving, trying to balance all the interacting forces.
-> -- (Hunt & Thomas, 2020)
-
+![Cómo se pilota un helicóptero](./img/helicoptero-infografia.png)
 
 El **cíclico** (mano derecha) hace que el helicóptero se mueve en la dirección correspondiente. El **colectivo** (mano izquierda) aumenta o disminuye el _pitch_ en todas las palas, generando sustentación. Al final del colectivo (_pitch_) está el **acelerador**. Finalmente, dos **pedales** varían la cantidad de empuje del rotor de cola y ayudan a girar el helicóptero.
 
 Sin embargo, cuando lo intentas, descubres que la vida no es tan simple. La nariz del helicóptero cae, y comienzas una espiral hacia abajo hacia la izquierda. De repente descubres que estás volando un sistema donde cada entrada de control tiene efectos secundarios. Baja la palanca de la mano izquierda y necesitas añadir un movimiento compensatorio hacia atrás al mando de la mano derecha y empujar el pedal derecho. Pero entonces cada uno de estos cambios afecta todos los otros controles de nuevo.
 
 De repente estás haciendo malabares con un sistema increíblemente complejo, donde cada cambio impacta todas las otras entradas.
+
+
+![Mandos de un helicóptero](./img/helicoptero.png)
+
+> Helicopters have four basic controls. The cyclic is the stick you hold in your right hand. Move it, and the helicopter moves in the corresponding direction. Your left hand holds the collective pitch lever. Pull up on this and you increase the pitch on all the blades, generating lift. At the end of the pitch lever is the throttle. Finally you have two foot pedals, which vary the amount of tail rotor thrust and so help turn the helicopter.
+>
+> However, when you try it, you discover that life isn’t that simple. The helicopter’s nose drops, and you start to spiral down to the left. Suddenly you discover that you’re flying a system where every control input has secondary effects. Lower the left-hand lever and you need to add compensating backward movement to the right-hand stick and push the right pedal. But then each of these changes affects all of the other controls again. Suddenly you’re juggling an unbelievably complex system, where every change impacts all the other inputs. Your workload is phenomenal: your hands and feet are constantly moving, trying to balance all the interacting forces.
+> -- (Hunt & Thomas, 2020)
 
 
 ## Beneficios de la ortogonalidad
@@ -3676,7 +3784,10 @@ De repente estás haciendo malabares con un sistema increíblemente complejo, do
 - Más fácil de **probar**, pues será más fácil construir pruebas individuales de cada uno de sus componentes (por ejemplo, las técnicas de _[mocking](https://en.wikipedia.org/wiki/Mock_object)_ son más sencillas)
 
 
-## Niveles de aplicación de la ortogonalizad
+## Aplicación de la ortogonalizad
+
+<div class="cols">
+<div>
 
 La ortogonalidad es aplicable a:
 
@@ -3686,7 +3797,13 @@ La ortogonalidad es aplicable a:
 - bibliotecas
 - la documentación
 
+</div>
+<div>
+
 A nivel de _diseño_, los patrones de diseño y las arquitecturas como MVC facilitan la construcción de componentes ortogonales.
+
+</div>
+</div>
 
 ### Lectura recomendada
 
@@ -3732,6 +3849,9 @@ Al pedir un servicio a un objeto, el servicio debe ser realizado de parte nuestr
 
 ### Ley de Demeter para funciones
 
+<div class="cols">
+<div>
+
 Los métodos de un objeto solo deben hacer llamadas a métodos...
 
 1. **propios**
@@ -3739,6 +3859,8 @@ Los métodos de un objeto solo deben hacer llamadas a métodos...
 3. de objetos **creados** por ellos mismos
 4. de objetos **declarados** en el mismo método
 
+</div>
+<div>
 
 ```java
 class Demeter {
@@ -3756,16 +3878,23 @@ class Demeter {
 }
 ```
 
+</div>
+</div>
+
 
 #### Excepción: Interfaces _fluent_
 
-Hay una excepción notable a la prohibición de encadenar llamadas a funciones de la ley de Demeter. Esta regla no aplica si es muy poco probable que haya cambios en las cosas que se encadenan. En la práctica, cualquier parte de tu aplicación debe considerarse como algo que es probable que cambie; cualquier elemento de una biblioteca de un tercero debe considerarse volátil, en particular si quienes mantienen dicha biblioteca suelen cambiar su API de una versión a otra.
+Hay una excepción notable a la prohibición de encadenar llamadas a funciones de la ley de Demeter. Esta regla no aplica si es muy poco probable que haya cambios en las cosas que se encadenan.
 
-Las librerías que vienen con el lenguaje suelen ser bastante estables, así que ejemplos de código como el siguiente son aceptables como excepción a esta interpretación de la ley de Demeter:
+En la práctica, cualquier parte de tu aplicación debe considerarse como algo que es probable que cambie; cualquier elemento de una biblioteca de un tercero debe considerarse volátil, en particular si quienes mantienen dicha biblioteca suelen cambiar su API de una versión a otra.
 
+
+Ejemplos de código como el siguiente son aceptables como excepción a esta interpretación de la ley de Demeter.
+
+¿Por qué?
 
 ```java
-List<String> myList =
+java.util.List<String> myList =
     Arrays.asList("a1", "a2", "b1", "c2", "c1");
 
 myList
@@ -3776,12 +3905,16 @@ myList
     .forEach(System.out::println);
 ```
 
+>[!NOTE]
+>Todos los métodos encadenados devuelven objetos del mismo tipo `Stream`
+
 
 Los métodos `stream`, `filter`, `map`, `sorted` y `forEach` son parte de las nuevas _interfaces funcionales_ de Java para manejar _streams_, incorporadas a las colecciones (v.g. `List`) desde la versión Java 8.
 
 Este tipo de interfaces como la del API de streams de Java se conoce como [_fluent interfaces_](https://en.wikipedia.org/wiki/Fluent_interface).
 
-> La programación con streams y se tratarán en el bloque sobre **Programación Funcional**
+>[!NOTE]
+>La programación con streams y se tratarán en el bloque sobre Programación Funcional
 
 
 #### Críticas a la ley de Demeter
@@ -3839,8 +3972,11 @@ Otro método para implementar la ortogonalidad es usar [Aspectos](aspectos.md) y
 
 ### Ejemplo: editor de figuras
 
+<div class="cols">
+<div>
+
 ```java
-class Line implements FigureElement{
+class Line implements FigureElement {
   private Point p1, p2;
 
   Point getP1() { return p1; }
@@ -3861,46 +3997,19 @@ class Point implements FigureElement {
 }
 ```
 
+</div>
+<div>
 
 Hay que actualizar la pantalla tras mover los objetos:
 
 ![figuras en pantalla](./img/aspectj-1.png)
 
-Hay una colección de figuras que cambian periódicamente. Se deben monitorizar los cambios para refrescar el display.
+Hay una colección de figuras que cambian periódicamente.
 
+Se deben monitorizar los cambios para refrescar el display.
 
-```java
-class Line {
-  private Point p1, p2;
-
-  Point getP1() { return p1; }
-  Point getP2() { return p2; }
-
-  void setP1(Point p1) {
-    this.p1 = p1;
-  }
-  void setP2(Point p2) {
-    this.p2 = p2;
-  }
-}
-```
-
-
-```java
-class Point {
-  private int x = 0, y= 0;
-
-  int getX() { return x; }
-  int getY() { return y; }
-
-  void setX(int x) {
-    this.x = x;
-  }
-  void setY(int y) {
-    this.y = y;
-  }
-}
-```
+</div>
+</div>
 
 
 Implementamos una clase que monitoriza los cambios en las figuras:
@@ -3929,61 +4038,24 @@ class MoveTracking {
 - `Line` $\dashrightarrow$ `MoveTracking`
 - `Point` $\dashrightarrow$ `MoveTracking`
 
-### Implementación sin aspectos
+### Implementaciones sin aspectos
 
-Primero vemos una implementación con las dependencias anteriores, sin aspectos...
+Primero vemos algunas implementaciones con las dependencias anteriores, intentando resolver la no ortogonalizad, pero sin usar aspectos.
+
+- Versión 1: solo detecta el cambio de los extremos de una línea
+- Versión 2: también detecta el cambio de coordenadas de un punto
+- Versión 3: monitoriza las figuras que cambian, evitando el refresco de todas
 
 
 #### Versión 1 sin aspectos
 
-Solo detecta el cambio de los extremos de una línea:
+Solo detecta el cambio de los extremos de una línea: `Line` $\dashrightarrow$ `MoveTracking`
 
-`Line` $\dashrightarrow$ `MoveTracking`
+<div class="cols">
+<div>
 
 ```java hl_lines="9 13 31"
-class Line {
-  private Point p1, p2;
-
-  Point getP1() { return _p1; }
-  Point getP2() { return _p2; }
-
-  void setP1(Point p1) {
-    this.p1 = p1;
-    MoveTracking.setFlag(); // añadido
-  }
-  void setP2(Point p2) {
-    this.p2 = p2;
-    MoveTracking.setFlag(); // añadido
-  }
-}
-```
-
-
-```java
-class Point {
-  private int x = 0, y= 0;
-
-  int getX() { return x; }
-  int getY() { return y; }
-
-  void setX(int x) {
-    this.x = x;
-  }
-  void setY(int y) {
-    this.y = y;
-  }
-}
-```
-
-
-#### Versión 2 sin aspectos
-
-También detecta el cambio de coordenadas de un punto.
-
-`Line` $\dashrightarrow$ `MoveTracking` y `Point` $\dashrightarrow$ `MoveTracking`
-
-```java hl_lines="25 29"
-class Line {
+class Line implements FigureElement {
   private Point p1, p2;
 
   Point getP1() { return p1; }
@@ -4000,25 +4072,41 @@ class Line {
 }
 ```
 
+</div>
+<div>
 
 ```java
-class Point {
-  private int x = 0, y = 0;
+class Point implements FigureElement {
+  private int x = 0, y= 0;
 
   int getX() { return x; }
   int getY() { return y; }
 
   void setX(int x) {
     this.x = x;
-    MoveTracking.setFlag(); //añadido
   }
   void setY(int y) {
     this.y = y;
-    MoveTracking.setFlag(); //añadido
   }
 }
 ```
 
+</div>
+</div>
+
+
+#### Versión 2 sin aspectos
+
+También detecta el cambio de coordenadas de un punto
+
+<div class="cols">
+<div>
+
+- `Line` $\dashrightarrow$ `MoveTracking`
+- `Point` $\dashrightarrow$ `MoveTracking`
+
+</div>
+<div>
 
 ```java
 class MoveTracking {
@@ -4036,22 +4124,15 @@ class MoveTracking {
 }
 ```
 
-
-#### Versión 3 sin aspectos
-
-Las colecciones de figuras son complejas. Las estructuras de objetos son jerárquicas y se producen eventos asíncronos:
-
-![colección de figuras](./img/aspectj-2.png)
-
-La versión 2 hace que un cambio en cualquier elemento provoque un refresco de todas las figuras.
-
-Mejor monitorizar las figuras que cambian...
+</div>
+</div>
 
 
-Decidimos modificar la implementación: cambiar el método `setFlag` por `collectOne`, indicando la figura que se mueve.
+<div class="cols">
+<div>
 
-```java hl_lines="9 13 25 29 34 36 40"
-class Line {
+```java hl_lines="25 29"
+class Line implements FigureElement {
   private Point p1, p2;
 
   Point getP1() { return p1; }
@@ -4059,18 +4140,20 @@ class Line {
 
   void setP1(Point p1) {
     this.p1 = p1;
-    MoveTracking.collectOne(this); // modificado
+    MoveTracking.setFlag();
   }
   void setP2(Point p2) {
     this.p2 = p2;
-    MoveTracking.collectOne(this); // modificado
+    MoveTracking.setFlag();
   }
 }
 ```
 
+</div>
+<div>
 
 ```java
-class Point {
+class Point implements FigureElement {
   private int x = 0, y = 0;
 
   int getX() { return x; }
@@ -4078,19 +4161,41 @@ class Point {
 
   void setX(int x) {
     this.x = x;
-    MoveTracking.collectOne(this); // modificado
+    MoveTracking.setFlag(); //añadido
   }
   void setY(int y) {
     this.y = y;
-    MoveTracking.collectOne(this); // modificado
+    MoveTracking.setFlag(); //añadido
   }
 }
 ```
 
+</div>
+</div>
+
+
+#### Versión 3 sin aspectos
+
+<div class="cols">
+<div>
+
+Las colecciones de figuras son complejas. Las estructuras de objetos son jerárquicas y se producen eventos asíncronos:
+
+![colección de figuras](./img/aspectj-2.png)
+
+Versión 2: un cambio en cualquier elemento provocará un refresco de todas las figuras
+
+</div>
+<div>
+
+Mejor monitorizar las figuras que cambian...
+
+Modificamos la versión 2 para cambiar el método `setFlag` por `collectOne`
 
 ```java
 class MoveTracking {
-  private static Set movees = new HashSet();
+  private static Set movees =
+                       new HashSet();
 
   public static void collectOne(Object o) {
     movees.add(o);
@@ -4103,6 +4208,57 @@ class MoveTracking {
   }
 }
 ```
+
+</div>
+</div>
+
+
+Indicamos la figura que se mueve:
+
+<div class="cols">
+<div>
+
+```java hl_lines="9 13 25 29 34 36 40"
+class Line implements FigureElement {
+  private Point p1, p2;
+
+  Point getP1() { return p1; }
+  Point getP2() { return p2; }
+
+  void setP1(Point p1) {
+    this.p1 = p1;
+    MoveTracking.collectOne(this);
+  }
+  void setP2(Point p2) {
+    this.p2 = p2;
+    MoveTracking.collectOne(this);
+  }
+}
+```
+
+</div>
+<div>
+
+```java
+class Point implements FigureElement {
+  private int x = 0, y = 0;
+
+  int getX() { return x; }
+  int getY() { return y; }
+
+  void setX(int x) {
+    this.x = x;
+    MoveTracking.collectOne(this);
+  }
+  void setY(int y) {
+    this.y = y;
+    MoveTracking.collectOne(this);
+  }
+}
+```
+
+</div>
+</div>
 
 
 La no ortogonalidad de `MoveTracking` con respecto a `Line` y `Point` hace que la solicitud de un cambio de implementación (el seguimiento de los cambios en las figuras para el refresco en pantalla) provoque un cambio en los otros módulos (clases).
@@ -4129,8 +4285,11 @@ La __programación orientada a aspectos__ (_AOP_) es un paradigma de programaci�
 
 En el ejemplo anterior, las clases `Line` y `Point` no se ven afectadas:
 
+<div class="cols">
+<div>
+
 ```java
-class Line {
+class Line implements FigureElement {
   private Point p1, p2;
 
   Point getP1() { return p1; }
@@ -4145,9 +4304,11 @@ class Line {
 }
 ```
 
+</div>
+<div>
 
 ```java
-class Point {
+class Point implements FigureElement {
   private int x = 0, y = 0;
 
   int getX() { return x; }
@@ -4162,7 +4323,10 @@ class Point {
 }
 ```
 
-Vamos a eliminar las dependencias, gracias a la implementación de aspectos...
+</div>
+</div>
+
+Vamos a eliminar las dependencias ($\Delta$ ortogonalidad) implementando aspectos...
 
 
 #### Versión 1 con aspectos
@@ -4179,8 +4343,7 @@ aspect MoveTracking {
   }
 
   pointcut move():
-    call(void Line.setP1(Point)) ||
-    call(void Line.setP2(Point));
+    call(void Line.setP1(Point)) || call(void Line.setP2(Point));
 
   after(): move() {
     flag = true;
@@ -4203,10 +4366,8 @@ aspect MoveTracking {
   }
 
   pointcut move():
-    call(void Line.setP1(Point)) ||
-    call(void Line.setP2(Point)) ||
-    call(void Point.setX(int))   ||
-    call(void Point.setY(int));
+    call(void Line.setP1(Point)) || call(void Line.setP2(Point)) ||
+    call(void Point.setX(int))   || call(void Point.setY(int));
 
   after(): move() {
     flag = true;
@@ -4242,10 +4403,8 @@ aspect MoveTracking {
 
   pointcut move(FigureElement figElt):
     target(figElt) &&
-    (call(void Line.setP1(Point)) ||
-     call(void Line.setP2(Point)) ||
-     call(void Point.setX(int))   ||
-     call(void Point.setY(int)));
+    (call(void Line.setP1(Point)) || call(void Line.setP2(Point)) ||
+     call(void Point.setX(int))   || call(void Point.setY(int)));
 
   after(FigureElement fe): move(fe) {
     movees.add(fe);

@@ -22,7 +22,19 @@ h2 {
   color: darkblue;
   text-align: center;
 }
+emph {
+  color: #E87B00;
+}
+.cols {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+.cols > div {
+  align-self: start;
+}
 </style>
+
 <style scoped>
 p {
   text-align: center;
@@ -49,8 +61,11 @@ p {
 
 ### Ejemplo: editor de figuras
 
+<div class="cols">
+<div>
+
 ```java
-class Line implements FigureElement{
+class Line implements FigureElement {
   private Point p1, p2;
 
   Point getP1() { return p1; }
@@ -71,49 +86,19 @@ class Point implements FigureElement {
 }
 ```
 
----
+</div>
+<div>
 
 Hay que actualizar la pantalla tras mover los objetos:
 
 ![figuras en pantalla](./img/aspectj-1.png)
 
-Hay una colección de figuras que cambian periódicamente. Se deben monitorizar los cambios para refrescar el display.
+Hay una colección de figuras que cambian periódicamente.
 
----
+Se deben monitorizar los cambios para refrescar el display.
 
-```java
-class Line {
-  private Point p1, p2;
-
-  Point getP1() { return p1; }
-  Point getP2() { return p2; }
-
-  void setP1(Point p1) {
-    this.p1 = p1;
-  }
-  void setP2(Point p2) {
-    this.p2 = p2;
-  }
-}
-```
-
----
-
-```java
-class Point {
-  private int x = 0, y= 0;
-
-  int getX() { return x; }
-  int getY() { return y; }
-
-  void setX(int x) {
-    this.x = x;
-  }
-  void setY(int y) {
-    this.y = y;
-  }
-}
-```
+</div>
+</div>
 
 ---
 
@@ -144,64 +129,25 @@ class MoveTracking {
 - `Line` $\dashrightarrow$ `MoveTracking`
 - `Point` $\dashrightarrow$ `MoveTracking`
 
-### Implementación sin aspectos
+### Implementaciones sin aspectos
 
-Primero vemos una implementación con las dependencias anteriores, sin aspectos...
+Primero vemos algunas implementaciones con las dependencias anteriores, intentando resolver la no ortogonalizad, pero sin usar aspectos.
+
+- Versión 1: solo detecta el cambio de los extremos de una línea
+- Versión 2: también detecta el cambio de coordenadas de un punto
+- Versión 3: monitoriza las figuras que cambian, evitando el refresco de todas
 
 ---
 
 #### Versión 1 sin aspectos
 
-Solo detecta el cambio de los extremos de una línea:
+Solo detecta el cambio de los extremos de una línea: `Line` $\dashrightarrow$ `MoveTracking`
 
-`Line` $\dashrightarrow$ `MoveTracking`
+<div class="cols">
+<div>
 
 ```java hl_lines="9 13 31"
-class Line {
-  private Point p1, p2;
-
-  Point getP1() { return _p1; }
-  Point getP2() { return _p2; }
-
-  void setP1(Point p1) {
-    this.p1 = p1;
-    MoveTracking.setFlag(); // añadido
-  }
-  void setP2(Point p2) {
-    this.p2 = p2;
-    MoveTracking.setFlag(); // añadido
-  }
-}
-```
-
----
-
-```java
-class Point {
-  private int x = 0, y= 0;
-
-  int getX() { return x; }
-  int getY() { return y; }
-
-  void setX(int x) {
-    this.x = x;
-  }
-  void setY(int y) {
-    this.y = y;
-  }
-}
-```
-
----
-
-#### Versión 2 sin aspectos
-
-También detecta el cambio de coordenadas de un punto.
-
-`Line` $\dashrightarrow$ `MoveTracking` y `Point` $\dashrightarrow$ `MoveTracking`
-
-```java hl_lines="25 29"
-class Line {
+class Line implements FigureElement {
   private Point p1, p2;
 
   Point getP1() { return p1; }
@@ -218,27 +164,42 @@ class Line {
 }
 ```
 
----
+</div>
+<div>
 
 ```java
-class Point {
-  private int x = 0, y = 0;
+class Point implements FigureElement {
+  private int x = 0, y= 0;
 
   int getX() { return x; }
   int getY() { return y; }
 
   void setX(int x) {
     this.x = x;
-    MoveTracking.setFlag(); //añadido
   }
   void setY(int y) {
     this.y = y;
-    MoveTracking.setFlag(); //añadido
   }
 }
 ```
 
+</div>
+</div>
+
 ---
+
+#### Versión 2 sin aspectos
+
+También detecta el cambio de coordenadas de un punto
+
+<div class="cols">
+<div>
+
+- `Line` $\dashrightarrow$ `MoveTracking`
+- `Point` $\dashrightarrow$ `MoveTracking`
+
+</div>
+<div>
 
 ```java
 class MoveTracking {
@@ -256,24 +217,16 @@ class MoveTracking {
 }
 ```
 
----
-
-#### Versión 3 sin aspectos
-
-Las colecciones de figuras son complejas. Las estructuras de objetos son jerárquicas y se producen eventos asíncronos:
-
-![colección de figuras](./img/aspectj-2.png)
-
-La versión 2 hace que un cambio en cualquier elemento provoque un refresco de todas las figuras.
-
-Mejor monitorizar las figuras que cambian...
+</div>
+</div>
 
 ---
 
-Decidimos modificar la implementación: cambiar el método `setFlag` por `collectOne`, indicando la figura que se mueve.
+<div class="cols">
+<div>
 
-```java hl_lines="9 13 25 29 34 36 40"
-class Line {
+```java hl_lines="25 29"
+class Line implements FigureElement {
   private Point p1, p2;
 
   Point getP1() { return p1; }
@@ -281,19 +234,20 @@ class Line {
 
   void setP1(Point p1) {
     this.p1 = p1;
-    MoveTracking.collectOne(this); // modificado
+    MoveTracking.setFlag();
   }
   void setP2(Point p2) {
     this.p2 = p2;
-    MoveTracking.collectOne(this); // modificado
+    MoveTracking.setFlag();
   }
 }
 ```
 
----
+</div>
+<div>
 
 ```java
-class Point {
+class Point implements FigureElement {
   private int x = 0, y = 0;
 
   int getX() { return x; }
@@ -301,20 +255,42 @@ class Point {
 
   void setX(int x) {
     this.x = x;
-    MoveTracking.collectOne(this); // modificado
+    MoveTracking.setFlag(); //añadido
   }
   void setY(int y) {
     this.y = y;
-    MoveTracking.collectOne(this); // modificado
+    MoveTracking.setFlag(); //añadido
   }
 }
 ```
 
+</div>
+</div>
+
 ---
+
+#### Versión 3 sin aspectos
+
+<div class="cols">
+<div>
+
+Las colecciones de figuras son complejas. Las estructuras de objetos son jerárquicas y se producen eventos asíncronos:
+
+![colección de figuras](./img/aspectj-2.png)
+
+Versión 2: un cambio en cualquier elemento provocará un refresco de todas las figuras
+
+</div>
+<div>
+
+Mejor monitorizar las figuras que cambian...
+
+Modificamos la versión 2 para cambiar el método `setFlag` por `collectOne`
 
 ```java
 class MoveTracking {
-  private static Set movees = new HashSet();
+  private static Set movees =
+                       new HashSet();
 
   public static void collectOne(Object o) {
     movees.add(o);
@@ -327,6 +303,58 @@ class MoveTracking {
   }
 }
 ```
+
+</div>
+</div>
+
+---
+
+Indicamos la figura que se mueve:
+
+<div class="cols">
+<div>
+
+```java hl_lines="9 13 25 29 34 36 40"
+class Line implements FigureElement {
+  private Point p1, p2;
+
+  Point getP1() { return p1; }
+  Point getP2() { return p2; }
+
+  void setP1(Point p1) {
+    this.p1 = p1;
+    MoveTracking.collectOne(this);
+  }
+  void setP2(Point p2) {
+    this.p2 = p2;
+    MoveTracking.collectOne(this);
+  }
+}
+```
+
+</div>
+<div>
+
+```java
+class Point implements FigureElement {
+  private int x = 0, y = 0;
+
+  int getX() { return x; }
+  int getY() { return y; }
+
+  void setX(int x) {
+    this.x = x;
+    MoveTracking.collectOne(this);
+  }
+  void setY(int y) {
+    this.y = y;
+    MoveTracking.collectOne(this);
+  }
+}
+```
+
+</div>
+</div>
 
 ---
 
@@ -348,7 +376,7 @@ La __programación orientada a aspectos__ (_AOP_) es un paradigma de programaci�
 - __joinpoint__ = especificación declarativa de un punto en la ejecución de un programa (por ejemplo, la ejecución de un método, el manejo de una excepción, etc.)
 - __advice__ = acción a tomar por la especificación de un aspecto dado en un determinado _joinpoint_.
   - Interceptan la ejecución de un _joinpoint_. Hay una cadena de interceptores alrededor de cada _joinpoint_.
-  - Tipos de _advice_: _after_, _before_, _around_, etc. 
+  - Tipos de _advice_: _after_, _before_, _around_, etc.
 - __pointcut__ = predicado que define cuándo se aplica un _advice_ de un aspecto en un _jointpoint_ determinado. Se asocia un _advice_ con la expresión de un _pointcut_ y se ejecuta el _advice_ en todos los _joinpoint_ que cumplan la expresión del _pointcut_.
 
 ---
@@ -357,8 +385,11 @@ La __programación orientada a aspectos__ (_AOP_) es un paradigma de programaci�
 
 En el ejemplo anterior, las clases `Line` y `Point` no se ven afectadas:
 
+<div class="cols">
+<div>
+
 ```java
-class Line {
+class Line implements FigureElement {
   private Point p1, p2;
 
   Point getP1() { return p1; }
@@ -373,10 +404,11 @@ class Line {
 }
 ```
 
----
+</div>
+<div>
 
 ```java
-class Point {
+class Point implements FigureElement {
   private int x = 0, y = 0;
 
   int getX() { return x; }
@@ -391,7 +423,10 @@ class Point {
 }
 ```
 
-Vamos a eliminar las dependencias, gracias a la implementación de aspectos...
+</div>
+</div>
+
+Vamos a eliminar las dependencias ($\Delta$ ortogonalidad) implementando aspectos...
 
 ---
 
@@ -409,8 +444,7 @@ aspect MoveTracking {
   }
 
   pointcut move():
-    call(void Line.setP1(Point)) ||
-    call(void Line.setP2(Point));
+    call(void Line.setP1(Point)) || call(void Line.setP2(Point));
 
   after(): move() {
     flag = true;
@@ -434,10 +468,8 @@ aspect MoveTracking {
   }
 
   pointcut move():
-    call(void Line.setP1(Point)) ||
-    call(void Line.setP2(Point)) ||
-    call(void Point.setX(int))   ||
-    call(void Point.setY(int));
+    call(void Line.setP1(Point)) || call(void Line.setP2(Point)) ||
+    call(void Point.setX(int))   || call(void Point.setY(int));
 
   after(): move() {
     flag = true;
@@ -475,10 +507,8 @@ aspect MoveTracking {
 
   pointcut move(FigureElement figElt):
     target(figElt) &&
-    (call(void Line.setP1(Point)) ||
-     call(void Line.setP2(Point)) ||
-     call(void Point.setX(int))   ||
-     call(void Point.setY(int)));
+    (call(void Line.setP1(Point)) || call(void Line.setP2(Point)) ||
+     call(void Point.setX(int))   || call(void Point.setY(int)));
 
   after(FigureElement fe): move(fe) {
     movees.add(fe);
