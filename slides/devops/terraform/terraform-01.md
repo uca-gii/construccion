@@ -1,7 +1,7 @@
 ---
 marp: true
 title: Prácticas de Terraform para Infraestructura Docker
-description: Asignaturas del grado en Ingeniería Informática 
+description: Asignatura de Virtualización de Sistemas
 ---
 
 <!-- size: 16:9 -->
@@ -26,13 +26,6 @@ img[alt~="center"] {
   display: block;
   margin: 0 auto;
 }
-img[alt~="float"] {
-  display: float;
-  margin: 8px 5px 0 5px;
-}
-emph {
-  color: #E87B00;
-}
 </style>
 
 # Terraform para Infraestructura Docker
@@ -43,35 +36,33 @@ emph {
 
 <!-- paginate: true -->
 
-## Introducción a Terraform (I)
+## Introducción a Terraform
 
-Terraform es una herramienta de código abierto que permite automatizar la implementación y gestión de infraestructura como código (IaC).
+Terraform es una herramienta de código abierto que permite __automatizar la implementación y gestión de infraestructura como código__ (IaC).
 
-IaC es una metodología que permite definir y administrar la infraestructura de una aplicación utilizando archivos de configuración en lugar de configuraciones manuales.
+* __Automatización__: automatiza la creación, configuración y gestión de recursos de infraestructura, lo que ahorra tiempo y reduce errores
 
-- Automatización: automatiza la creación, configuración y gestión de recursos de infraestructura, lo que ahorra tiempo y reduce errores
+* __Declarativo__: estado de la infraestructura en vez de scripts
 
-- Declarativo: se decribe el estado de la infraestructura en lugar de escribir scripts
+* __Replicabilidad__: archivos de configuración legibles y versionables
 
-- Multiplataforma: compatible con una variedad de proveedores de nube y tecnologías: AWS, Azure, Google Cloud, Kubernetes, Docker...
+* __Orquestación__: coordina dependencias entre recursos de distintos proveedores (AWS, Azure, Kubernetes...)
 
-- Colaboración y Replicabilidad: archivos de configuración legibles y versionables
+* __Estado__: mantiene un estado de la infraestructura para gestionar cambios controlados
 
 ---
 
-## Introducción a Terraform (II)
+## Arquitectura de Terraform
 
 ![width:720 center](img/terraform_architecture.avif)
 
-- Creación de los archivos Terraform (IaC)
-- Plan: Vista previa de los cambios que Terraform realizará para que coincidan con tu configuración
-- Apply: Se aplican los cambios planificados
+* Creación de los archivos Terraform (IaC)
+* Plan: Vista previa de los cambios que Terraform realizará para que coincidan con tu configuración
+* Apply: Se aplican los cambios planificados
 
 ---
 
-## Introducción a Terraform (III)
-
-### Uso de Terraform para Infraestructura Docker
+## Uso de Terraform para Infraestructura Docker
 
 Terraform permite crear y gestionar una infraestructura Docker completa: contenedores, imágenes, redes y volúmenes.
 
@@ -81,31 +72,22 @@ En esta práctica, se utilizará Terraform para crear y gestionar una infraestru
 
 ---
 
-## Instalación de Terraform (I)
+## Instalación de Terraform
 
-https://developer.hashicorp.com/terraform/downloads
+https://developer.hashicorp.com/terraform/install
 
-### Instalación (Linux)
+### Instalación de Terraform (Linux)
 
-```bash
-sudo apt update
-sudo apt install terraform
-```
+Según distribución en [Documentación Oficial](https://developer.hashicorp.com/terraform/install)
 
-### Instalación (MacOS)
+### Instalación de Terraform (MacOS)
 
 ```bash
 brew tap hashicorp/tap
 brew install hashicorp/tap/terraform
 ```
 
----
-
-## Instalación de Terraform (II)
-
-https://developer.hashicorp.com/terraform/downloads
-
-### Instalación (Windows)
+### Instalación de Terraform (Windows)
 
 Instalación con [chocolatey](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli).
 
@@ -115,7 +97,7 @@ choco install terraform
 
 ---
 
-## Creación de Infraestructura Docker con Terraform (I)
+## Creación de Infraestructura Docker con Terraform
 
 Primero, crea un directorio de trabajo para tus prácticas de Terraform.
 
@@ -124,40 +106,208 @@ mkdir mi_proyecto_terraform
 cd mi_proyecto_terraform
 ```
 
-Dentro del directorio de trabajo, inicializa un proyecto Terraform con el siguiente comando:
+Vamos a crear un archivo de configuración `nginx.tf` para desplegar un contenedor Docker con Nginx.
 
-```bash
-terraform init
+---
+
+## Creación de archivos de configuración (nginx.tf)
+
+```ruby
+terraform {
+  required_providers {
+    docker = {
+      source = "kreuzwerker/docker"
+      version = "~> 3.6.2"
+    }
+  }
+}
+
+provider "docker" {} # Para Windows, añadir:  host = "npipe:////.//pipe//docker_engine"
+
+resource "docker_image" "nginx" {
+  name         = "nginx:latest"
+  keep_locally = false
+}
+
+resource "docker_container" "nginx" {
+  image = docker_image.nginx.image_id
+  name  = "practicas"
+  ports {
+    internal = 80
+    external = 8080
+  }
+}
 ```
 
 ---
 
-## Creación de Infraestructura Docker con Terraform (II)
+## Creación de archivos de configuración (proveedor)
 
-El comando `terraform init` se utiliza para inicializar un directorio de trabajo de Terraform. Cuando ejecutas este comando, Terraform realiza varias tareas importantes:
+```ruby
+terraform {
+  required_providers {
+    docker = {
+      source = "kreuzwerker/docker"
+      version = "~> 3.6.2"
+    }
+  }
+}
+provider "docker" {} # Para Windows, añadir:  host = "npipe:////.//pipe//docker_engine"
+```
 
-- Descarga de <emph>proveedores</emph>: Terraform identifica y descarga los proveedores de recursos específicos que se utilizarán en tu configuración. Por ejemplo, si estás creando una infraestructura Docker, Terraform descargará el proveedor de Docker.
-
-- Inicialización del <emph>estado</emph>: El estado es un archivo que almacena información sobre la infraestructura gestionada.
-
-- Validación de la <emph>configuración</emph>: Terraform verifica la sintaxis y la validez de tus archivos de configuración.
+* __terraform__: define la configuración de Terraform. Hemos especificado el proveedor de Docker y su versión (https://registry.terraform.io/providers/kreuzwerker/docker/latest/docs)
+* Terraform instala los proveedores del Registro de Terraform ([Terraform Registry](https://registry.terraform.io/)) de forma predeterminada
+* __provider__: permite configurar la conexión a Docker si es necesario
 
 ---
 
-## Creación de Infraestructura Docker con Terraform (III)
+## Creación de archivos de configuración (recursos - images)
 
-### Estado de Terraform
+```ruby
+resource "docker_image" "nginx" {
+  name         = "nginx:latest"
+  keep_locally = false  # Se elimina al destruir la infraestructura
+}
+```
+* __resource__: crea una imagen Docker utilizando la imagen indicada (nginx). La imagen se descargará automáticamente si no existe localmente
 
-El estado de Terraform almacena información sobre la infraestructura que estás gestionando, incluidos los recursos que Terraform ha creado y su estado actual.
+El prefijo del tipo se relaciona con el nombre del proveedor. Terraform gestiona el recurso `docker_image` con el proveedor docker. El tipo y el nombre del recurso forman un ID único para el recurso (`docker_image.nginx`).
 
-- Permite comprender la diferencia entre la infraestructura deseada y la existente
-- Se almacena de forma segura y puede ser compartido entre miembros del equipo
-- Puede contener información sensible, como contraseñas o claves secretas
+---
+
+## Creación de archivos de configuración (recursos - containers)
+
+```ruby
+resource "docker_container" "nginx" {
+  image = docker_image.nginx.image_id
+  name  = "practicas"
+  ports {
+    internal = 80
+    external = 8080
+  }
+}
+```
+
+* __resource__: contiene argumentos para configurar los recursos. `docker_container` crea un contenedor Docker utilizando la imagen anterior
+* Además, realiza un mapeo de puertos para exponer el puerto `80` internamente como el puerto `8080` externamente
+
+`terraform init` inicializará el directorio de trabajo con la nueva configuración.
+
+---
+
+## Creación de Infraestructura Docker con Terraform (init)
+
+`terraform init` realiza varias tareas importantes:
+
+- __Descarga de proveedores__: Terraform identifica y descarga los proveedores de recursos específicos que se utilizarán en tu configuración. Por ejemplo, si estás creando infraestructura Docker, Terraform descargará el proveedor de Docker.
+
+- __Validación de la configuración__: Terraform verifica la sintaxis y la validez de tus archivos de configuración.
+
+- Crea `.terraform.lock.hcl`: bloquea las versiones de los proveedores utilizados.
+
+---
+
+## Formateo y validación
+
+`terraform fmt` actualiza automáticamente el formato de los archivos de configuración de Terraform según las convenciones de estilo.
+
+```bash
+terraform fmt
+```
+
+Terraform imprimirá los nombres de los archivos que modifique.
+
+Puede comprobarse si la configuración es sintácticamente válida:
+
+```bash
+terraform validate
+```
+
+---
+
+## Planificación de la creación de la infraestructura
+
+Planificar cambios es una buena práctica para comprender __qué recursos se crearán o modificarán__ y cómo afectarán a la infraestructura.
+
+La planificación te da una vista previa de los cambios que Terraform realizará.
+
+```bash
+terraform plan
+```
+
+Terraform escaneará tus archivos de configuración, evaluará la infraestructura actual y generará un plan detallado de los cambios propuestos.
+
+---
+
+## Creación de la infraestructura (I)
+
+Aplicar los archivos de configuración del directorio actual:
+
+```bash
+terraform apply
+```
+
+- Terraform escaneará tus archivos de configuración, evaluará la infraestructura actual y __generará un plan detallado de los cambios propuestos__
+- Esto incluirá la creación de nuevos recursos, actualizaciones de recursos existentes y la destrucción de recursos obsoletos si los hay
+- La información mostrada es similar a la de `terraform plan`
+
+---
+
+## Creación de la infraestructura (II)
+
+```plaintext
+  # docker_image.nginx will be created
+  + resource "docker_image" "nginx" {
+      + id           = (known after apply)
+      + keep_locally = false
+      + latest       = (known after apply)
+      + name         = "nginx:latest"
+      + output       = (known after apply)
+    }
+
+Plan: 2 to add, 0 to change, 0 to destroy.
+```
+
+- `+` junto a docker_container.nginx indica que se creará este recurso
+- Debajo, se muestran los atributos que se establecerán en el recurso
+- Terraform solicitará confirmación antes de aplicar los cambios
+
+---
+
+## Creación de la infraestructura (III)
+
+Terraform mostrará un __resumen__ de los recursos creados.
+
+Podemos comprobar los contenedores creados con `docker ps` y acceder a la aplicación en http://localhost:8080.
+
+Listar los recursos actuales:
+  
+```bash
+terraform state list
+```
+
+__El archivo de estado de Terraform__ (`terrafor.tfstate`) se habrá __creado/actualizado__ con la información de los recursos creados.
+
+
+---
+
+
+## Estado de Terraform
+
+`terraform.tfstate` __almacena información sobre la infraestructura__ que estás gestionando, incluidos los recursos que Terraform ha creado y su estado actual.
+
+- Permite comprender la __diferencia entre la infraestructura deseada y la existente__
+- Se almacena de __forma segura y puede ser compartido__ en un equipo
+- Puede __contener información sensible__, como contraseñas (incluir en `.gitignore`)
+
+Estado actual de la infraestructura:
+```bash
+terraform show
+```
 
 A continuación se muestra un ejemplo de estado de Terraform:
-- Información sobre el recurso `docker_container` llamado `my_container`
-- Incluye la imagen utilizada
-- Incluye los puertos mapeados
+- Información sobre el recurso docker_container llamado my_container
+- Incluye la imagen utilizada y los puertos expuestos
 
 ---
 
@@ -206,203 +356,9 @@ A continuación se muestra un ejemplo de estado de Terraform:
 
 ---
 
-## Creación de archivos de configuración (I)
-
----
-
-### Ejemplo de configuración `nginx.tf`
-
-```ruby
-terraform {
-  required_providers {
-    docker = {
-      source = "kreuzwerker/docker"
-      version = "~> 3.0.1"
-    }
-  }
-}
-
-provider "docker" {}
-# Para Windows, añadir:  host = "npipe:////.//pipe//docker_engine"
-
-resource "docker_image" "nginx" {
-  name         = "nginx:latest"
-  keep_locally = false
-}
-
-resource "docker_container" "nginx" {
-  image = docker_image.nginx.image_id
-  name  = "practica_terraform"
-  ports {
-    internal = 80
-    external = 8000
-  }
-}
-```
-
----
-
-## Creación de archivos de configuración (II)
-
-```ruby
-terraform {
-  required_providers {
-    docker = {
-      source = "kreuzwerker/docker"
-      version = "~> 3.0.1"
-    }
-  }
-}
-```
-
-- El bloque `terraform` define la configuración de Terraform. En este caso, hemos especificado el proveedor de Docker que se utilizará y su versión (igual o superior a 3.0.1 pero inferior a 4.0.0).
-- Terraform instala los proveedores del Registro de Terraform ([Terraform Registry](https://registry.terraform.io/)) de forma predeterminada
-
----
-
-## Creación de archivos de configuración (III)
-
-```ruby
-provider "docker" {}
-# Para Windows, añadir:  host = "npipe:////.//pipe//docker_engine"
-```
-
-- El bloque `provider` especifica la configuración del proveedor Docker. En este caso, no se especifica ninguna configuración adicional
-
----
-
-## Creación de archivos de configuración (IV)
-
-```ruby
-resource "docker_image" "nginx" {
-  name         = "nginx:latest"
-  keep_locally = false
-}
-```
-
-- El bloque `resource` crea una imagen Docker a partir de otra imagen indicada (en este caso _nginx_). La imagen se descargará automáticamente si no existe localmente
-- El prefijo del tipo se relaciona con el nombre del proveedor. Terraform gestiona el recurso `docker_image` con el proveedor docker. 
-- El tipo y el nombre del recurso forman un ID único para el recurso (`docker_image.nginx`).
-
----
-
-## Creación de archivos de configuración (V)
-
-```ruby
-resource "docker_container" "nginx" {
-  image = docker_image.nginx.image_id
-  name  = "practicas"
-  ports {
-    internal = 80
-    external = 8000
-  }
-}
-```
-
-- Los bloques de recursos contienen argumentos para configurar los recursos. El bloque `docker_container` crea un contenedor Docker utilizando la imagen anterior
-- Además, realiza un mapeo de puertos para exponer el puerto `80` interno como el puerto `8000` externamente
-
-Ejecutar `terraform init` para inicializar el directorio de trabajo con la nueva configuración.
-
----
-
-## Formateo y validación
-
-Es recomendable utilizar un formato consistente en los archivos de configuración.
-
-El comando `terraform fmt` actualiza automáticamente las configuraciones en el directorio actual para mejorar la legibilidad y la consistencia.
-
-```bash
-terraform fmt
-```
-
-Terraform imprimirá los nombres de los archivos que modificó. Si no se modificó ningún archivo, no se imprimirá nada.
-
-Puede comprobarse si la configuración es sintácticamente válida utilizando el comando:
-
-```bash
-terraform validate
-```
-
----
-
-## Planificación de la creación de la infraestructura
-
-Antes de aplicar cambios, es una buena práctica realizar una planificación para comprender qué recursos se crearán o modificarán y cómo afectarán a la infraestructura.
-
-La planificación da una vista previa de los cambios que Terraform realizará.
-
-Para planificar la creación de la infraestructura, utiliza el siguiente comando:
-
-```bash
-terraform plan
-```
-
-Terraform escaneará tus archivos de configuración, evaluará la infraestructura actual y generará un plan detallado de los cambios propuestos.
-
----
-
-## Creación de la infraestructura (I)
-
-Para crear la infraestructura, aplica los archivos de configuración del directorio actual mediante:
-
-```bash
-terraform apply
-```
-
-- Terraform escaneará tus archivos de configuración, evaluará la infraestructura actual, generará un plan detallado de los cambios propuestos y lo aplicará.
-- Esto incluirá la creación de nuevos recursos, actualizaciones de recursos existentes y la destrucción de recursos obsoletos si los hay.
-
-La información mostrada es similar a la de `terraform plan`.
-
----
-
-## Creación de la infraestructura (II)
-
-```plaintext
-  # docker_image.nginx will be created
-  + resource "docker_image" "nginx" {
-      + id           = (known after apply)
-      + keep_locally = false
-      + latest       = (known after apply)
-      + name         = "nginx:latest"
-      + output       = (known after apply)
-    }
-
-Plan: 2 to add, 0 to change, 0 to destroy.
-```
-
-- La salida con `+` indica que se creará este recurso
-- Debajo, se muestran los atributos que se definirán para el recurso
-
-Terraform solicitará confirmación antes de aplicar los cambios (`yes` para continuar).
-
----
-
-## Creación de la infraestructura (III)
-
-Una vez creada la infraestructura, Terraform mostrará un resumen de los recursos creados.
-
-Podemos comprobar los contenedores creados con `docker ps` y acceder a la aplicación en http://localhost:8000.
-
-El archivo de estado de Terraform (`terrafor.tfstate`) se habrá creado/actualizado con la información de los recursos creados.
-
-Estado actual de la infraestructura:
-```bash
-terraform show
-```
-
-Listar los recursos actuales:
-  
-```bash
-terraform state list
-```
-
----
-
 ## Modificación de la infraestructura
 
-Modifica el archivo de configuración para cambiar el puerto externo a 8001:
+Modifica el archivo de configuración para cambiar el puerto externo a 8081:
 
 ```ruby
 resource "docker_container" "nginx" {
@@ -410,12 +366,12 @@ resource "docker_container" "nginx" {
   name  = "practicas"
   ports {
     internal = 80
-    external = 8001
+    external = 8081
   }
 }
 ```
 
-Aplica los cambios con `terraform apply` y comprueba que el contenedor se ha recreado con el nuevo puerto http://localhost:8001.
+Aplica los cambios con `terraform apply` y comprueba que el contenedor se ha recreado con el nuevo puerto http://localhost:8081.
 
 - El prefijo `-`/`+` significa que Terraform destruirá y volverá a crear el recurso
 - Terraform puede actualizar algunos atributos (prefijo `~`), pero cambiar el puerto de un contenedor requiere recrearlo
@@ -424,21 +380,21 @@ Aplica los cambios con `terraform apply` y comprueba que el contenedor se ha rec
 
 ## Destrucción de la infraestructura
 
-Cuando ya no necesites ciertos recursos o quieras eliminar completamente la infraestructura, puedes utilizar el siguiente comando para destruirla:
+Cuando ya no necesites ciertos recursos puedes eliminar la infraestructura:
 
 ```bash
 terraform destroy
 ```
 
-Se mostrará un plan de destrucción similar al de `terraform plan` y se solicitará confirmación antes de aplicar los cambios.
+- Se mostrará un __plan de destrucción__ similar al de `terraform plan` y se solicitará confirmación
 
-Tras confirmar, se eliminarán los recursos de la infraestructura.
+- Tras confirmar, __se eliminarán los recursos__ de la infraestructura
 
-En el caso de Docker, los contenedores se eliminarán y las imágenes se eliminarán si no se utilizan en otros contenedores.
+- En el caso de Docker, los contenedores se eliminarán y las imágenes se eliminarán si no se utilizan en otros contenedores
 
 ---
 
-## Aplicación de Variables de Entorno (I)
+## Archivo con Variables (I)
 
 Las variables de Terraform permiten escribir configuraciones dinámicas y flexibles.
 
@@ -459,7 +415,7 @@ variable "container_name" {
 
 ---
 
-## Aplicación de Variables de Entorno (II)
+## Archivo con Variables (II)
 
 Para utilizar la variable en el archivo de configuración, se utiliza la sintaxis `${var.container_name}`:
 
@@ -469,7 +425,7 @@ resource "docker_container" "nginx" {
   name  = "${var.container_name}"
   ports {
     internal = 80
-    external = 8001
+    external = 8081
   }
 }
 ```
@@ -478,7 +434,7 @@ Aplica los cambios con `terraform apply` y comprueba que el contenedor se ha rec
 
 ---
 
-## Aplicación de Variables de Entorno (III)
+## Aplicación de Variables de Entorno
 
 Si lo que queremos es añadir variables de entorno al contenedor Docker, podemos utilizar el atributo `env`:
 
@@ -488,7 +444,7 @@ resource "docker_container" "nginx" {
   name  = "${var.container_name}"
   ports {
     internal = 80
-    external = 8001
+    external = 8081
   }
   env = [
     "MY_ENV_VAR=my_env_value"
@@ -500,8 +456,6 @@ resource "docker_container" "nginx" {
 
 ## Volúmenes de Docker
 
-Para añadir un volumen de Docker, usa el recurso docker_volume en la configuración:
-  
 ```ruby
 resource "docker_volume" "my_volume" {
   name = "my_volume"
@@ -525,8 +479,6 @@ Cada volumen se define indicando el nombre del volumen y la ruta de montaje dent
 ---
 
 ## Redes de Docker
-
-Para añadir una red de Docker, usa el recurso docker_network en la configuración:
   
 ```ruby
 resource "docker_network" "my_network" {
@@ -541,17 +493,19 @@ resource "docker_container" "nginx" {
   ...
   networks_advanced {
     name = docker_network.my_network.name
+    aliases = ["nginx"] # Opcional: alias del contenedor en la red
   }
 }
 ```
 
----
+Los contenedores pueden comunicarse entre sí en la misma red utilizando el nombre del contenedor o el alias.
 
-## Tarea Entregable
+
+# Ejercicio
 
 1. Crea una infraestructura Docker personalizada utilizando Terraform.
 2. La infraestructura debe contener un contenedor con una aplicación Wordpress y otro contenedor con una base de datos MariaDB.
-3. Deben estar conectados a una red Docker.
+3. Deben estar conectados a una red Docker creada desde Terraform.
 4. Debe existir un volumen para almacenar los datos de la base de datos y que no se eliminen al destruir la infraestructura.
 5. Deben usarse variables de entorno para configurar la aplicación Wordpress.
 6. Debe existir un archivo de configuración `variables.tf` con las variables de entorno.
