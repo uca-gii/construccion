@@ -49,15 +49,14 @@ En esta segunda práctica profundizaremos en cómo __organizar__, __parametrizar
 
 ---
 
-## Objetivos
-
-Al finalizar esta práctica deberías ser capaz de:
+## Objetivos de la práctica
 
 1. Separar la configuración en varios archivos.
 2. Utilizar `tfvars`, `locals` y `outputs`.
-3. Crear varios recursos con `count` y `for_each`.
-4. Trabajar con módulos.
+3. Separar entornos con `tfvars` alternativos.
+4. Crear varios recursos con `count`.
 5. Gestionar el estado con más seguridad.
+6. Trabajar con módulos.
 
 ---
 
@@ -83,12 +82,12 @@ terraform {
   required_providers {
     docker = {
       source  = "kreuzwerker/docker"
-      version = "~> 3.0.1"
+      version = "~> 3.6.2"
     }
   }
 }
 
-provider "docker" {}
+provider "docker" {} # Para Windows, añadir:  host = "npipe:////.//pipe//docker_engine"
 ```
 
 Separar este bloque ayuda a localizar rápidamente la versión del proveedor y su configuración.
@@ -109,6 +108,8 @@ variable "wordpress_port" {
 }
 ```
 
+El archivo `terraform.tfvars` permite definir valores concretos para las variables:
+
 ```ruby
 project_name   = "iacdocker"
 wordpress_port = 8090
@@ -116,23 +117,26 @@ wordpress_port = 8090
 
 ---
 
-## `outputs.tf` y `locals`
+## `locals` y `outputs.tf`
+
+`locals`: derivados internos que no se pasan desde fuera (como las variables), sino que se calculan dentro del módulo. Evita repeticiones y mejora la legibilidad.
 
 ```ruby
 locals {
   db_volume_name = "${var.project_name}-db-data"
 }
+```
 
+`outputs` muestra información útil tras `apply`.
+
+```ruby
 output "wordpress_url" {
   value = "http://localhost:${var.wordpress_port}"
 }
-
 output "network_name" {
   value = docker_network.wp_net.name
 }
 ```
-
-`locals` evita repeticiones y `outputs` muestra información útil tras `apply`.
 
 ---
 
@@ -140,106 +144,168 @@ output "network_name" {
 
 Vamos a desplegar una pequeña aplicación compuesta por:
 
-- una red Docker
-- un volumen persistente
-- un contenedor `mariadb`
-- un contenedor `wordpress`
+- un contenedor `drupal`
+- un contenedor `mysql`
 
-Es un ejemplo sencillo, pero suficientemente realista para practicar conceptos más avanzados.
+```text
+drupal_terraform/
+  providers.tf
+  main.tf
+  variables.tf
+  terraform.tfvars
+  outputs.tf
+```
 
 ---
 
-## Red y volumen
+## Variables (`variables.tf`)
 
 ```ruby
-resource "docker_network" "wp_net" {
-  name = "${var.project_name}-net"
+variable "project" {
+  description = "Nombre del proyecto"
+  type        = string
+  default     = "drupal-iac"
 }
 
-resource "docker_volume" "db_data" {
-  name = local.db_volume_name
+variable "drupal_host_port" {
+  description = "Puerto en el host para acceder a Drupal"
+  type        = number
+  default     = 8080
+}
+
+variable "mysql_root_password" {
+  description = "Password de root en MySQL"
+  type        = string
+  sensitive   = true # Oculta el valor en la salida de Terraform
+}
+
+variable "mysql_database" {
+  description = "Nombre de la base de datos de Drupal"
+  type        = string
+  default     = "drupal"
+}
+
+variable "mysql_user" {
+  description = "Usuario de la BD para Drupal"
+  type        = string
+  default     = "drupal"
+}
+
+variable "mysql_password" {
+  description = "Password del usuario de la BD"
+  type        = string
+  sensitive   = true # Oculta el valor en la salida de Terraform
 }
 ```
 
-La red conecta los contenedores y el volumen conserva los datos de MariaDB.
+---
+
+ ## Variables (`terraform.tfvars`)
+
+
+```ruby
+drupal_host_port = 8082
+mysql_root_password = "root_secret_123"
+mysql_database = "drupal"
+mysql_user = "drupal"
+mysql_password = "drupal_secret_123"
+```
 
 ---
 
-## Imágenes Docker con versión fija
+## Locals (`main.tf`)
 
 ```ruby
-resource "docker_image" "wordpress" {
-  name         = "wordpress:6.4-apache"
-  keep_locally = true
-}
-
-resource "docker_image" "mariadb" {
-  name         = "mariadb:11.1"
-  keep_locally = true
+locals {
+  mysql_name   = "${var.project}-mysql"
+  drupal_name  = "${var.project}-drupal"
+  network_name = "${var.project}-network"
 }
 ```
 
-Usar versiones concretas hace el despliegue más estable y reproducible.
+---
+
+## Red e Imágenes Docker (`main.tf`)
+
+```ruby
+resource "docker_network" "name" {
+  name = local.network_name # local para evitar repetir la construcción del nombre
+}
+
+resource "docker_image" "mysql" {
+  name = "mysql:8.0"
+}
+
+resource "docker_image" "drupal" {
+  name = "drupal:10-apache"
+}
+```
+
+* La red es necesaria para que los contenedores puedan comunicarse entre sí.
+* Usar versiones concretas hace el despliegue más estable y reproducible.
 
 ---
 
-## Contenedor MariaDB
+## Contenedor Mysql (`main.tf`)
 
 ```ruby
-resource "docker_container" "mariadb" {
-  name  = "${var.project_name}-db"
-  image = docker_image.mariadb.image_id
+resource "docker_container" "mysql" {
+  name  = local.mysql_name
+  image = docker_image.mysql.image_id
 
   env = [
-    "MARIADB_ROOT_PASSWORD=changeme",
-    "MARIADB_DATABASE=wordpress",
-    "MARIADB_USER=wpuser",
-    "MARIADB_PASSWORD=wppass"
+    "MYSQL_ROOT_PASSWORD=${var.mysql_root_password}",
+    "MYSQL_DATABASE=${var.mysql_database}",
+    "MYSQL_USER=${var.mysql_user}",
+    "MYSQL_PASSWORD=${var.mysql_password}",
   ]
-
-  volumes {
-    volume_name    = docker_volume.db_data.name
-    container_path = "/var/lib/mysql"
-  }
 
   networks_advanced {
-    name = docker_network.wp_net.name
+    name = docker_network.name.name
   }
 }
 ```
 
 ---
 
-## Contenedor Wordpress
+## Contenedor Drupal (`main.tf`)
 
 ```ruby
-resource "docker_container" "wordpress" {
-  name  = "${var.project_name}-wp"
-  image = docker_image.wordpress.image_id
-
-  env = [
-    "WORDPRESS_DB_HOST=${docker_container.mariadb.name}:3306",
-    "WORDPRESS_DB_USER=wpuser",
-    "WORDPRESS_DB_PASSWORD=wppass",
-    "WORDPRESS_DB_NAME=wordpress"
-  ]
+resource "docker_container" "drupal" {
+  name  = local.drupal_name
+  image = docker_image.drupal.image_id
 
   ports {
     internal = 80
-    external = var.wordpress_port
+    external = var.drupal_host_port
   }
-
   networks_advanced {
-    name = docker_network.wp_net.name
+    name = docker_network.name.name
   }
 }
 ```
+
+---
+
+## Salida (`outputs.tf`)
+
+```ruby
+output "drupal_url" {
+  description = "URL para acceder a Drupal"
+  value = "http://localhost:${var.drupal_host_port}"
+}
+
+output "mysql_container_name" {
+  description = "Nombre del contenedor MySQL"
+  value = docker_container.mysql.name
+}
+```
+
+Tras terraform apply, se mostrarán estas salidas con la información de acceso a Drupal y el nombre del contenedor MySQL.
 
 ---
 
 ## Dependencias y flujo de trabajo
-
-Terraform detecta dependencias implícitas cuando un recurso hace referencia a otro.
 
 Flujo habitual:
 
@@ -251,7 +317,7 @@ terraform plan
 terraform apply
 ```
 
-Así obtenemos una infraestructura más compleja, pero descrita de forma declarativa.
+Así obtenemos una infraestructura descrita de forma declarativa.
 
 ---
 
@@ -261,7 +327,7 @@ Comandos útiles después de `apply`:
 
 ```bash
 terraform output
-terraform output wordpress_url
+terraform output drupal_url
 terraform show
 terraform state list
 ```
@@ -290,62 +356,18 @@ Es útil para reutilizar la misma configuración en varios entornos.
 
 ---
 
-## Workspaces
-
-Otra forma de separar entornos es utilizar distintos workspaces:
-
-```bash
-terraform workspace list
-terraform workspace new dev
-terraform workspace new test
-terraform workspace select dev
-```
-
-Cada workspace mantiene su propio estado.
-
----
-
-## Ejemplo de uso de workspace
-
-```ruby
-locals {
-  env_name = terraform.workspace
-}
-
-resource "docker_network" "wp_net" {
-  name = "${var.project_name}-${local.env_name}-net"
-}
-```
-
-Con el mismo código podemos obtener recursos distintos para `dev` y `test`.
-
----
-
 ## Múltiples recursos con `count`
 
 `count` permite crear varias instancias similares.
 
 ```ruby
 resource "docker_image" "nginx" {
-  name         = "nginx:alpine"
-  keep_locally = true
+  name = "nginx:alpine"
 }
 
 resource "docker_container" "replica" {
   count = 3
   name  = "nginx-${count.index}"
-  image = docker_image.nginx.image_id
-}
-```
-
----
-
-## `count` con puertos distintos
-
-```ruby
-resource "docker_container" "replica" {
-  count = 3
-  name  = "${var.project_name}-nginx-${count.index}"
   image = docker_image.nginx.image_id
 
   ports {
@@ -359,54 +381,26 @@ Así tendríamos servicios accesibles en `8080`, `8081` y `8082`.
 
 ---
 
-## Múltiples recursos con `for_each`
-
-`for_each` es mejor cuando cada instancia tiene una identidad propia.
+## Ejemplo con contenedor Drupal
 
 ```ruby
-variable "web_ports" {
-  type = map(number)
-  default = {
-    web1 = 8080
-    web2 = 8081
-    web3 = 8082
-  }
-}
-```
-
-Cada clave del mapa representará un recurso distinto.
-
----
-
-## Ejemplo con `for_each`
-
-```ruby
-resource "docker_container" "web" {
-  for_each = var.web_ports
-
-  name  = each.key
-  image = docker_image.nginx.image_id
+resource "docker_container" "drupal" {
+  count = 3
+  name  = "${local.drupal_name}-${count.index}"
+  
+  image = docker_image.drupal.image_id
 
   ports {
     internal = 80
-    external = each.value
+    external = var.drupal_host_port + count.index
+  }
+  networks_advanced {
+    name = docker_network.name.name
   }
 }
 ```
 
-La ventaja es que Terraform identifica cada recurso por su clave (`web1`, `web2`, `web3`).
-
----
-
-## `count` o `for_each`
-
-- `count`: recursos casi idénticos, diferenciados por índice
-- `for_each`: recursos con nombre o clave significativa
-
-En general:
-
-- usa `count` para series simples
-- usa `for_each` cuando la identidad del recurso importa
+Al configurar Drupal en una réplica, ¿estará configurado en el resto de contenedores?
 
 ---
 
@@ -415,13 +409,35 @@ En general:
 En ocasiones puede ser útil expresar dependencias de forma explícita:
 
 ```ruby
-resource "docker_container" "wordpress" {
+resource "docker_container" "drupal" {
   ...
-  depends_on = [docker_container.mariadb]
+  depends_on = [docker_container.mysql]
 }
 ```
 
-No suele hacer falta si ya existe una referencia directa, pero puede ayudar a documentar la relación.
+Terraform deduce dependencias cuando un recurso usa atributos de otro... pero:
+* Terraform no siempre ve una dependencia real, por ejemplo, si el contenedor Drupal se conecta a MySQL por la red, no lo detecta automáticamente.
+* En algunos casos, como con `count`, puede no deducirla correctamente
+* Incluso con `depends_on`, MySQL puede no estar listo
+
+---
+
+## Ejemplo con Drupal (`depends_on`)
+
+```ruby
+resource "docker_container" "drupal" {
+  ...
+  depends_on = [docker_container.mysql]
+  restart = "unless-stopped"
+}
+```
+* `depends_on` asegura que Terraform intente crear el contenedor Drupal solo después de crear el de MySQL, pero no garantiza que MySQL esté listo.
+* `restart = "unless-stopped"` hace que el contenedor Drupal intente reiniciarse si MySQL no está listo, lo que mejora la resiliencia de la aplicación.
+
+Un healthcheck en MySQL ayuda a saber cuándo la BD está realmente lista (healthy).
+
+Terraform no espera automáticamente a ese estado: se necesita lógica extra (p. ej., restart/espera en Drupal, o usar Compose/orquestador que sí pueda esperar a healthy).
+
 
 ---
 
@@ -437,7 +453,9 @@ resource "docker_volume" "db_data" {
 }
 ```
 
-Esta técnica evita eliminar por accidente volúmenes con datos persistentes.
+* Terraform se detiene con error cuando intenta borrar ese volumen y el volumen no se elimina.
+* El destroy no se completa (evita borrar datos por accidente)
+* Para eliminarlo hay que quitar `prevent_destroy` (o dejar el volumen fuera de Terraform).
 
 ---
 
@@ -447,7 +465,7 @@ Comandos útiles para inspeccionar el estado:
 
 ```bash
 terraform state list
-terraform state show docker_container.wordpress
+terraform state show docker_container.drupal
 ```
 
 Y recordatorio importante:
@@ -455,18 +473,6 @@ Y recordatorio importante:
 - no editar `terraform.tfstate` manualmente
 - añadir `terraform.tfstate*` al `.gitignore`
 - revisar siempre el `plan`
-
----
-
-## Importar recursos existentes
-
-Terraform puede empezar a gestionar recursos ya creados fuera de Terraform:
-
-```bash
-terraform import docker_container.wordpress ID_DEL_CONTENEDOR
-```
-
-Después del `import`, la configuración `*.tf` debe ajustarse para reflejar fielmente el recurso importado.
 
 ---
 
@@ -485,50 +491,123 @@ Se usa para encapsular soluciones repetidas, por ejemplo:
 ## Estructura de un módulo
 
 ```text
-modules/
-  web_container/
-    main.tf
-    variables.tf
-    outputs.tf
+.
+├─ providers.tf
+├─ main.tf
+├─ variables.tf
+├─ terraform.tfvars
+├─ outputs.tf
+└─ modules/
+   └─ nombre_modulo/
+      ├─ main.tf
+      ├─ variables.tf
+      └─ outputs.tf
 ```
 
 Después, el proyecto principal puede reutilizarlo tantas veces como necesite.
 
 ---
 
-## Uso de un módulo
+## Uso de un módulo (añadido en `main.tf`)
 
 ```ruby
-module "frontend" {
-  source         = "./modules/web_container"
-  container_name = "frontend"
-  external_port  = 8080
-  image_name     = "nginx:alpine"
+module "phpmyadmin" {
+  source = "./modules/phpmyadmin"
+
+  network_name = docker_network.name.name
+  db_host = local.mysql_name
+  host_port = 8090
+  container_name = "${var.project}-phpmyadmin"
+}
+```
+
+* `source` indica la ruta al módulo
+* Se pasan variables al módulo como argumentos (network_name, db_host, host_port, container_name)
+* El módulo puede usar esas variables para configurar su propia infraestructura
+
+---
+
+## `main.tf` del módulo `phpmyadmin`:
+
+```ruby
+terraform {
+  required_providers {
+    docker = { # La versión y la configuración se gestionan desde el proyecto principal
+      source = "kreuzwerker/docker"
+    }
+  }
 }
 
-module "backend" {
-  source         = "./modules/web_container"
-  container_name = "backend"
-  external_port  = 8081
-  image_name     = "httpd:alpine"
+resource "docker_image" "phpmyadmin" {
+  name = "phpmyadmin:5-apache"
+}
+# Se usan argumentos recibidos para configurar el contenedor
+resource "docker_container" "phpmyadmin" {
+  name  = var.container_name
+  image = docker_image.phpmyadmin.image_id
+  ports {
+    internal = 80
+    external = var.host_port
+  }
+  networks_advanced {
+    name = var.network_name
+  }
+  env = [
+    "PMA_HOST=${var.db_host}",
+    "PMA_PORT=${var.db_port}",
+  ]
 }
 ```
 
 ---
 
-## Variables y salidas de un módulo
+## Variables del módulo (`variables.tf`)
 
 ```ruby
-variable "container_name" { type = string }
-variable "external_port"  { type = number }
-variable "image_name"     { type = string }
+variable "container_name" {
+  type    = string
+}
 
-output "url" {
-  value = "http://localhost:${var.external_port}"
+variable "host_port" {
+  type    = number
+  default = 8081
+}
+
+variable "network_name" {
+  type = string
+}
+
+variable "db_host" {
+  type = string
+}
+
+variable "db_port" {
+  type    = number
+  default = 3306
 }
 ```
 
-Desde el proyecto principal podríamos acceder a `module.frontend.url`.
+* El módulo define sus propias variables, que se pasan desde el proyecto principal.
+* No tienen `default`, excepto `host_port` y `db_port`, para que el proyecto principal las configure explícitamente.
+
+---
+
+## Salidas del módulo (`outputs.tf`):
+
+```ruby
+output "url" {
+  description = "URL para acceder a PhpMyAdmin"
+  value = "http://localhost:${var.host_port}"
+}
+```
+
+Se pueden utilizar desde el módulo principal con `module.phpmyadmin.url`:
+
+```ruby
+output "phpmyadmin_url" {
+  value = module.phpmyadmin.url
+}
+```
 
 ---
 
@@ -536,34 +615,22 @@ Desde el proyecto principal podríamos acceder a `module.frontend.url`.
 
 Los módulos son especialmente útiles cuando:
 
-- repites el mismo patrón varias veces
-- quieres ocultar detalles de implementación
-- buscas reutilizar código entre prácticas o proyectos
+- Se repite el mismo patrón varias veces
+- Ocultar detalles de implementación
+- Reutilizar código entre prácticas o proyectos
 
 No merece la pena modularizar todo desde el principio si la infraestructura aún es muy pequeña.
 
 ---
 
-## Flujo de trabajo recomendado
-
-1. Diseñar primero una versión pequeña.
-2. Separar la configuración por responsabilidad.
-3. Parametrizar con variables y `tfvars`.
-4. Añadir salidas útiles.
-5. Reutilizar con `count`, `for_each` o módulos.
-6. Proteger recursos sensibles y revisar el estado.
-
----
-
 ## Resumen
 
-En esta segunda práctica se ha avanzado desde una configuración básica hacia otra más mantenible:
-
-- organización por archivos
+- Organización por archivos
 - `locals`, `outputs` y `tfvars`
-- despliegue de múltiples recursos
-- workspaces y módulos
-- gestión más segura del estado
+- Diferencia de entornos con `tfvars` alternativos
+- Despliegue de múltiples recursos con `count`
+- Gestión más segura del estado
+- Módulos para reutilizar configuraciones
 
 Esto permite construir infraestructuras Docker más realistas con Terraform.
 
