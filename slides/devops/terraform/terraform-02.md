@@ -641,18 +641,19 @@ Crea una infraestructura Docker con Terraform que cumpla lo siguiente:
 
 1. Debe desplegar __tres contenedores Nginx__.
 2. Deben publicarse en los puertos `8080`, `8081` y `8082`.
-3. La configuración debe usar `count` o `for_each`.
+3. La configuración debe usar `count`.
 4. Debe existir al menos un `output` que muestre las URL de acceso.
 5. Debe utilizarse un archivo `terraform.tfvars` para definir puertos o nombres.
 
 
 # Ejercicio 2
 
-Diseña una infraestructura reutilizable con Terraform que incluya:
+Diseña una infraestructura reutilizable con Terraform del ejercicio de la primera sesión (Wordpress + MariaDB) que aplique *TODO* lo visto en la segunda sesión de Terraform (excepto `count`). Recordatorio del Ejercicio anterior:
 
-1. Un __módulo__ para desplegar un contenedor web.
-2. Dos instancias de ese módulo con nombres y puertos diferentes.
-3. Una red Docker común para ambos contenedores.
-4. Un volumen persistente para uno de los servicios.
-5. Protección del volumen mediante `lifecycle { prevent_destroy = true }`.
-6. Un conjunto de salidas finales con los nombres de los contenedores y sus URLs.
+1. Crea una infraestructura Docker personalizada utilizando Terraform.
+2. La infraestructura debe contener un contenedor con una aplicación Wordpress y otro contenedor con una base de datos MariaDB.
+3. Deben estar conectados a una red Docker creada desde Terraform.
+4. Debe existir un volumen para almacenar los datos de la base de datos y otro para los archivos de Wordpress, ambos gestionados por Terraform.
+5. Deben usarse variables de entorno para configurar la aplicación Wordpress.
+6. Debe existir un archivo de configuración `variables.tf` con las variables de entorno.
+
