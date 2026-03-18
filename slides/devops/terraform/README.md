@@ -1,6 +1,7 @@
 # Prácticas de Terraform
 
 - [Práctica 1](terraform-01.md)
+- [Práctica 2](terraform-02.md)
 
 # Instalar marp
 

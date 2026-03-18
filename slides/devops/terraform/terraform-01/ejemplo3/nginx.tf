@@ -2,7 +2,7 @@ terraform {
   required_providers {
     docker = {
       source  = "kreuzwerker/docker"
-      version = "~> 3.0.1"
+      version = "~> 3.6.2"
     }
   }
 }
@@ -27,7 +27,7 @@ resource "docker_container" "nginx" {
   name  = "${var.container_name}"
   ports {
     internal = 80
-    external = 8001
+    external = 8081
   }
   env = [
     "MY_ENV_VAR=my_env_value"
