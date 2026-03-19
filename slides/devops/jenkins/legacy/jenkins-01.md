@@ -1,3 +1,4 @@
+
 ---
 marp: true
 title: Prácticas de Jenkins
@@ -37,11 +38,13 @@ emph {
 
 # CI/CD con Jenkins
 
-![width:300 center](img/jenkins.svg)
-
 ---
 
-<!-- paginate: true -->
+![bg 80%](img/cicd-jenkins.png)
+
+# Integración y Entrega Continuas
+
+---
 
 ## Continous Integration / Continuous Delivery
 
@@ -63,20 +66,23 @@ Cada uno de estos procesos tiene su propio pipeline
 
 ### Pipeline de CI
 
-CI es la práctica de construir y probar las aplicaciones en cada nueva versión.
-
 ![CI pipeline](img/ci-pipeline.png)
 
+<!--
+
+CI es la práctica de construir y probar las aplicaciones en cada nueva versión.
+
+-->
 
 ---
 
 ### Pipeline de CD
 
-CD añade pruebas automáticas y despliegue automático al proceso de CI.
-
 ![CD pipeline](img/cd-pipeline.png)
 
 <!--
+
+CD añade pruebas automáticas y despliegue automático al proceso de CI.
 
 Gracias a CD, el software entregado debe funcionar siempre.
 
@@ -90,12 +96,11 @@ Antiguamente, los cambios pequeños solían tener que esperar a que se completar
 
 ### Continuous Deployment
 
-Desplegar automáticamente el software en producción después de cada cambio.
-
-
 ![CDEP pipeline](img/cdep-pipeline.png)
 
 <!--
+
+El despliegue continuo es la práctica de desplegar automáticamente el software en producción después de cada cambio.
 
 La entrega es manual, el despliegue es automático.
 
@@ -113,9 +118,13 @@ La entrega es manual, el despliegue es automático.
 
 ---
 
-![bg 80%](img/cicd-jenkins.png)
+# Jenkins
+
+![width:300 center](img/jenkins.svg)
 
 ---
+
+<!-- paginate: true -->
 
 ## ¿Qué es Jenkins?
 
@@ -139,60 +148,126 @@ La entrega es manual, el despliegue es automático.
 
 - Vamos a realizar una instalación personalizada
 
-Como requisito previo, debes tener instalado Docker
+Como requisito previo, debes tener instalado Docker en su sistema
 
 https://www.jenkins.io/doc/book/installing/docker/
 
 ---
 
-## Instalación de Jenkins
+### Imágenes de Docker
 
-Hay dos formas de instalar Jenkins usando Docker:
-1. Usando el socket de Docker del host
-2. Usando Docker in Docker (dind)
+```bash
+docker pull jenkins/jenkins
+docker pull docker:dind
+```
 
----
+- La imagen dind (Docker in Docker) es una imagen de Docker que contiene Docker
+- Dind se utiliza para ejecutar comandos de Docker dentro de los nodos de Jenkins
 
-## Instalación de Jenkins (usando socket de Docker)
+### Red
 
-* Jenkins necesita acceso al socket de Docker del host para ejecutar comandos.
-* Estos comandos se usarán en los pipelines de Jenkins para construir, ejecutar y administrar contenedores Docker.
-* Permite usar el Docker del host como **agente de Jenkins** para ejecutar los pipelines.
+Crear una red de tipo bridge en Docker:
 
-El socket de Docker se encuentra en...
-* En Linux, macOS o Windows con WSL: `/var/run/docker.sock`
-* En Windows sin WSL: `//./pipe/docker_engine`
-
----
-
-## Instalación de Jenkins (docker-compose.yml)
-
-```yaml
-services:
-  jenkins:
-    image: my-custom-jenkins
-    build: .
-    container_name: jenkins
-    restart: unless-stopped
-    ports:
-      - "8080:8080" # Puerto para acceder a Jenkins
-      - "50000:50000" # Puerto para agentes de Jenkins
-    volumes:
-      - jenkins_home:/var/jenkins_home # Persistencia de datos de Jenkins
-      - /var/run/docker.sock:/var/run/docker.sock # Permite a Jenkins usar Docker del host
-    environment:
-      - DOCKER_HOST=unix:///var/run/docker.sock # Configura Jenkins para usar Docker del host
-
-volumes:
-  jenkins_home:
+```bash
+docker network create jenkins
 ```
 
 ---
 
-### Dockerfile (personaliza imagen oficial con Docker CLI y plugins)
+## Docker in Docker (dind)
+
+![bg right:50% 100% Dind](img/docker-dind-min.png)
+
+Crea un contenedor hijo dentro de otro contenedor Docker
+
+- Contenedores e imágenes disponibles en el contenedor hijo
+- Acceso [privilegiado](https://docs.docker.com/engine/reference/run/#runtime-privilege-and-linux-capabilities) al host (¡seguridad!)
+
+---
+
+### Instalación dind:
 
 ```bash
-FROM jenkins/jenkins:lts-jdk21
+docker run --privileged -d --name dind-test docker:dind
+docker exec -it dind-test /bin/sh
+docker pull ubuntu
+docker images
+mkdir test && cd test
+vi Dockerfile
+docker build -t test-image .
+```
+
+<emph>Dockerfile</emph>:
+
+```Dockerfile
+FROM ubuntu:18.04
+RUN apt-get update && \
+    apt-get -qy full-upgrade && \
+    apt-get install -qy curl && \
+    apt-get install -qy curl && \
+    curl -sSL https://get.docker.com/ | sh
+```
+
+---
+
+### Docker in Docker (macOS y Linux) (comando)
+
+Para ejecutar comandos de Docker dentro de los nodos de Jenkins, ejecuta la imagen de Docker `docker:dind` utilizando el siguiente comando:
+
+```bash
+docker run --name jenkins-docker --rm --detach \
+  --privileged --network jenkins --network-alias docker \
+  --env DOCKER_TLS_CERTDIR=/certs \
+  --volume jenkins-docker-certs:/certs/client \
+  --volume jenkins-data:/var/jenkins_home \
+  --publish 2376:2376 \
+  docker:dind --storage-driver overlay2
+```
+
+---
+
+### Docker in Docker (Windows) (comando)
+
+En Windows, ejecuta el siguiente comando para ejecutar la imagen de Docker `docker:dind`:
+
+```bash
+docker run --name jenkins-docker --rm --detach ^
+  --privileged --network jenkins --network-alias docker ^
+  --env DOCKER_TLS_CERTDIR=/certs ^
+  --volume jenkins-docker-certs:/certs/client ^
+  --volume jenkins-data:/var/jenkins_home ^
+  --publish 2376:2376 ^
+  docker:dind
+```
+
+---
+
+### Docker in Docker
+
+```bash
+docker run --name jenkins-docker # Nombre del contenedor
+  --rm # Elimina el contenedor cuando se para
+  -d # Ejecuta el contenedor en segundo plano
+  --privileged # Otorga privilegios necesarios para Dind
+  --network jenkins # Conecta el contenedor a la red jenkins
+  --network-alias docker 
+  # Contenedor de Dind disponible como el nombre de host 'docker'
+  --env DOCKER_TLS_CERTDIR=/certs # Habilita TLS dentro del contenedor
+  -v jenkins-docker-certs:/certs/client # Certificados TLS
+  -v jenkins-data:/var/jenkins_home # Datos de Jenkins
+  -p 2376:2376 # Puertos
+  docker:dind # Imagen de Docker
+  --storage-driver overlay2 # Controlador de almacenamiento a utilizar
+```
+
+---
+
+### Dockerfile
+
+Personaliza la imagen oficial de Jenkins de Docker usando un Dockerfile:
+
+```bash
+FROM jenkins/jenkins
 USER root
 RUN apt-get update && apt-get install -y lsb-release
 RUN curl -fsSLo /usr/share/keyrings/docker-archive-keyring.asc \
@@ -203,113 +278,73 @@ RUN echo "deb [arch=$(dpkg --print-architecture) \
   $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list
 RUN apt-get update && apt-get install -y docker-ce-cli
 USER jenkins
-RUN jenkins-plugin-cli --plugins \
-    docker-workflow \
-    workflow-aggregator \
-    git \
-    github \
-    locale \
-    blueocean
+RUN jenkins-plugin-cli --plugins "blueocean docker-workflow"
 ```
 
 ---
 
-## Docker in Docker (dind)
+### Construir imagen
 
-![bg right:50% 100% Dind](img/docker-dind-min.png)
+Construye una nueva imagen de Docker a partir de este Dockerfile y asigna a la imagen un nombre significativo como `myjenkins-blueocean`:
 
-- La imagen dind (Docker in Docker) es una imagen de Docker que contiene Docker
-- Crea un contenedor hijo dentro de otro contenedor Docker
-- Contenedores e imágenes disponibles en el contenedor hijo
-
-- Más compleja de configurar... pero (algo) más segura y portable.
-- Acceso [privilegiado](https://docs.docker.com/engine/reference/run/#runtime-privilege-and-linux-capabilities) al host (¡cuidado!)
-
----
-
-## Instalación de Jenkins (usando Docker in Docker)
-
-```yaml
-services:
-  docker:
-    image: docker:dind
-    container_name: jenkins-docker
-    privileged: true
-    restart: unless-stopped
-    # Controlador de almacenamiento a utilizar (OMITIR EN WINDOWS):
-    command: ["--storage-driver=overlay2"]
-    environment:
-      - DOCKER_TLS_CERTDIR=/certs # Habilita TLS para Docker
-    volumes:
-      - jenkins-docker-certs:/certs/client
-      - jenkins-data:/var/jenkins_home
-    ports:
-      - "2376:2376" # Puerto para la API de Docker
-      - "3000:3000" # Puerto para la aplicación React
-    networks:
-      jenkins:
-        aliases:
-          - docker
+```bash
+docker build -t myjenkins-blueocean .
 ```
 
 ---
 
-(`docker-compose.yml`) Servicio de Jenkins:
+## Ejecutar Jenkins
 
-```yaml
-jenkins:
-    image: my-custom-jenkins
-    build: .
-    container_name: jenkins
-    restart: on-failure
-    depends_on:
-      - docker
-    environment:
-      - DOCKER_HOST=tcp://docker:2376
-      - DOCKER_CERT_PATH=/certs/client
-      - DOCKER_TLS_VERIFY=1
-    ports:
-      - "8080:8080"
-      - "50000:50000"
-    volumes:
-      - jenkins-data:/var/jenkins_home
-      - jenkins-docker-certs:/certs/client:ro
-    networks:
-      - jenkins
+Ejecuta la imagen de Jenkins personalizada con el siguiente comando:
+
+```bash
+docker run --name jenkins-blueocean --restart=on-failure --detach \
+  --network jenkins --env DOCKER_HOST=tcp://docker:2376 \
+  --env DOCKER_CERT_PATH=/certs/client --env DOCKER_TLS_VERIFY=1 \
+  --publish 8080:8080 --publish 50000:50000 \
+  --volume jenkins-data:/var/jenkins_home \
+  --volume jenkins-docker-certs:/certs/client:ro \
+  myjenkins-blueocean
 ```
+
+Opcionalmente, puede añadirse `--env JAVA_OPTS="-Dorg.jenkinsci.plugins.durabletask.BourneShellScript.LAUNCH_DIAGNOSTICS=true" \` justo antes de la última línea para que Jenkins muestre los logs de los scripts.
 
 ---
 
-(`docker-compose.yml`) Volúmenes y redes:
+### Ejecutar Jenkins (explicación)
 
-```yaml
-volumes:
-  jenkins-data:
-    name: jenkins-data
-  jenkins-docker-certs:
-    name: jenkins-docker-certs
-
-networks:
-  jenkins:
-    name: jenkins
+```bash
+docker run 
+  --name jenkins-blueocean # Nombre del contenedor
+  --restart=on-failure # Reinicia el contenedor si falla
+  -d # Ejecuta el contenedor en segundo plano
+  --network jenkins # Conecta el contenedor a la red jenkins
+  --env DOCKER_HOST=tcp://docker:2376 # Dirección del host de Docker
+  --env DOCKER_CERT_PATH=/certs/client # Ruta certificados TLS
+  --env DOCKER_TLS_VERIFY=1 # Habilita verificación de TLS
+  -p 8080:8080 -p 50000:50000 # Puertos
+  -v jenkins-data:/var/jenkins_home # Datos de Jenkins
+  -v jenkins-docker-certs:/certs/client:ro # Certificados TLS
+  myjenkins-blueocean # Especifica la imagen de Docker a utilizar
 ```
 
 ---
 
 ## Accediendo al contenedor de Docker
 
-Levanta el contenedor de Jenkins usando `docker-compose`:
+Para acceder al contenedor de Docker, usa `docker exec` junto con el nombre del contenedor de Docker y `bash`:
 
 ```bash
-docker-compose up -d
+docker exec -it jenkins-blueocean bash
 ```
 
-Recuerda que puedes acceder a la terminal del contenedor y a los logs:
+Para acceder a los logs del contenedor de Docker, usa `docker logs`:
 
 ```bash
-docker exec -it jenkins bash
-docker logs jenkins
+docker logs jenkins-blueocean
 ```
+
+En caso de haber usado otro nombre para el contenedor, sustituye `jenkins-blueocean` por el nombre que hayas usado.
 
 ---
 
@@ -324,8 +359,6 @@ Este asistente te guía para:
   - Instalar plugins
   - Crear el primer usuario administrador
 
-Se puede forzar el idioma desde las opciones de *Apariencia*
-
 ---
 
 ## Crear un Pipeline (I)
@@ -334,7 +367,7 @@ Un pipeline es un conjunto de pasos que Jenkins ejecuta para compilar, probar y 
 
 Un pipeline se define en un archivo de texto llamado `Jenkinsfile`.
 
-1. Haz clic en **New Item** en el menú de la izquierda
+1. Haz clic en **Nueva tarea** en el menú de la izquierda
 
 2. Introduce un nombre para la tarea y selecciona **Pipeline**
 
@@ -344,33 +377,32 @@ Un pipeline se define en un archivo de texto llamado `Jenkinsfile`.
 
 ## Crear un Pipeline (II)
 
-1. En la sección **Definition**, selecciona **Pipeline script**
+1. En la sección **Definición de Pipeline**, selecciona **Pipeline script**
 
 2. Introduce el siguiente código en el editor:
 
 ```groovy
-pipeline { // Declaración de pipeline
-  agent any // Agente que ejecuta el pipeline
-  
-  stages { // Declaración de etapas
-      stage('Stage 1') { // Declaración de etapa
-          steps { // Declaración de pasos
-              echo 'Hello world!' // Paso
+  pipeline { // Declaración de pipeline
+      agent any // Agente que ejecuta el pipeline
+      stages { // Declaración de etapas
+          stage('Stage 1') { // Declaración de etapa
+              steps { // Declaración de pasos
+                  echo 'Hello world!' // Paso
+              }
           }
       }
   }
-}
 ```
 
-3. Haz clic en **Save**
+3. Haz clic en **Guardar**
 
 ---
 
 ## Ejecutar un Pipeline
 
-1. Haz clic en **Build Now** en el menú de la izquierda
+1. Haz clic en **Construir ahora** en el menú de la izquierda
 
-2. Haz clic en el número de compilación en la columna **Builds**
+2. Haz clic en el número de compilación en la columna **Construcciones**
 
 3. En la sección, **Console Output**, podemos ver la salida del pipeline
 
@@ -380,39 +412,37 @@ Debido a que personalizamos la imagen de Jenkins, también podemos usar la inter
 
 ## Jenkinsfile
 
-- Contiene la definición de un pipeline (usa lenguaje Groovy)
+- Contiene la definición de un pipeline
+- Está escrito en el lenguaje de programación Groovy
 - Se puede almacenar en un repositorio de código fuente como GitHub y Bitbucket
 
 ```groovy
 pipeline {
     agent {
-        // Indica dónde se ejecutará el pipeline. Puede ser:
-        // - cualquier agente disponible
-        // - un agente concreto identificado por una etiqueta
-        // - un contenedor Docker con una imagen determinada
+        // Agente que ejecuta el pipeline (puede ser de Jenkins o de Docker)
     }
     environment {
-        // Variables de entorno del pipeline
+        // Variables de entorno
     }
     stages {
-        // Etapas que componen el pipeline
+        // Declaración de etapas
     }
 }
 ```
 
 ---
 
-### Agentes (Ejemplos)
+### Agentes (Jenkins)
 
 ```groovy
 pipeline {
     agent {
-        label 'agente' // Nombre del agente de Jenkins
+        label 'label' // Nombre del agente de Jenkins
     }
 }
 ```
 
-Podemos ver los agentes de Jenkins disponibles en **Manage Jenkins** > **Nodes**.
+Podemos ver los agentes de Jenkins disponibles en **Administrar Jenkins** > **Administrar nodos**.
 
 También podemos indicar que el pipeline se ejecute en cualquier agente disponible:
 
@@ -422,25 +452,23 @@ pipeline {
 }
 ```
 
-* El propio servidor de Jenkins también puede actuar como agente.
-* Se pueden configurar otras máquinas como agentes de Jenkins.
-
 ---
 
-### Agentes (usando contenedores Docker)
-
-Dind se utiliza para ejecutar comandos de Docker dentro de los nodos de Jenkins
+### Agentes (Docker)
 
 ```groovy
 pipeline {
     agent {
         docker {
-            image 'image' // Nombre de la imagen de Docker
-            args 'args' // Argumentos para la imagen de Docker
+            image 'image'
+            args 'args'
         }
     }
 }
 ```
+
+- `image` es el nombre de la imagen de Docker.
+- `args` son los argumentos que se pasan a la imagen de Docker.
 
 También se puede usar un archivo Dockerfile que se encuentre en el repositorio:
 
@@ -484,8 +512,9 @@ pipeline {
 }
 ```
 
-- Una etapa es una colección de pasos secuenciales...
-  - (aunque hay opciones para ejecutarlas en paralelo)
+- Una etapa es una colección de pasos
+  - Las etapas se ejecutan secuencialmente
+  - Aunque hay opciones para ejecutarlas en paralelo
 - Un paso es una acción que se ejecuta en un agente
   - Los pasos se ejecutan secuencialmente
   - Se usa `sh` para ejecutar comandos de shell
@@ -494,7 +523,7 @@ pipeline {
 
 ## Pipeline from SCM
 
-Escribir y mantener pipelines complejas dentro del área de texto de la interfaz clásica de Jenkins puede ser complicado.
+Escribir y mantener pipelines complejas dentro del área de texto del Script en la página de configuración de la Pipeline en la interfaz clásica de Jenkins puede ser complicado.
 
 La alternativa para facilitar este proceso es escribir tu Jenkinsfile en un IDE y luego subirlo al control de código fuente.
 
@@ -502,26 +531,28 @@ La alternativa para facilitar este proceso es escribir tu Jenkinsfile en un IDE 
 
 ### Crear Pipeline from SCM
 
-1. Crea una nueva pipeline y selecciona **Pipeline script from SCM**.
+1. Crea una nueva pipeline y selecciona **Pipeline script from SCM** en la sección **Definición de Pipeline**
 2. En **SCM**, selecciona **Git**
-3. En **Repository URL**, introduce la URL del repo y añade las credenciales necesarias para acceder al repositorio:
+3. En **Repository URL**, introduce la URL del repo y las credenciales:
+
+   - **Kind**: Username with password
    - **Username**: nombre de usuario del repositorio
    - **Password**: Token de Acceso Personal (PAT)
    - **ID**: Nombre de la credencial
 
 4. En **Script Path**, introduce el path del archivo Jenkinsfile
-5. Haz clic en **Save**
+5. Haz clic en **Guardar**
 
 ---
 
 ## Pipeline para desplegar aplicación React
 
-Vamos a crear un pipeline para desplegar una aplicación React en un contenedor Docker usando el repositorio:
-https://github.com/jenkins-docs/simple-node-js-react-npm-app
+Vamos a crear un pipeline para desplegar una aplicación React en un contenedor Docker:
+https://www.jenkins.io/doc/tutorials/build-a-node-js-and-react-app-with-npm/
 
-Si has usado Docker in Docker (dind) para ejecutar Jenkins, debes publicar un puerto adicional en el contenedor Dind para Jenkins (Ya lo hicimos en el `docker-compose.yml`):
+Como requisito previo, debes publicar dos puertos adicionales en el contenedor Dind para Jenkins (jenkins-docker):
 
-`--publish 3000:3000`
+`--publish 3000:3000 --publish 5000:5000`
 
 ---
 
@@ -533,7 +564,7 @@ Si has usado Docker in Docker (dind) para ejecutar Jenkins, debes publicar un pu
 4. Creamos un pipeline en Jenkins con la opción **Pipeline script from SCM** y la siguiente configuración:
    - **SCM**: Git
    - **Repository URL**: URL del repositorio
-   - **Credentials**: Crear credenciales de tipo "Username with password" con tu nombre de usuario de GitHub y token de acceso personal (PAT) del repositorio
+   - **Credentials**: No indicar credenciales (el repositorio será público)
    - **Script Path**: Jenkinsfile
    - **Branches to build**: */master
 
@@ -547,7 +578,7 @@ Incluimos el siguiente código en el archivo `Jenkinsfile` y lo subimos al repos
 pipeline {
     agent {
         docker {
-            image 'node:22-alpine' // Imagen de Docker
+            image 'node:20.10.0-alpine3.18' // Imagen de Docker
             args '-p 3000:3000' // Puertos
         }
     }
@@ -567,7 +598,7 @@ pipeline {
 
 Volvamos a Jenkins y ejecutemos el pipeline.
 
-1. Haz clic en **Build now** en el menú de la izquierda
+1. Haz clic en **Construir ahora** en el menú de la izquierda
 2. Puedes ver el progreso del pipeline en la interfaz de usuario de Jenkins
 
 Es posible que debas esperar varios minutos para que se complete esta primera ejecución
@@ -617,15 +648,6 @@ Actualizamos el archivo `Jenkinsfile` con una etapa de Entrega/Despliegue:
 
 - El script `deliver.sh` entrega y despliega la aplicación en un contenedor Docker (más detalles dentro del script)
 - `input message` detiene la ejecución y solicita respuesta al usuario
-
----
-
-NOTA: Para que funcione correctamente, es necesario realizar un cambio en el script `deliver.sh` original:
-* npm start & -->
-* npm start -- --host 0.0.0.0
-
-El puerto estaba publicado por Docker, pero la aplicación escuchaba solo en localhost **dentro del contenedor**.
-Para que se pueda acceder desde el navegador del host, debe escuchar en 0.0.0.0.
 
 ---
 
