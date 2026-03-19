@@ -629,7 +629,7 @@ Para que se pueda acceder desde el navegador del host, debe escuchar en 0.0.0.0.
 
 ---
 
-### Ejemplo: Pipeline para desplegar aplicación React (VI)
+### Ejemplo: Pipeline para desplegar aplicación React (V)
 
 Finalmente, volvemos a ejecutar el pipeline y vemos el resultado en la interfaz de Jenkins.
 
@@ -639,3 +639,23 @@ Si accedemos a http://localhost:3000, podemos ver la aplicación React desplegad
 
 - Si accedemos al contenedor de Jenkins, podemos ver los archivos generados por el pipeline en el directorio `/var/jenkins_home/workspace/<nombre-del-pipeline>`
 - Además, con el comando `docker ps` podemos ver el contenedor creado durante la ejecución del pipeline
+
+
+# Ejercicio 1
+
+Prueba a realizar el completo proceso de despliegue de la aplicación React usando el pipeline que acabamos de crear.
+
+* Usa Docker in Docker (dind) para los agentes de Jenkins
+* ¿Se puede considerar que este pipeline implementa CI, Continuous Delivery y/o Continuous Deployment? ¿Por qué?
+
+
+# Ejercicio 2
+
+Crea un pipeline para desplegar una aplicación Python forkeando el repositorio: https://github.com/jenkins-docs/simple-python-pyinstaller-app
+
+Sigue los mismos pasos que hemos visto para la aplicación React, pero usando un pipeline adaptado a la aplicación Python:
+
+https://github.com/jacaballero/simple-python-pyinstaller-app/blob/master/Jenkinsfile
+
+- ¿Qué diferencia hay entre lo que generan los dos pipelines (React VS Python)?
+- ¿Se puede considerar que este pipeline implementa CI, Continuous Delivery y/o Continuous Deployment? ¿Por qué?

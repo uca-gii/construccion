@@ -1,4 +1,3 @@
-#FROM jenkins/jenkins:2.426.1-jdk17
 FROM jenkins/jenkins:lts-jdk21
 USER root
 RUN apt-get update && apt-get install -y --no-install-recommends \
