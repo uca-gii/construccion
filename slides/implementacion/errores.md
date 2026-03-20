@@ -15,18 +15,23 @@ math: mathjax
 <!-- paginate: false -->
 
 <style>
-/*
-section {
-  font-family: 'Founders Grotesk', sans-serif;
-  filter: brightness(1.00001);
-}
-*/
 h1 {
   text-align: center;
 }
 h2 {
   color: darkblue;
   text-align: center;
+}
+emph {
+  color: #E87B00;
+}
+.cols {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+.cols > div {
+  align-self: start;
 }
 </style>
 
@@ -86,7 +91,7 @@ public enum Error {
 
 - Los programadores intentan evitar añadir nuevos motivos de error, porque eso significa tener que volver a compilar y desplegar todo el código.
 
-Otros ejemplos de imanes de dependencias son las clases con nombres como _Utilidades_, _Tools_, etc.
+Otros imanes de dependencias: clases con nombres como _Utilidades_, _Tools_, etc.
 
 ---
 
@@ -156,19 +161,8 @@ private void logError(Exception e) {
 
 ### Excepciones en Java
 
-- __Checked__ — Instancias de clases derivadas de `java.lang.Throwable` (menos `RuntimeException`). Deben declararse en el método mediante `throws` y obligan al llamador a tratar la excepción.
-
-- __Unchecked__ — Instancias de clases derivadas de `java.lang.RuntimeException`. No se declaran en el método y no obligan al llamador a tratar la excepción.
-
-__¿Qué implica elevar una excepción `e` en Java?__
-
-1. Deshacer (_roll back_) la llamada a un método...
-2. ...hasta que se encuentre un bloque catch para el tipo de `e` y...
-3. ...si no se encuentra, la excepción es capturada por la JVM, que detiene el programa.
-
----
-
-#### Tratamiento de excepciones en Java
+<div class="cols">
+<div>
 
 ```java
   try {
@@ -187,6 +181,20 @@ __¿Qué implica elevar una excepción `e` en Java?__
   }
 ```
 
+__Elevar una excepción `e`__ $\Rightarrow$ Deshacer (_roll back_) la llamada a un método hasta encontrar un `catch` para el tipo de `e`. Si no se encuentra, se detiene el programa.
+
+</div>
+<div>
+
+__Tipos de excepciones__:
+
+- __Checked__ — Instancias de clases derivadas de `java.lang.Throwable` (menos `RuntimeException`). Deben declararse en el método mediante `throws` y obligan al llamador a tratar la excepción.
+
+- __Unchecked__ — Instancias de clases derivadas de `java.lang.RuntimeException`. No se declaran en el método y no obligan al llamador a tratar la excepción.
+
+</div>
+</div>
+
 ---
 
 #### Recomendaciones sobre excepciones
@@ -201,9 +209,57 @@ Los beneficios de las excepciones _checked_ en Java son mínimos: [¿por qué?](
 
 ---
 
+#### ¿Por qué no usar excepciones checked?
+
+Ejemplo: se necesita procesar un archivo CSV con datos de empleados. El código está estructurado en capas:
+
+1. `EmployeeCSVProcessor` (mi aplicación) — Necesita lanzar `IOException` si hay errores
+2. `CSVReader` (una librería de terceros) — Itera sobre las líneas del archivo
+3. `EmployeeRowHandler`** (mi implementación de callback) — Procesa cada fila
+
+---
+
+```java
+// Librería de terceros - NO sabe ni debe saber sobre IOException
+public class CSVReader {
+    public void processRows(RowHandler handler) {
+        List<String> lines = readFile(filePath);
+        for (String line : lines) {
+            handler.handle(line);  // Llama al handler
+        }
+    }
+}
+
+// Contrato que proporciona CSVReader
+public interface RowHandler {
+    void handle(String row);  // NO puede lanzar excepciones checked
+}
+
+// Mi implementación - ¡PROBLEMA!
+public class EmployeeRowHandler implements RowHandler {
+    @Override
+    public void handle(String row) throws IOException {  // ❌ INCOMPATIBLE
+        if (!isValid(row)) {
+            throw new IOException("Invalid employee data");
+        }
+    }
+}
+```
+
+---
+
+__El dilema:__
+
+`EmployeeCSVProcessor` (quiere `IOException`) $\rightarrow$ `CSVReader` (no declara `IOException`) $\rightarrow$ `EmployeeRowHandler` (necesita lanzarla)
+
+$\Rightarrow$ ❌ Contrato violado: ¡no compila!
+
+
 __Cómo afectan al diseño las excepciones checked__
 
 Se paga el precio de violar el principio OCP (_Open-Closed Principle_): si lanzamos una excepción _checked_ desde un método y el `catch` está tres niveles por encima, hay que declarar la excepción en la signatura de todos los métodos que van entre medias. Esto significa que un cambio en un nivel bajo del software puede forzar cambios en niveles altos.
+
+---
 
 #### Excepciones en otros lenguajes
 
@@ -218,13 +274,12 @@ Muchas APIs de Java lanzan excepciones _checked_ cuando deberían ser _unchecked
 
 __Ejemplo__: Al ejecutar una consulta mediante `executeQuery` en el API de JDBC se lanza una excepción `java.sql.SQLException` (de tipo checked) si la SQL es errónea.
 
-
 - ¿Le interesa al cliente del API saber que el error es provocado por una sentencia SQL?
 - ¿Le interesa al cliente del API conocer el tipo de excepción _checked_ que una consulta puede generar?
 
 ---
 
-__Solución: Transformación en unchecked__
+__Solución: ¿transformación en unchecked?__
 
 Transformar las excepciones checked en unchecked:
 
@@ -235,6 +290,56 @@ Transformar las excepciones checked en unchecked:
     throw new RuntimeException("Unchecked exception", ex)
   }
 ```
+
+---
+
+<style scoped>
+.cols {
+  display: grid;
+  grid-template-columns: 65% 35%;
+}
+</style>
+
+__La solución es un code smell:__
+
+<div class="cols">
+<div>
+
+```java
+public class EmployeeRowHandler implements RowHandler {
+  @Override
+  public void handle(String row) {
+    if (!isValid(row)) {
+      throw new RuntimeException("Invalid employee data: " + row);
+    }
+  }
+}
+
+public class EmployeeCSVProcessor {
+  public void process(String filePath) throws IOException {
+    try {
+      reader.processRows(new EmployeeRowHandler());
+    } catch (RuntimeException e) {
+      // ¿Era una IOException o un error real?
+      if (e.getMessage().contains("Invalid")) {
+        throw new IOException(e);  // Reconvertir
+      }
+      throw e;  // Relanzar si era otra cosa
+    }
+  }
+}
+```
+
+</div>
+<div>
+
+__Precio a pagar:__
+
+- Pérdida de información: No se sabe si la `RuntimeException` es realmente la excepción esperada
+- Violación del tipo: La excepción no comunica claramente el error
+
+</div>
+</div>
 
 ---
 
@@ -261,10 +366,22 @@ Criticar la siguiente implementación:
 ```
 
 ---
+<style scoped>
+.cols {
+  display: grid;
+  grid-template-columns: 40% 60%;
+}
+</style>
 
 __Código duplicado__: llamada a `reportPortError()` se repite mucho. ¿Cómo evitarlo?
 
+<div class="cols">
+<div>
+
 __Solución: Excepción encapsulada__
+
+</div>
+<div>
 
 ```java
 public class LocalPort {
@@ -287,7 +404,21 @@ public class LocalPort {
 }
 ```
 
+</div>
+</div>
+
 ---
+<style scoped>
+.cols {
+  display: grid;
+  grid-template-columns: 45% 55%;
+}
+</style>
+
+<div class="cols">
+<div>
+
+Sustituir ahora por...
 
 ```java
 LocalPort port = new LocalPort(12);
@@ -301,43 +432,60 @@ try {
 }
 ```
 
+</div>
+<div>
+
 - La encapsulación de excepciones es recomendable cuando se usa un API de terceros, para minimizar las dependencias con respecto al API elegido.
 - También facilita la implementación de __mocks__ del componente que proporciona el API para construir pruebas.
 
----
+</div>
+</div>
 
 #### Las excepciones son excepcionales
 
-__Recomendación de uso__: Usar excepciones para problemas excepcionales (eventos inesperados)
-
-__Ejemplo: Excepciones por ficheros__: ¿Usar excepciones cuando se intenta abrir un fichero para leer y el fichero no existe?
-
-- Depende de si el fichero debe estar ahí
+- __Recomendación de uso__: Usar excepciones para problemas excepcionales (eventos inesperados)
 
 ---
+<style scoped>
+.cols {
+  display: grid;
+  grid-template-columns: 58% 42%;
+}
+</style>
+
+__Ejemplo__: excepciones en el tratamiento de ficheros: ¿Usar excepciones cuando se intenta abrir un fichero para leer y el fichero no existe? Depende de si el fichero debe estar ahí
+
+<div class="cols">
+<div>
 
 - Caso en que se debe lanzar una excepción:
 
-  ```java
-  public void open_passwd() throws FileNotFoundException {
-    // This may throw FileNotFoundException...
-    ipstream = new FileInputStream("/etc/passwd");
-    // ...
-  }
-  ```
+```java
+public void open_passwd() throws FileNotFoundException {
+  // This may throw FileNotFoundException...
+  ipstream = new FileInputStream("/etc/passwd");
+  // ...
+}
+```
 
-- Caso en que no se debe lanzar una excepción:
+</div>
+<div>
 
-  ```java
-  public boolean open_user_file(String name)
-      throws FileNotFoundException {
-    File f = new File(name);
-    if (!f.exists())
-      return false;
-    ipstream = new FileInputStream(f);
-    return true;
-  }
-  ```
+- Caso en que no se debe lanzar:
+
+```java
+public boolean open_user_file(String name)
+    throws FileNotFoundException {
+  File f = new File(name);
+  if (!f.exists())
+    return false;
+  ipstream = new FileInputStream(f);
+  return true;
+}
+```
+
+</div>
+</div>
 
 ---
 
