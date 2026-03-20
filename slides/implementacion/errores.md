@@ -205,7 +205,9 @@ Incluir el __contexto__ de la ejecución:
 - No basta con el *stack trace*
 - Escribir mensajes informativos: operación fallida y tipo de fallo
 
-Los beneficios de las excepciones _checked_ en Java son mínimos: [¿por qué?](https://testing.googleblog.com/2009/09/checked-exceptions-i-love-you-but-you.html) ⟶ Hay quien recomienda usar solamente excepciones __unchecked__.
+Los beneficios de las excepciones _checked_ en Java son mínimos: <emph>¿por qué?</emph>
+
+(Hay quien recomienda [usar solamente](https://testing.googleblog.com/2009/09/checked-exceptions-i-love-you-but-you.html) excepciones __unchecked__)
 
 ---
 
@@ -215,7 +217,7 @@ Ejemplo: se necesita procesar un archivo CSV con datos de empleados. El código 
 
 1. `EmployeeCSVProcessor` (mi aplicación) — Necesita lanzar `IOException` si hay errores
 2. `CSVReader` (una librería de terceros) — Itera sobre las líneas del archivo
-3. `EmployeeRowHandler`** (mi implementación de callback) — Procesa cada fila
+3. `EmployeeRowHandler` (mi implementación de callback) — Procesa cada fila
 
 ---
 
@@ -254,17 +256,11 @@ __El dilema:__
 
 $\Rightarrow$ ❌ Contrato violado: ¡no compila!
 
-
 __Cómo afectan al diseño las excepciones checked__
 
-Se paga el precio de violar el principio OCP (_Open-Closed Principle_): si lanzamos una excepción _checked_ desde un método y el `catch` está tres niveles por encima, hay que declarar la excepción en la signatura de todos los métodos que van entre medias. Esto significa que un cambio en un nivel bajo del software puede forzar cambios en niveles altos.
-
----
-
-#### Excepciones en otros lenguajes
-
-- C\#, C++, Python o Ruby no ofrecen excepciones _checked_.
-- Scala no usa excepciones _checked_ como Java: [Scala exception handling](https://www.baeldung.com/scala/exception-handling)
+- Se paga el precio de violar el principio OCP (_Open-Closed Principle_): si lanzamos una excepción _checked_ desde un método y el `catch` está tres niveles por encima, hay que declarar la excepción en la signatura de todos los métodos que van entre medias.
+- Esto significa que un cambio en un nivel bajo del software puede forzar cambios en niveles altos.
+- Imaginemos cuando entre medias hay una biblioteca de terceros que no podemos modificar
 
 ---
 
@@ -343,6 +339,13 @@ __Precio a pagar:__
 
 ---
 
+#### Excepciones en otros lenguajes
+
+- C\#, C++, Python o Ruby no ofrecen excepciones _checked_.
+- Scala no usa excepciones _checked_ como Java: [Scala exception handling](https://www.baeldung.com/scala/exception-handling)
+
+---
+
 #### Excepciones encapsuladas
 
 Criticar la siguiente implementación:
@@ -415,10 +418,10 @@ public class LocalPort {
 }
 </style>
 
+Sustituir ahora por...
+
 <div class="cols">
 <div>
-
-Sustituir ahora por...
 
 ```java
 LocalPort port = new LocalPort(12);
@@ -449,7 +452,7 @@ try {
 <style scoped>
 .cols {
   display: grid;
-  grid-template-columns: 58% 42%;
+  grid-template-columns: 25% 75%;
 }
 </style>
 
@@ -460,6 +463,9 @@ __Ejemplo__: excepciones en el tratamiento de ficheros: ¿Usar excepciones cuand
 
 - Caso en que se debe lanzar una excepción:
 
+</div>
+<div>
+
 ```java
 public void open_passwd() throws FileNotFoundException {
   // This may throw FileNotFoundException...
@@ -469,9 +475,15 @@ public void open_passwd() throws FileNotFoundException {
 ```
 
 </div>
+</div>
+
+<div class="cols">
 <div>
 
 - Caso en que no se debe lanzar:
+
+</div>
+<div>
 
 ```java
 public boolean open_user_file(String name)
