@@ -75,7 +75,6 @@ CI es la práctica de construir y probar las aplicaciones en cada nueva versión
 
 ![CI pipeline](img/ci-pipeline.png)
 
-
 ---
 
 ### Pipeline de CD
@@ -99,7 +98,6 @@ Antiguamente, los cambios pequeños solían tener que esperar a que se completar
 ### Continuous Deployment
 
 Desplegar automáticamente el software en producción después de cada cambio.
-
 
 ![CDEP pipeline](img/cdep-pipeline.png)
 
@@ -141,7 +139,7 @@ La entrega es manual, el despliegue es automático.
 
 - Hay varias imágenes de Docker de Jenkins disponibles.
 
-- Utiliza la imagen oficial recomendada https://hub.docker.com/r/jenkins/jenkins/ del repositorio Docker Hub. Esta imagen contiene la versión actual LTS de Jenkin
+- Utiliza la imagen oficial recomendada <https://hub.docker.com/r/jenkins/jenkins/> del repositorio Docker Hub. Esta imagen contiene la versión actual LTS de Jenkin
 
 - Sin embargo, esta imagen no contiene Docker CLI, ni incluye plugins de Blue Ocean que se utilizan con frecuencia
 
@@ -149,41 +147,24 @@ La entrega es manual, el despliegue es automático.
 
 Como requisito previo, debes tener instalado Docker
 
-https://www.jenkins.io/doc/book/installing/docker/
+<https://www.jenkins.io/doc/book/installing/docker/>
 
 ---
 
-### Arquitectura DinD con Jenkins
-
-- La imagen DinD (Docker in Docker) es una imagen de Docker que contiene Docker
-- DinD se utiliza para ejecutar comandos de Docker dentro de los nodos de Jenkins
-
-```txt
-Host (macOS/Linux/Windows)
-└── Contenedor jenkins-docker (docker:dind)  ← motor Docker "interno"
-      └── Contenedor jenkins-blueocean       ← servidor Jenkins
-            └── Pipelines que usan Docker    ← builds CI/CD
-```
-
-Los dos contenedores se comunican a través de una **red bridge** de Docker.
-
----
-
-#### 1. Instalar imágenes de Docker
+### 1. Instalar imágenes de Docker
 
 Hay dos formas de instalar Jenkins usando Docker:
+
 1. Usando el socket de Docker del host
-2. Usando Docker in Docker (dind)
+2. Usando Docker in Docker (DinD)
 
-#### 2. Configurar la red
+### 2. Configurar la red
 
-* Jenkins necesita acceso al socket de Docker del host para ejecutar comandos.
-* Estos comandos se usarán en los pipelines de Jenkins para construir, ejecutar y administrar contenedores Docker.
-* Permite usar el Docker del host como **agente de Jenkins** para ejecutar los pipelines.
+- Jenkins necesita acceso al socket de Docker del host para ejecutar comandos.
+- Estos comandos se usarán en los pipelines de Jenkins para construir, ejecutar y administrar contenedores Docker.
+- Permite usar el Docker del host como **agente de Jenkins** para ejecutar los pipelines.
 
-El socket de Docker se encuentra en...
-* En Linux, macOS o Windows con WSL: `/var/run/docker.sock`
-* En Windows sin WSL: `//./pipe/docker_engine`
+El socket de Docker se encuentra en `/var/run/docker.sock` (Linux, MacOS o Windows con WSL))o en  `//./pipe/docker_engine` (Windows sin WSL).
 
 <!--
 Docker in Docker (dind) permite ejecutar un demonio Docker dentro de un contenedor Docker. Esto significa que el contenedor hijo tiene su propio motor Docker, con imágenes y contenedores aislados del host.
@@ -246,86 +227,29 @@ La opción --privileged es necesaria para que dind pueda gestionar el kernel (na
 
 ---
 
-### Blue Ocean
+### Plugins
 
-Blue Ocean es una interfaz de usuario moderna para Jenkins que simplifica la visualización y gestión de pipelines CI/CD. Características de Blue Ocean:
+<emph>Blue Ocean</emph> es una interfaz de usuario para Jenkins que simplifica la visualización y gestión de pipelines CI/CD:
 
-- **Visualización gráfica** de pipelines: Muestra el flujo del pipeline como un diagrama de nodos, facilitando identificar en qué etapa falla una build.
-- **Editor visual** de pipelines: Permite crear y editar Jenkinsfile de forma gráfica sin escribir código Groovy manualmente.
-- **Vista de ramas y PRs** mejorada: Integración nativa con GitHub/GitLab/Bitbucket para mostrar el estado de cada rama y pull request.
-- **Logs** más claros: Presenta la salida de cada paso de forma organizada y con colores, a diferencia de la interfaz clásica.
+- **Visualización gráfica** de pipelines: para identificad fallos.
+- **Editor visual** de pipelines: sin escribir código Groovy manualmente.
+- **Vista de ramas y PRs** mejorada: Integración con repositorios git para mostrar el estado de cada rama y PR.
+- **Logs** más claros: colores, etc.
+
+<emph>Otros plugins</emph>: Docker Workflow (para usar Docker en pipelines), Git, GitHub, Locale (para configurar el idioma de Jenkins), etc.
 
 ---
 
-## Docker in Docker (dind)
+## Docker in Docker (DinD)
 
-![bg right:50% 100% Dind](img/docker-dind-min.png)
+![bg right:50% 100% DinD](img/docker-dind-min.png)
 
-- La imagen dind (Docker in Docker) es una imagen de Docker que contiene Docker
+- La imagen DinD (Docker in Docker) es una imagen de Docker que contiene Docker
 - Crea un contenedor hijo dentro de otro contenedor Docker
 - Contenedores e imágenes disponibles en el contenedor hijo
 
 - Más compleja de configurar... pero (algo) más segura y portable.
 - Acceso [privilegiado](https://docs.docker.com/engine/reference/run/#runtime-privilege-and-linux-capabilities) al host (¡cuidado!)
-
----
-
-### Arquitectura DinD con Jenkins
-
-- DinD se utiliza para ejecutar comandos de Docker dentro de los nodos de Jenkins
-
-```txt
-Host (macOS/Linux/Windows)
-└── Contenedor jenkins-docker (docker:dind)  ← motor Docker "interno"
-      └── Contenedor jenkins-blueocean       ← servidor Jenkins
-            └── Pipelines que usan Docker    ← builds CI/CD
-```
-
-Los dos contenedores se comunican a través de una **red bridge** de Docker.
-
----
-
-#### 1. Instalar imágenes de Docker
-
-```bash
-docker pull jenkins/jenkins
-docker pull docker:dind
-```
-
----
-
-### Blue Ocean
-
-Blue Ocean es una interfaz de usuario moderna para Jenkins que simplifica la visualización y gestión de pipelines CI/CD. Características de Blue Ocean:
-
-- **Visualización gráfica** de pipelines: Muestra el flujo del pipeline como un diagrama de nodos, facilitando identificar en qué etapa falla una build.
-- **Editor visual** de pipelines: Permite crear y editar Jenkinsfile de forma gráfica sin escribir código Groovy manualmente.
-- **Vista de ramas y PRs** mejorada: Integración nativa con GitHub/GitLab/Bitbucket para mostrar el estado de cada rama y pull request.
-- **Logs** más claros: Presenta la salida de cada paso de forma organizada y con colores, a diferencia de la interfaz clásica.
-
----
-
-### Dockerfile
-
-Crear una red de tipo bridge en Docker:
-
-```bash
-docker network create jenkins
-```
-
-<!--
-Los dos plugins que se instalan son:
-- blueocean: interfaz gráfica moderna
-- docker-workflow: permite usar Docker dentro de los Jenkinsfile (pasos docker.build, docker.image, etc.)
-
-Otros plugins:
-- [Stage View](https://plugins.jenkins.io/pipeline-stage-view/): muestra una vista gráfica de las etapas del pipeline 
--->
-
----
-
-Se usa en Jenkins para que los agentes/nodos del pipeline puedan construir y ejecutar imágenes Docker sin depender del Docker del host directamente.
--->
 
 ---
 
@@ -423,7 +347,7 @@ docker logs jenkins
 
 ## Asistente de configuración
 
-Después de instalar y ejecutar Jenkins podemos acceder a un asistente de configuración a través de la interfaz web: http://localhost:8080
+Después de instalar y ejecutar Jenkins podemos acceder a un asistente de configuración a través de la interfaz web: <http://localhost:8080>
 
 Este asistente te guía para:
 
@@ -431,7 +355,7 @@ Este asistente te guía para:
 - Instalar plugins
 - Crear el primer usuario administrador
 
-Blue Ocean es accesible desde el menú lateral o en http://localhost:8080/blue
+Blue Ocean es accesible desde el menú lateral o en <http://localhost:8080/blue>
 
 Se puede forzar el idioma desde las opciones de *Apariencia*
 
@@ -455,7 +379,7 @@ Un pipeline se define en un archivo de texto llamado `Jenkinsfile`.
 
 1. En la sección **Definition**, selecciona **Pipeline script**
 
-2. Introduce el siguiente código en el editor:
+2. Introduce el siguiente código en el editor y **Save**:
 
 ```groovy
 pipeline { // Declaración de pipeline
@@ -470,8 +394,6 @@ pipeline { // Declaración de pipeline
   }
 }
 ```
-
-3. Haz clic en **Save**
 
 ---
 
@@ -531,8 +453,8 @@ pipeline {
 }
 ```
 
-* El propio servidor de Jenkins también puede actuar como agente.
-* Se pueden configurar otras máquinas como agentes de Jenkins.
+- El propio servidor de Jenkins también puede actuar como agente.
+- Se pueden configurar otras máquinas como agentes de Jenkins.
 
 ---
 
@@ -646,9 +568,9 @@ La alternativa para facilitar este proceso es escribir tu Jenkinsfile en un IDE 
 ## Pipeline para desplegar aplicación React
 
 Vamos a crear un pipeline para desplegar una aplicación React en un contenedor Docker usando el repositorio:
-https://github.com/jenkins-docs/simple-node-js-react-npm-app
+<https://github.com/jenkins-docs/simple-node-js-react-npm-app>
 
-Si has usado Docker in Docker (dind) para ejecutar Jenkins, debes publicar un puerto adicional en el contenedor Dind para Jenkins (Ya lo hicimos en el `docker-compose.yml`):
+Si has usado Docker in Docker (DinD) para ejecutar Jenkins, debes publicar un puerto adicional en el contenedor Dind para Jenkins (Ya lo hicimos en el `docker-compose.yml`):
 
 `--publish 3000:3000`
 
@@ -656,7 +578,7 @@ Si has usado Docker in Docker (dind) para ejecutar Jenkins, debes publicar un pu
 
 ### Ejemplo: Pipeline para desplegar aplicación React (I)
 
-1. Crear fork del repositorio que contiene la aplicación: https://github.com/jenkins-docs/simple-node-js-react-npm-app
+1. Crear fork del repositorio que contiene la aplicación: <https://github.com/jenkins-docs/simple-node-js-react-npm-app>
 2. Clonamos el repositorio en nuestro equipo
 3. Creamos un archivo `Jenkinsfile` en el directorio raíz del repositorio
 4. Creamos un pipeline en Jenkins con la opción **Pipeline script from SCM** y la siguiente configuración:
@@ -750,8 +672,9 @@ Actualizamos el archivo `Jenkinsfile` con una etapa de Entrega/Despliegue:
 ---
 
 NOTA: Para que funcione correctamente, es necesario realizar un cambio en el script `deliver.sh` original:
-* npm start & -->
-* npm start -- --host 0.0.0.0
+
+- npm start & -->
+- npm start -- --host 0.0.0.0
 
 El puerto estaba publicado por Docker, pero la aplicación escuchaba solo en localhost **dentro del contenedor**.
 Para que se pueda acceder desde el navegador del host, debe escuchar en 0.0.0.0.
@@ -762,29 +685,27 @@ Para que se pueda acceder desde el navegador del host, debe escuchar en 0.0.0.0.
 
 Finalmente, volvemos a ejecutar el pipeline y vemos el resultado en la interfaz de Jenkins.
 
-Si accedemos a http://localhost:3000, podemos ver la aplicación React desplegada:
+Si accedemos a <http://localhost:3000>, podemos ver la aplicación React desplegada:
 
 ![width:400 center](img/react.png)
 
 - Si accedemos al contenedor de Jenkins, podemos ver los archivos generados por el pipeline en el directorio `/var/jenkins_home/workspace/<nombre-del-pipeline>`
 - Además, con el comando `docker ps` podemos ver el contenedor creado durante la ejecución del pipeline
 
-
 # Ejercicio 1
 
 Prueba a realizar el completo proceso de despliegue de la aplicación React usando el pipeline que acabamos de crear.
 
-* Usa Docker in Docker (dind) para los agentes de Jenkins
-* ¿Se puede considerar que este pipeline implementa CI, Continuous Delivery y/o Continuous Deployment? ¿Por qué?
-
+- Usa Docker in Docker (DinD) para los agentes de Jenkins
+- ¿Se puede considerar que este pipeline implementa CI, Continuous Delivery y/o Continuous Deployment? ¿Por qué?
 
 # Ejercicio 2
 
-Crea un pipeline para desplegar una aplicación Python forkeando el repositorio: https://github.com/jenkins-docs/simple-python-pyinstaller-app
+Crea un pipeline para desplegar una aplicación Python forkeando el repositorio: <https://github.com/jenkins-docs/simple-python-pyinstaller-app>
 
 Sigue los mismos pasos que hemos visto para la aplicación React, pero usando un pipeline adaptado a la aplicación Python:
 
-https://github.com/jacaballero/simple-python-pyinstaller-app/blob/master/Jenkinsfile
+<https://github.com/jacaballero/simple-python-pyinstaller-app/blob/master/Jenkinsfile>
 
 - ¿Qué diferencia hay entre lo que generan los dos pipelines (React VS Python)?
 - ¿Se puede considerar que este pipeline implementa CI, Continuous Delivery y/o Continuous Deployment? ¿Por qué?
