@@ -15,18 +15,23 @@ math: mathjax
 <!-- paginate: false -->
 
 <style>
-/*
-section {
-  font-family: 'Founders Grotesk', sans-serif;
-  filter: brightness(1.00001);
-}
-*/
 h1 {
   text-align: center;
 }
 h2 {
   color: darkblue;
   text-align: center;
+}
+emph {
+  color: #E87B00;
+}
+.cols {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+.cols > div {
+  align-self: start;
 }
 </style>
 
@@ -41,7 +46,6 @@ p {
   text-align: center;
 }
 </style>
-
 
 ## CÓDIGOS DE ERROR
 
@@ -86,7 +90,7 @@ public enum Error {
 
 - Los programadores intentan evitar añadir nuevos motivos de error, porque eso significa tener que volver a compilar y desplegar todo el código.
 
-Otros ejemplos de imanes de dependencias son las clases con nombres como _Utilidades_, _Tools_, etc.
+Otros imanes de dependencias: clases con nombres como _Utilidades_, _Tools_, etc.
 
 ---
 
@@ -99,8 +103,19 @@ p {
 ## EXCEPCIONES
 
 ---
+<style scoped>
+.cols {
+  display: grid;
+  grid-template-columns: 55% 45%;
+}
+</style>
 
 Muchos lenguajes usan __excepciones__ en lugar de códigos de error:
+
+<div class="cols">
+<div>
+
+Queda más claro:
 
 ```java hl_lines="2 3 4"
 try {
@@ -113,21 +128,37 @@ catch (Exception e) {
 }
 ```
 
-¿No queda más claro?
+</div>
+<div>
 
-### Ventaja
+### Ventaja...?
 
 Las nuevas excepciones son derivadas de una clase base `Exception`, lo que facilita la definición de nuevos motivos de error.
 
----
+</div>
+</div>
 
 ### ¿Dónde se produce el error?
 
-Si se eleva una excepción en el ejemplo anterior, ¿en cuál de las instrucciones del bloque `try` se ha producido?
+Si se eleva una excepción, ¿en cuál de las instrucciones del bloque `try` se ha producido?
 
 ---
+<style scoped>
+.cols {
+  display: grid;
+  grid-template-columns: 20% 80%;
+}
+</style>
 
 ### Separar la función y el tratamiento de errores
+
+<div class="cols">
+<div>
+
+Queda más fácil de comprender, modificar y depurar
+
+</div>
+<div>
 
 ```java
 public void delete(Page page) {
@@ -150,25 +181,15 @@ private void logError(Exception e) {
 }
 ```
 
-¿No queda más fácil de comprender, modificar y depurar?
+</div>
+</div>
 
 ---
 
 ### Excepciones en Java
 
-- __Checked__ — Instancias de clases derivadas de `java.lang.Throwable` (menos `RuntimeException`). Deben declararse en el método mediante `throws` y obligan al llamador a tratar la excepción.
-
-- __Unchecked__ — Instancias de clases derivadas de `java.lang.RuntimeException`. No se declaran en el método y no obligan al llamador a tratar la excepción.
-
-__¿Qué implica elevar una excepción `e` en Java?__
-
-1. Deshacer (_roll back_) la llamada a un método...
-2. ...hasta que se encuentre un bloque catch para el tipo de `e` y...
-3. ...si no se encuentra, la excepción es capturada por la JVM, que detiene el programa.
-
----
-
-#### Tratamiento de excepciones en Java
+<div class="cols">
+<div>
 
 ```java
   try {
@@ -187,6 +208,20 @@ __¿Qué implica elevar una excepción `e` en Java?__
   }
 ```
 
+__Elevar una excepción `e`__ $\Rightarrow$ Deshacer (_roll back_) la llamada a un método hasta encontrar un `catch` para el tipo de `e`. Si no se encuentra, se detiene el programa.
+
+</div>
+<div>
+
+__Tipos de excepciones__:
+
+- __Checked__ — Derivadas de `java.lang.Throwable` (menos `RuntimeException`). Deben declararse en el método mediante `throws` y obligan al llamador a tratar la excepción.
+
+- __Unchecked__ — Derivadas de `java.lang.RuntimeException`. No se declaran en el método y no obligan al llamador a tratar la excepción.
+
+</div>
+</div>
+
 ---
 
 #### Recomendaciones sobre excepciones
@@ -197,18 +232,62 @@ Incluir el __contexto__ de la ejecución:
 - No basta con el *stack trace*
 - Escribir mensajes informativos: operación fallida y tipo de fallo
 
-Los beneficios de las excepciones _checked_ en Java son mínimos: [¿por qué?](https://testing.googleblog.com/2009/09/checked-exceptions-i-love-you-but-you.html) ⟶ Hay quien recomienda usar solamente excepciones __unchecked__.
+Los beneficios de las excepciones _checked_ en Java son mínimos: <emph>¿por qué?</emph>
+
+(Hay quien recomienda [usar solamente](https://testing.googleblog.com/2009/09/checked-exceptions-i-love-you-but-you.html) excepciones __unchecked__)
 
 ---
 
+#### ¿Por qué no usar excepciones checked?
+
+Ejemplo: se necesita procesar un archivo CSV con datos de empleados. El código está estructurado en capas:
+
+1. `EmployeeCSVProcessor` (mi aplicación) — Necesita lanzar `IOException` si hay errores
+2. `CSVReader` (una librería de terceros) — Itera sobre las líneas del archivo
+3. `EmployeeRowHandler` (mi implementación de callback) — Procesa cada fila
+
+---
+
+```java
+// Librería de terceros - NO sabe ni debe saber sobre IOException
+public class CSVReader {
+    public void processRows(RowHandler handler) {
+        List<String> lines = readFile(filePath);
+        for (String line : lines) {
+            handler.handle(line);  // Llama al handler
+        }
+    }
+}
+
+// Contrato que proporciona CSVReader
+public interface RowHandler {
+    void handle(String row);  // NO puede lanzar excepciones checked
+}
+
+// Mi implementación - ¡PROBLEMA!
+public class EmployeeRowHandler implements RowHandler {
+    @Override
+    public void handle(String row) throws IOException {  // ❌ INCOMPATIBLE
+        if (!isValid(row)) {
+            throw new IOException("Invalid employee data");
+        }
+    }
+}
+```
+
+---
+
+__El dilema:__
+
+`EmployeeCSVProcessor` (quiere `IOException`) $\rightarrow$ `CSVReader` (no declara `IOException`) $\rightarrow$ `EmployeeRowHandler` (necesita lanzarla)
+
+$\Rightarrow$ ❌ Contrato violado: ¡no compila!
+
 __Cómo afectan al diseño las excepciones checked__
 
-Se paga el precio de violar el principio OCP (_Open-Closed Principle_): si lanzamos una excepción _checked_ desde un método y el `catch` está tres niveles por encima, hay que declarar la excepción en la signatura de todos los métodos que van entre medias. Esto significa que un cambio en un nivel bajo del software puede forzar cambios en niveles altos.
-
-#### Excepciones en otros lenguajes
-
-- C\#, C++, Python o Ruby no ofrecen excepciones _checked_.
-- Scala no usa excepciones _checked_ como Java: [Scala exception handling](https://www.baeldung.com/scala/exception-handling)
+- Se paga el precio de violar el principio OCP (_Open-Closed Principle_): si lanzamos una excepción _checked_ desde un método y el `catch` está tres niveles por encima, hay que declarar la excepción en la signatura de todos los métodos que van entre medias.
+- Esto significa que un cambio en un nivel bajo del software puede forzar cambios en niveles altos.
+- Imaginemos cuando entre medias hay una biblioteca de terceros que no podemos modificar
 
 ---
 
@@ -218,13 +297,12 @@ Muchas APIs de Java lanzan excepciones _checked_ cuando deberían ser _unchecked
 
 __Ejemplo__: Al ejecutar una consulta mediante `executeQuery` en el API de JDBC se lanza una excepción `java.sql.SQLException` (de tipo checked) si la SQL es errónea.
 
-
 - ¿Le interesa al cliente del API saber que el error es provocado por una sentencia SQL?
 - ¿Le interesa al cliente del API conocer el tipo de excepción _checked_ que una consulta puede generar?
 
 ---
 
-__Solución: Transformación en unchecked__
+__Solución: ¿transformación en unchecked?__
 
 Transformar las excepciones checked en unchecked:
 
@@ -235,6 +313,63 @@ Transformar las excepciones checked en unchecked:
     throw new RuntimeException("Unchecked exception", ex)
   }
 ```
+
+---
+
+<style scoped>
+.cols {
+  display: grid;
+  grid-template-columns: 65% 35%;
+}
+</style>
+
+__La solución es un code smell:__
+
+<div class="cols">
+<div>
+
+```java
+public class EmployeeRowHandler implements RowHandler {
+  @Override
+  public void handle(String row) {
+    if (!isValid(row)) {
+      throw new RuntimeException("Invalid employee data: " + row);
+    }
+  }
+}
+
+public class EmployeeCSVProcessor {
+  public void process(String filePath) throws IOException {
+    try {
+      reader.processRows(new EmployeeRowHandler());
+    } catch (RuntimeException e) {
+      // ¿Era una IOException o un error real?
+      if (e.getMessage().contains("Invalid")) {
+        throw new IOException(e);  // Reconvertir
+      }
+      throw e;  // Relanzar si era otra cosa
+    }
+  }
+}
+```
+
+</div>
+<div>
+
+__Precio a pagar:__
+
+- Pérdida de información: No se sabe si la `RuntimeException` es realmente la excepción esperada
+- Violación del tipo: La excepción no comunica claramente el error
+
+</div>
+</div>
+
+---
+
+#### Excepciones en otros lenguajes
+
+- C\#, C++, Python o Ruby no ofrecen excepciones _checked_.
+- Scala no usa excepciones _checked_ como Java: [Scala exception handling](https://www.baeldung.com/scala/exception-handling)
 
 ---
 
@@ -261,10 +396,22 @@ Criticar la siguiente implementación:
 ```
 
 ---
+<style scoped>
+.cols {
+  display: grid;
+  grid-template-columns: 40% 60%;
+}
+</style>
 
 __Código duplicado__: llamada a `reportPortError()` se repite mucho. ¿Cómo evitarlo?
 
+<div class="cols">
+<div>
+
 __Solución: Excepción encapsulada__
+
+</div>
+<div>
 
 ```java
 public class LocalPort {
@@ -287,7 +434,21 @@ public class LocalPort {
 }
 ```
 
+</div>
+</div>
+
 ---
+<style scoped>
+.cols {
+  display: grid;
+  grid-template-columns: 45% 55%;
+}
+</style>
+
+Sustituir ahora por...
+
+<div class="cols">
+<div>
 
 ```java
 LocalPort port = new LocalPort(12);
@@ -301,43 +462,69 @@ try {
 }
 ```
 
+</div>
+<div>
+
 - La encapsulación de excepciones es recomendable cuando se usa un API de terceros, para minimizar las dependencias con respecto al API elegido.
 - También facilita la implementación de __mocks__ del componente que proporciona el API para construir pruebas.
 
----
+</div>
+</div>
 
 #### Las excepciones son excepcionales
 
-__Recomendación de uso__: Usar excepciones para problemas excepcionales (eventos inesperados)
-
-__Ejemplo: Excepciones por ficheros__: ¿Usar excepciones cuando se intenta abrir un fichero para leer y el fichero no existe?
-
-- Depende de si el fichero debe estar ahí
+- __Recomendación de uso__: Usar excepciones para problemas excepcionales (eventos inesperados)
 
 ---
+<style scoped>
+.cols {
+  display: grid;
+  grid-template-columns: 25% 75%;
+}
+</style>
+
+__Ejemplo__: excepciones en el tratamiento de ficheros: ¿Usar excepciones cuando se intenta abrir un fichero para leer y el fichero no existe? Depende de si el fichero debe estar ahí
+
+<div class="cols">
+<div>
 
 - Caso en que se debe lanzar una excepción:
 
-  ```java
-  public void open_passwd() throws FileNotFoundException {
-    // This may throw FileNotFoundException...
-    ipstream = new FileInputStream("/etc/passwd");
-    // ...
-  }
-  ```
+</div>
+<div>
 
-- Caso en que no se debe lanzar una excepción:
+```java
+public void open_passwd() throws FileNotFoundException {
+  // This may throw FileNotFoundException...
+  ipstream = new FileInputStream("/etc/passwd");
+  // ...
+}
+```
 
-  ```java
-  public boolean open_user_file(String name)
-      throws FileNotFoundException {
-    File f = new File(name);
-    if (!f.exists())
-      return false;
-    ipstream = new FileInputStream(f);
-    return true;
-  }
-  ```
+</div>
+</div>
+
+<div class="cols">
+<div>
+
+- Caso en que no se debe lanzar:
+
+</div>
+<div>
+
+```java
+public boolean open_user_file(String name)
+    throws FileNotFoundException {
+  File f = new File(name);
+  if (!f.exists())
+    return false;
+  ipstream = new FileInputStream(f);
+  return true;
+}
+```
+
+</div>
+</div>
 
 ---
 
@@ -355,12 +542,12 @@ Obtener un _null_ cuando no se espera puede ser un quebradero de cabeza para el 
 
 __Principio general: no devolver null__
 
-Este código puede parecer inofensivo, pero es maligno:
+Este código puede parecer inofensivo, pero es maligno: ¿Qué pasa si `persistentStore` es null?
 
 ```java
 public void registerItem(Item item) {
   if (item != null) {
-    ItemRegistry registry = peristentStore.getItemRegistry();
+    ItemRegistry registry = persistentStore.getItemRegistry();
     if (registry != null) {
       Item existing = registry.getItem(item.getID());
       if (existing.getBillingPeriod().hasRetailOwner()) {
@@ -370,8 +557,6 @@ public void registerItem(Item item) {
   }
 }
 ```
-
-¿Qué pasa si `persistentStore` es null?
 
 ---
 
@@ -384,10 +569,15 @@ public void registerItem(Item item) {
 
 ### No devolver null
 
+<div class="cols">
+<div>
+
 Evitar esto:
 
 ```java
-List<Employee> employees = getEmployees();
+List<Employee> employees =
+                  getEmployees();
+
 if (employees != null) {
   for(Employee e : employees) {
     totalPay += e.getPay();
@@ -395,13 +585,16 @@ if (employees != null) {
 }
 ```
 
----
+</div>
+<div>
 
 Mejor así:
 
 ```java
-List<Employee> employees = getEmployees();
-for(Employee e : employees) {
+List<Employee> employees =
+                  getEmployees();
+
+for (Employee e: employees) {
   totalPay += e.getPay();
 }
 
@@ -410,6 +603,9 @@ public List<Employee> getEmployees() {
     return Collections.emptyList();
 }
 ```
+
+</div>
+</div>
 
 ---
 
@@ -454,8 +650,6 @@ public class MetricsCalculator
 
 #### Alternativa con aserciones
 
-Solo para JDK ≥ 5.0
-
 ```java
 public class MetricsCalculator
 {
@@ -467,7 +661,7 @@ public class MetricsCalculator
 }
 ```
 
-El uso de `assert` es una buena forma de documentar, pero no resuelve el problema.
+El uso de `assert` es una buena forma de <emph>documentar</emph>, pero no resuelve el problema.
 
 Pueden usarse __aserciones__ o __contratos__ para resolver esto.
 
@@ -621,45 +815,39 @@ Para ello se usa `orElse()` para proporcionar un valor alternativo en caso de qu
 
 ---
 
-#### Ejemplo del API Streams en Java:
+#### Ejemplo: `record` en vez de clases
+
+El compilador genera automáticamente constructor, accessores (sin `get`), `equals`, `hashCode` y `toString`:
 
 ```java
-import java.util.List;
-import java.util.Arrays;
-...
+record ScreenResolution(int width, int height) {}
 
-List<String> myList = Arrays.asList("a1", "a2", "b1", "c2", "c1");
+record DisplayFeatures(String size, ScreenResolution resolution) {}
 
-myList.stream()
-  .filter(s -> s.startsWith("c"))
-  .map(String::toUpperCase)
-  .sorted()
-  .forEach(System.out::println);
-
-myList.stream()
-  .reduce( (a,b) -> a + " " + b )
-  .ifPresent(System.out::println);
+record Mobile(long id, String brand, String name,
+              DisplayFeatures displayFeatures) {}
 ```
 
 ---
 
-#### Ejemplo sin `Optional`: Programa de prueba
+#### Ejemplo: Programa de prueba
+
+Con `var` se infiere el tipo de cada variable local:
 
 ```java
-public class MobileTesterWithoutOptional {
+public class MobileTester {
   public static void main(String[] args) {
-    ScreenResolution resolution = new ScreenResolution(750,1334);
-    DisplayFeatures dfeatures = new DisplayFeatures("4.7", resolution);
-    Mobile mobile = new Mobile(2015001, "Apple", "iPhone 6s", dfeatures);
+    var resolution1 = new ScreenResolution(750, 1334);
+    var dfeatures1  = new DisplayFeatures("4.7", resolution1);
+    var mobile1     = new Mobile(2015001, "Apple", "iPhone 6s", dfeatures1);
 
-    MobileService mService = new MobileService();
-
-    int mobileWidth = mService.getMobileScreenWidth(mobile);
+    var mService = new MobileService();
+    int mobileWidth = mService.getMobileScreenWidth(mobile1);
     System.out.println("Apple iPhone 6s Screen Width = " + mobileWidth);
 
-    ScreenResolution resolution2 = new ScreenResolution(0,0);
-    DisplayFeatures dfeatures2 = new DisplayFeatures("0", resolution2);
-    Mobile mobile2 = new Mobile(2015001, "Apple", "iPhone 6s", dfeatures2);
+    var resolution2 = new ScreenResolution(0, 0);
+    var dfeatures2  = new DisplayFeatures("0", resolution2);
+    var mobile2     = new Mobile(2015001, "Apple", "iPhone 6s", dfeatures2);
     int mobileWidth2 = mService.getMobileScreenWidth(mobile2);
     System.out.println("Apple iPhone 16s Screen Width = " + mobileWidth2);
   }
@@ -668,116 +856,52 @@ public class MobileTesterWithoutOptional {
 
 ---
 
-Cantidad de código _boilerplate_ para comprobar los nulos en la clase principal:
+Reducir _boilerplate_ de `if (x!_null)`: expresión `switch` con _record patterns_ y _unnamed patterns_ `_`:
 
 ```java
 public class MobileService {
-  public int getMobileScreenWidth(Mobile mobile){
-    if(mobile != null){
-      DisplayFeatures dfeatures = mobile.getDisplayFeatures();
-      if(dfeatures != null){
-        ScreenResolution resolution = dfeatures.getResolution();
-        if(resolution != null){
-          return resolution.getWidth();
-        }
-      }
-    }
-    return 0;
+  public int getMobileScreenWidth(Mobile mobile) {
+    return switch (mobile) {
+      case null                                              -> 0;
+      case Mobile(_, _, _, null)                            -> 0;
+      case Mobile(_, _, _, DisplayFeatures(_, null))        -> 0;
+      case Mobile(_, _, _, DisplayFeatures(_, ScreenResolution(int w, _))) -> w;
+    };
   }
 }
 ```
 
 ---
 
-Clases de utilidad:
+##### Novedades de Java usadas en el ejemplo
 
-```java
-public class ScreenResolution {
-  private int width;
-  private int height;
-
-  public ScreenResolution(int width, int height){
-    this.width = width;
-    this.height = height;
-  }
-  public int getWidth() {
-    return width;
-  }
-  public int getHeight() {
-    return height;
-  }
-}
-```
+| Característica | JDK | Qué aporta |
+| :--- | --- | :--- |
+| `record` | 16 | Clase inmutable en una línea; accessors sin prefijo `get` |
+| _Pattern matching_ en `switch`** | 21 | Elimina `if (x != null)` anidados |
+| _Record patterns_ | 21 | Deconstrucción  en los `case` |
+| _Unnamed patterns_ `_` | 22 | Ignora campos del `record` irrelevantes |
+| `var` | 10 | Inferencia de tipo local; reduce repetición de tipos |
 
 ---
 
-```java
-public class DisplayFeatures {
-  private String size; // In inches
-  private ScreenResolution resolution;
+#### Ejemplo con `Optionals`
 
-  public DisplayFeatures(String size, ScreenResolution resolution){
-    this.size = size;
-    this.resolution = resolution;
-  }
-  public String getSize() {
-    return size;
-  }
-  public ScreenResolution getResolution() {
-    return resolution;
-  }
-}
-```
-
----
-
-```java
-public class Mobile {
-  private long id;
-  private String brand;
-  private String name;
-  private DisplayFeatures displayFeatures;
-  
-  public Mobile(long id,
-                String brand,
-                String name,
-                DisplayFeatures displayFeatures){
-    this.id = id;
-    this.brand = brand;
-    this.name = name;
-    this.displayFeatures = displayFeatures;
-  }
-  public long getId() { return id; }
-  public String getBrand() { return brand; }
-  public String getName() { return name; }
-  public DisplayFeatures getDisplayFeatures() {
-    return displayFeatures;
-  }
-}
-```
-
----
-
-#### Ejemplo con `Optionals`: Uso de `Optional` en el programa de prueba
+Con `var` se infiere el tipo de cada variable local:
 
 ```java
 public class MobileTesterWithOptional {
   public static void main(String[] args) {
-    ScreenResolution resolution =
-      new ScreenResolution(750,1334);
-    DisplayFeatures dfeatures =
-      new DisplayFeatures("4.7", Optional.of(resolution));
-    Mobile mobile =
-      new Mobile(2015001, "Apple", "iPhone 13", Optional.of(dfeatures));
-
-    MobileService mService =
-      new MobileService();
+    var resolution = new ScreenResolution(750, 1334);
+    var dfeatures  = new DisplayFeatures("4.7", Optional.of(resolution));
+    var mobile     = new Mobile(2015001, "Apple", "iPhone 13", Optional.of(dfeatures));
+    var mService   = new MobileService();
 
     int width = mService.getMobileScreenWidth(Optional.of(mobile));
     System.out.println("Apple iPhone 13 Screen Width = " + width);
 
-    Mobile mobile2 = new Mobile(2015001, "Apple", "iPhone 13", Optional.empty());
-    int width2 = mService.getMobileScreenWidth(Optional.of(mobile2));
+    var mobile2 = new Mobile(2015001, "Apple", "iPhone 13", Optional.empty());
+    int width2  = mService.getMobileScreenWidth(Optional.of(mobile2));
     System.out.println("Apple iPhone 13 Screen Width = " + width2);
   }
 }
@@ -785,67 +909,29 @@ public class MobileTesterWithOptional {
 
 ---
 
-Menos código _boilerplate_ en la clase principal:
+```java
+record ScreenResolution(int width, int height) {}
+
+record DisplayFeatures(String size, Optional<ScreenResolution> resolution) {}
+
+record Mobile(long id, String brand, String name,
+              Optional<DisplayFeatures> displayFeatures) {}
+```
+
+Menos _boilerplate_ - Sintaxis _fluent_ con `flatMap` - Elimina el problema de los nulos:
 
 ```java
 public class MobileService {
-  public Integer getMobileScreenWidth(Optional<Mobile> mobile){
-    return mobile.flatMap(Mobile::getDisplayFeatures)
-      .flatMap(DisplayFeatures::getResolution)
-      .map(ScreenResolution::getWidth)
+  public int getMobileScreenWidth(Optional<Mobile> mobile) {
+    return mobile.flatMap(Mobile::displayFeatures)
+      .flatMap(DisplayFeatures::resolution)
+      .map(ScreenResolution::width)
       .orElse(0);
   }
 }
 ```
 
----
-
-Clases de utilidad modificadas para que usen `Optional`:
-
-```java
-import java.util.Optional;
-
-public class DisplayFeatures {
-  private String size; // In inches
-  private Optional<ScreenResolution> resolution;
-  public DisplayFeatures(String size, Optional<ScreenResolution> resolution){
-    this.size = size;
-    this.resolution = resolution;
-  }
-  public String getSize() {
-    return size;
-  }
-  public Optional<ScreenResolution> getResolution() {
-    return resolution;
-  }
-}
-```
-
----
-
-```java
-public class Mobile {
-  private long id;
-  private String brand;
-  private String name;
-  private Optional<DisplayFeatures> displayFeatures;
-  public Mobile(long id,
-                String brand,
-                String name,
-                Optional<DisplayFeatures> displayFeatures){
-    this.id = id;
-    this.brand = brand;
-    this.name = name;
-    this.displayFeatures = displayFeatures;
-  }
-  public long getId() { return id; }
-  public String getBrand() { return brand; }
-  public String getName() { return name; }
-  public Optional<DisplayFeatures> getDisplayFeatures() {
-    return displayFeatures;
-  }
-}
-```
+<!-- Esta solución, además de reducir el boilerplate, elimina el problema de manejar valores nulos -->
 
 ---
 

@@ -5,7 +5,7 @@ description: Asignaturas del grado en Ingeniería Informática
 ---
 
 <!-- size: 16:9 -->
-<!-- theme: vs -->
+<!-- theme: default -->
 
 <!-- paginate: skip -->
 
