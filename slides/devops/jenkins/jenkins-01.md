@@ -33,6 +33,14 @@ img[alt~="float"] {
 emph {
   color: #E87B00;
 }
+.cols {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+.cols > div {
+  align-self: start;
+}
 </style>
 
 # CI/CD con Jenkins
@@ -108,14 +116,12 @@ La entrega es manual, el despliegue es automático.
 ---
 
 | 📙 | Definiciones |
-----:|:----
-<emph>Build</emph>   | compilar y ensamblar el código fuente en formato ejecutable o en un conjunto de artefactos para un entorno específico
-<emph>Pipeline</emph>   | conjunto automatizado y secuencial de procesos para ejecutar tareas específicas
-<emph>Staging</emph> | entorno de prueba que replica el entorno de producción para realizar pruebas finales (con usuarios) antes del despliegue
-<emph>Artefacto</emph> | resultado del _build_. Pueden ser binarios ejecutables, bibliotecas, paquetes de instalación, etc., necesarios para ejecutar la aplicación
-<emph>Release</emph> | una versión específica y completa de una aplicación o software que se considera lista para ser distribuida y utilizada por los usuarios finales
-
----
+| ----: | :---- |
+| <emph>Build</emph> | compilar y ensamblar el código fuente en formato ejecutable o en un conjunto de artefactos para un entorno específico |
+| <emph>Pipeline</emph> | conjunto automatizado y secuencial de procesos para ejecutar tareas específicas |
+| <emph>Staging</emph> | entorno de prueba que replica el entorno de producción para realizar pruebas finales (con usuarios) antes del despliegue |
+| <emph>Artefacto</emph> | resultado del _build_. Pueden ser binarios ejecutables, bibliotecas, paquetes de instalación, etc., necesarios para ejecutar la aplicación |
+| <emph>Release</emph> | una versión específica y completa de una aplicación o software que se considera lista para ser distribuida y utilizada por los usuarios finales |
 
 # Jenkins
 
@@ -153,23 +159,42 @@ https://www.jenkins.io/doc/book/installing/docker/
 
 ---
 
-### Imágenes de Docker
+### Arquitectura DinD con Jenkins
+
+- La imagen DinD (Docker in Docker) es una imagen de Docker que contiene Docker
+- DinD se utiliza para ejecutar comandos de Docker dentro de los nodos de Jenkins
+
+```txt
+Host (macOS/Linux/Windows)
+└── Contenedor jenkins-docker (docker:dind)  ← motor Docker "interno"
+      └── Contenedor jenkins-blueocean       ← servidor Jenkins
+            └── Pipelines que usan Docker    ← builds CI/CD
+```
+
+Los dos contenedores se comunican a través de una **red bridge** de Docker.
+
+---
+
+#### 1. Instalar imágenes de Docker
 
 ```bash
 docker pull jenkins/jenkins
 docker pull docker:dind
 ```
 
-- La imagen dind (Docker in Docker) es una imagen de Docker que contiene Docker
-- Dind se utiliza para ejecutar comandos de Docker dentro de los nodos de Jenkins
-
-### Red
+#### 2. Configurar la red
 
 Crear una red de tipo bridge en Docker:
 
 ```bash
 docker network create jenkins
 ```
+
+<!--
+Docker in Docker (dind) permite ejecutar un demonio Docker dentro de un contenedor Docker. Esto significa que el contenedor hijo tiene su propio motor Docker, con imágenes y contenedores aislados del host.
+
+Se usa en Jenkins para que los agentes/nodos del pipeline puedan construir y ejecutar imágenes Docker sin depender del Docker del host directamente.
+-->
 
 ---
 
@@ -206,6 +231,10 @@ RUN apt-get update && \
     apt-get install -qy curl && \
     curl -sSL https://get.docker.com/ | sh
 ```
+
+<!--
+La opción --privileged es necesaria para que dind pueda gestionar el kernel (namespaces, cgroups).
+-->
 
 ---
 
@@ -261,6 +290,17 @@ docker run --name jenkins-docker # Nombre del contenedor
 
 ---
 
+### Blue Ocean
+
+Blue Ocean es una interfaz de usuario moderna para Jenkins que simplifica la visualización y gestión de pipelines CI/CD. Características de Blue Ocean:
+
+- **Visualización gráfica** de pipelines: Muestra el flujo del pipeline como un diagrama de nodos, facilitando identificar en qué etapa falla una build.
+- **Editor visual** de pipelines: Permite crear y editar Jenkinsfile de forma gráfica sin escribir código Groovy manualmente.
+- **Vista de ramas y PRs** mejorada: Integración nativa con GitHub/GitLab/Bitbucket para mostrar el estado de cada rama y pull request.
+- **Logs** más claros: Presenta la salida de cada paso de forma organizada y con colores, a diferencia de la interfaz clásica.
+
+---
+
 ### Dockerfile
 
 Personaliza la imagen oficial de Jenkins de Docker usando un Dockerfile:
@@ -279,6 +319,15 @@ RUN apt-get update && apt-get install -y docker-ce-cli
 USER jenkins
 RUN jenkins-plugin-cli --plugins "blueocean docker-workflow"
 ```
+
+<!--
+Los dos plugins que se instalan son:
+- blueocean: interfaz gráfica moderna
+- docker-workflow: permite usar Docker dentro de los Jenkinsfile (pasos docker.build, docker.image, etc.)
+
+Otros plugins:
+- [Stage View](https://plugins.jenkins.io/pipeline-stage-view/): muestra una vista gráfica de las etapas del pipeline 
+-->
 
 ---
 
@@ -308,6 +357,10 @@ docker run --name jenkins-blueocean --restart=on-failure --detach \
 
 Opcionalmente, puede añadirse `--env JAVA_OPTS="-Dorg.jenkinsci.plugins.durabletask.BourneShellScript.LAUNCH_DIAGNOSTICS=true" \` justo antes de la última línea para que Jenkins muestre los logs de los scripts.
 
+<!--
+La variable DOCKER_HOST=tcp://docker:2376 hace que el CLI de Jenkins se comunique con el motor dind (resolvible por el alias de red docker).
+-->
+
 ---
 
 ### Ejecutar Jenkins (explicación)
@@ -329,7 +382,7 @@ docker run
 
 ---
 
-## Accediendo al contenedor de Docker
+## Acceder al contenedor de Docker
 
 Para acceder al contenedor de Docker, usa `docker exec` junto con el nombre del contenedor de Docker y `bash`:
 
@@ -349,14 +402,15 @@ En caso de haber usado otro nombre para el contenedor, sustituye `jenkins-blueoc
 
 ## Asistente de configuración
 
-Después de instalar y ejecutar Jenkins podemos a un asistente de configuración a través de la interfaz web:
-
-http://localhost:8080
+Después de instalar y ejecutar Jenkins podemos acceder a un asistente de configuración a través de la interfaz web: http://localhost:8080
 
 Este asistente te guía para:
-  - Desbloquear Jenkins
-  - Instalar plugins
-  - Crear el primer usuario administrador
+
+- Desbloquear Jenkins
+- Instalar plugins
+- Crear el primer usuario administrador
+
+Blue Ocean es accesible desde el menú lateral o en http://localhost:8080/blue
 
 ---
 
@@ -481,10 +535,12 @@ pipeline {
 
 ### Variables de entorno
 
+<div class="cols">
+<div>
+
 Las variables de entorno se definen de la siguiente manera:
 
 ```groovy
-
 pipeline {
     environment {
         key = 'value'
@@ -492,12 +548,21 @@ pipeline {
 }
 ```
 
+</div>
+<div>
+
 - `key` es el nombre de la variable de entorno
 - `value` es el valor de la variable de entorno
+
+</div>
+</div>
 
 ---
 
 ### Etapas
+
+<div class="cols">
+<div>
 
 ```groovy
 pipeline {
@@ -505,18 +570,26 @@ pipeline {
         stage('Stage 1') {
             steps {
                 // Pasos de la etapa
+                // ...
+                // ...
             }
         }
     }
 }
 ```
 
-- Una etapa es una colección de pasos
+</div>
+<div>
+
+- Una **etapa** es una colección de pasos
   - Las etapas se ejecutan secuencialmente
   - Aunque hay opciones para ejecutarlas en paralelo
-- Un paso es una acción que se ejecuta en un agente
+- Un **paso** es una acción que se ejecuta en un agente
   - Los pasos se ejecutan secuencialmente
   - Se usa `sh` para ejecutar comandos de shell
+
+</div>
+</div>
 
 ---
 
