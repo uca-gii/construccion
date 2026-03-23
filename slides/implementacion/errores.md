@@ -366,6 +366,31 @@ __Precio a pagar:__
 
 ---
 
+__Transformación a UncheckedIOException__
+
+Java 8 introdujo `UncheckedIOException`, para transformar una `IOException` en unchecked sin perder la información de la causa original
+
+```java
+import java.io.UncheckedIOException;
+
+public class EmployeeRowHandler implements RowHandler {
+    @Override
+    public void handle(String row) {
+        try {
+            if (!isValid(row)) {
+                throw new IOException("Invalid employee data");
+            }
+            // Lógica principal
+        } catch (IOException e) {
+            // "Envolvemos" el error checked en un wrapper unchecked oficial de Java
+            throw new UncheckedIOException(e);
+        }
+    }
+}
+```
+
+---
+
 #### Excepciones en otros lenguajes
 
 - C\#, C++, Python o Ruby no ofrecen excepciones _checked_.
