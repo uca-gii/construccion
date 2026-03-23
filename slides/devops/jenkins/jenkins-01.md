@@ -33,6 +33,14 @@ img[alt~="float"] {
 emph {
   color: #E87B00;
 }
+.cols {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+.cols > div {
+  align-self: start;
+}
 </style>
 
 # CI/CD con Jenkins
@@ -104,12 +112,12 @@ La entrega es manual, el despliegue es automático.
 ---
 
 | 📙 | Definiciones |
-----:|:----
-<emph>Build</emph>   | compilar y ensamblar el código fuente en formato ejecutable o en un conjunto de artefactos para un entorno específico
-<emph>Pipeline</emph>   | conjunto automatizado y secuencial de procesos para ejecutar tareas específicas
-<emph>Staging</emph> | entorno de prueba que replica el entorno de producción para realizar pruebas finales (con usuarios) antes del despliegue
-<emph>Artefacto</emph> | resultado del _build_. Pueden ser binarios ejecutables, bibliotecas, paquetes de instalación, etc., necesarios para ejecutar la aplicación
-<emph>Release</emph> | una versión específica y completa de una aplicación o software que se considera lista para ser distribuida y utilizada por los usuarios finales
+| ----: | :---- |
+| <emph>Build</emph> | compilar y ensamblar el código fuente en formato ejecutable o en un conjunto de artefactos para un entorno específico |
+| <emph>Pipeline</emph> | conjunto automatizado y secuencial de procesos para ejecutar tareas específicas |
+| <emph>Staging</emph> | entorno de prueba que replica el entorno de producción para realizar pruebas finales (con usuarios) antes del despliegue |
+| <emph>Artefacto</emph> | resultado del _build_. Pueden ser binarios ejecutables, bibliotecas, paquetes de instalación, etc., necesarios para ejecutar la aplicación |
+| <emph>Release</emph> | una versión específica y completa de una aplicación o software que se considera lista para ser distribuida y utilizada por los usuarios finales |
 
 ---
 
@@ -224,6 +232,44 @@ RUN jenkins-plugin-cli --plugins \
 
 - Más compleja de configurar... pero (algo) más segura y portable.
 - Acceso [privilegiado](https://docs.docker.com/engine/reference/run/#runtime-privilege-and-linux-capabilities) al host (¡cuidado!)
+
+---
+
+### Arquitectura DinD con Jenkins
+
+- DinD se utiliza para ejecutar comandos de Docker dentro de los nodos de Jenkins
+
+```txt
+Host (macOS/Linux/Windows)
+└── Contenedor jenkins-docker (docker:dind)  ← motor Docker "interno"
+      └── Contenedor jenkins-blueocean       ← servidor Jenkins
+            └── Pipelines que usan Docker    ← builds CI/CD
+```
+
+Los dos contenedores se comunican a través de una **red bridge** de Docker.
+
+---
+
+#### 1. Instalar imágenes de Docker
+
+```bash
+docker pull jenkins/jenkins
+docker pull docker:dind
+```
+
+#### 2. Configurar la red
+
+Crear una red de tipo bridge en Docker:
+
+```bash
+docker network create jenkins
+```
+
+<!--
+Docker in Docker (dind) permite ejecutar un demonio Docker dentro de un contenedor Docker. Esto significa que el contenedor hijo tiene su propio motor Docker, con imágenes y contenedores aislados del host.
+
+Se usa en Jenkins para que los agentes/nodos del pipeline puedan construir y ejecutar imágenes Docker sin depender del Docker del host directamente.
+-->
 
 ---
 
@@ -454,10 +500,12 @@ pipeline {
 
 ### Variables de entorno
 
+<div class="cols">
+<div>
+
 Las variables de entorno se definen de la siguiente manera:
 
 ```groovy
-
 pipeline {
     environment {
         key = 'value'
@@ -465,12 +513,21 @@ pipeline {
 }
 ```
 
+</div>
+<div>
+
 - `key` es el nombre de la variable de entorno
 - `value` es el valor de la variable de entorno
+
+</div>
+</div>
 
 ---
 
 ### Etapas
+
+<div class="cols">
+<div>
 
 ```groovy
 pipeline {
@@ -478,17 +535,26 @@ pipeline {
         stage('Stage 1') {
             steps {
                 // Pasos de la etapa
+                // ...
+                // ...
             }
         }
     }
 }
 ```
 
-- Una etapa es una colección de pasos secuenciales...
-  - (aunque hay opciones para ejecutarlas en paralelo)
-- Un paso es una acción que se ejecuta en un agente
+</div>
+<div>
+
+- Una **etapa** es una colección de pasos
+  - Las etapas se ejecutan secuencialmente
+  - Aunque hay opciones para ejecutarlas en paralelo
+- Un **paso** es una acción que se ejecuta en un agente
   - Los pasos se ejecutan secuencialmente
   - Se usa `sh` para ejecutar comandos de shell
+
+</div>
+</div>
 
 ---
 
