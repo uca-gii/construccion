@@ -1,7 +1,12 @@
 ---
 marp: true
-title: Apuntes IISS
+author:
+- Juan Manuel Dodero
+date: Enero 2026
+subject: Implementación e Implantación de Sistemas Software, curso 2025/26
+title: Programación asertiva y contratos
 description: Apuntes de Implementación e Implantación de Sistemas Software
+math: mathjax
 ---
 
 <!-- size: 16:9 -->
@@ -19,7 +24,7 @@ h2 {
 }
 </style>
 
-# PROGRAMACIÓN ASERTIVA
+# PROGRAMACIÓN ASERTIVA Y CONTRATOS
 
 ---
 
@@ -266,9 +271,8 @@ La __inmutabilidad__ en los objetos (y estructuras de datos) es una garantía de
 - Por _thread-safety_ para código concurrente
 
 <!--
-
-#### *Idiom* para definir aserciones finales
-
+<details>
+<summary>*Idiom* para definir aserciones finales</summary>
 A veces hace falta guardar datos antes de hacer un cómputo, para poder luego comprobar una condición cuando el cómputo se haya completado.
 
 Ejemplo de cómo hacerlo con una _inner class_ que guarda el estado de variables:
@@ -294,7 +298,7 @@ Ejemplo de cómo hacerlo con una _inner class_ que guarda el estado de variables
         assert copy.isConsistent();
      }
 ```
-
+</details>
 -->
 
 ---

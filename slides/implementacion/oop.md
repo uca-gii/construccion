@@ -1,7 +1,12 @@
 ---
 marp: true
-title: Apuntes IISS
+author:
+- Juan Manuel Dodero
+date: Enero 2026
+subject: Implementación e Implantación de Sistemas Software, curso 2025/26
+title: Programación con objetos
 description: Apuntes de Implementación e Implantación de Sistemas Software
+math: mathjax
 ---
 
 <!-- size: 16:9 -->
@@ -20,9 +25,17 @@ h2 {
 emph {
   color: #E87B00;
 }
+.cols {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+.cols > div {
+  align-self: start;
+}
 </style>
 
-# OBJETOS
+# PROGRAMACIÓN CON OBJETOS
 
 ---
 
@@ -48,7 +61,7 @@ p {
 }
 </style>
 
-**Ocultar la implementación**
+**Ocultar** la implementación
 
 ---
 
@@ -66,12 +79,10 @@ p {
 
 ## Principios básicos de la construcción de software (OO)
 
-
-
-- __Abstracción__: diferenciar el *qué* y el *cómo*
-- __Modularidad__: componentes, módulos (en OO, clases y objetos), interfaces, etc.
-- $\bigtriangleup$ __cohesión__: módulos auto-contenidos, independientes y con un único propósito
-- $\bigtriangledown$ __acoplamiento__: reducir las dependencias entre módulos
+- **Abstracción**: diferenciar el *qué* y el *cómo*
+- **Modularidad**: componentes, módulos (en OO, clases y objetos), interfaces, etc.
+- $\bigtriangleup$ **cohesión**: módulos auto-contenidos, independientes y con un único propósito
+- $\bigtriangledown$ **acoplamiento**: reducir las dependencias entre módulos
 
 ---
 
@@ -106,6 +117,12 @@ En relación a los principios de _alta cohesión_ y _bajo acoplamiento_, critica
 
 ---
 
+<style scoped>
+p {
+  text-align: center;
+}
+</style>
+
 ## Abstracción
 
 - La clase abstracta `List<T>` diferencia entre el *qué* y el *cómo*
@@ -114,8 +131,12 @@ En relación a los principios de _alta cohesión_ y _bajo acoplamiento_, critica
 ## Cohesión
 
 > Cohesion refers to the degree to which the elements inside a module belong together
-> 
+>
 > --- E. Yourdon & L. Constantine. <emph>Structured Design: Fundamentals of a Discipline of Computer Program and Systems Design.</emph> Prentice Hall, 2nd edition, 1986.
+
+## Discusión sobre la implementación
+
+[v0.1](#versión-inicial-lista-v01) • [críticas](#críticas-a-lista-v01) $\rightarrow$ [v0.2](#implementación-alternativa-lista-v02) • [críticas](#críticas-a-lista-v02) $\rightarrow$ [v0.3](#implementación-alternativa-lista-v03) • [críticas](#críticas-a-lista-v03) $\rightarrow$ [v0.4](#implementación-alternativa-lista-v04) $\rightarrow$ [resumen](#resumen-de-problemas)
 
 ---
 
@@ -135,8 +156,8 @@ h3 {
 
 #### Problemáticas de Lista v0.1
 
-- Baja __cohesión__
-- Alta __variabilidad__ no bien tratada $\rightarrow$ poca __flexibilidad__
+- **Cohesión** baja
+- **Variabilidad** no bien tratada $\rightarrow$ poca **flexibilidad**
 
 ---
 
@@ -152,25 +173,38 @@ h2 {
 
 Hay que crear nuevos tipos de recorrido. Ampliamos la interfaz...
 
+<div class="cols">
+<div>
+
 ```java
-  public interface List<T> {
-    public void addFirst(T value);
-    public void removeFirst();
-    public void addLast(T value);
-    public void removeLast();
-    public T first();
-    public T last();
-    public boolean isEmpty();
-    public int length();
-    public List<T> clone();
-    public boolean isEqualTo(List<T>);
-    public void traverseForward();
-    public void traverseBackWard();
-    public void traverseEvens(); //pares
-    public void traverseOdds();  //impares
-    // etc...
-  }
+public interface List<T> {
+  public void addFirst(T value);
+  public void removeFirst();
+  public void addLast(T value);
+  public void removeLast();
+  public T first();
+  public T last();
+  public boolean isEmpty();
+  public int length();
+  public List<T> clone();
+  public boolean isEqualTo(List<T>);
+  ...
 ```
+
+</div>
+<div>
+
+```java
+  ...
+  public void traverseForward();
+  public void traverseBackWard();
+  public void traverseEvens(); //pares
+  public void traverseOdds();  //impares
+}
+```
+
+</div>
+</div>
 
 ---
 
@@ -189,8 +223,8 @@ h3 {
 
 #### Problemáticas de Lista v0.2
 
-- Muchas __dependencias__ (provocadas por el exceso de herencia) $\rightarrow$ excesivo __acoplamiento__
-- Poca __flexibilidad__
+- **Acoplamiento** excesivo: muchas **dependencias** (provocadas por el exceso de herencia)
+- **Flexibilidad** escasa
 
 ---
 
@@ -204,7 +238,7 @@ h2 {
 
 ## Implementación alternativa: Lista v0.3
 
-Delegar funcionalidad hacia las subclases (vía __herencia__).
+Delegar funcionalidad hacia las subclases (vía **herencia**).
 
 Criticar la implementación:
 
@@ -236,8 +270,8 @@ h3 {
 
 #### Problemáticas de Lista v0.3
 
-- Elevada __complejidad__. Si hay que crear nuevos tipos de recorrido, se abusará de la [herencia como _estructura_](#ejemplo-herencia-como-estructura)
-- La __variabilidad__ no está bien tratada $\rightarrow$ poca __flexibilidad__, mala __reutilización__
+- **Acoplamiento** elevado: Si hay que crear nuevos tipos de recorrido, se abusará de la herencia para crear _estructuras_ complejas
+- **Variabilidad** no está bien tratada: poca **flexibilidad**, baja **reutilización**
 
 ---
 
@@ -252,43 +286,70 @@ p {
 ¿Cómo se resuelve esto en las bibliotecas típicas que conocéis
 (v.g. C++ STL, Java Collections, etc.)?
 
-<!-- Iteradores -->
+<!--
+<details>
+<summary>Bibliotecas</summary>
+Iteradores
+</details>
+-->
 
 ---
 
 ## Implementación alternativa: Lista v0.4
 
-__Delegar__ hacia otra clase
+**Delegar** hacia otra clase
+
+<div class="cols">
+<div>
 
 ```java
-  public interface List<T> {
-    void addFirst(T value);
-    void removeFirst();
-    void addLast(T value);
-    void removeLast();
-    T first();
-    T last();
-    boolean isEmpty();
-    int length();
-    List<T> clone();
-    boolean isEqualTo(List<T>);
-    Iterator<T> iterator();
-  }
-
-  public interface Iterator<E> {
-    boolean hasNext();
-    E next();
-    void remove();
-  }
+public interface List<T> {
+  void addFirst(T value);
+  void removeFirst();
+  void addLast(T value);
+  void removeLast();
+  T first();
+  T last();
+  boolean isEmpty();
+  int length();
+  List<T> clone();
+  boolean isEqualTo(List<T>);
+  Iterator<T> iterator();
+}
 ```
+
+</div>
+<div>
+
+```java
+public interface Iterator<E> {
+  boolean hasNext();
+  E next();
+  void remove();
+}
+```
+
+</div>
+</div>
 
 ---
 
 ### Ventajas de Lista v0.4
 
-- Mayor __cohesión__: Las responsabilidades están ahora separadas: `List` almacena, `Iterator` recorre. `List` está más cohesionada
-- Para hacer `List` más cohesionada, se ha tenido que introducir una __dependencia__ (acoplamiento)
-- Uso de __delegación__ (o _composición_) en lugar de la herencia: la responsabilidad de recorrer se ha delegado hacia otro sitio
+- Mayor   **cohesión**: Las responsabilidades están ahora separadas: `List` almacena, `Iterator` recorre. `List` está más cohesionada
+- Para hacer `List` más cohesionada, se ha tenido que introducir una **dependencia** (acoplamiento)
+- Uso de **delegación** (o _composición_) en lugar de la herencia: la responsabilidad de recorrer se ha delegado hacia otro sitio
+
+---
+
+## Resumen de problemas
+
+| Problema | desde v0.1 ... | ... hasta v0.4 |
+|:----------|:------|:------|
+| **Cohesión** | Baja: `List<T>` aglutina almacenamiento y recorrido | Alta: `List<T>` solo almacena; `Iterator<T>` recorre |
+| **Variabilidad** | No tratada: difícil cambiar la forma de recorrer | Fácil crear nuevos `Iterator` sin tocar `List` |
+| **Flexibilidad** | Poca: cambios en recorrido afectan a `List` | Mayor: Cambios aislados en `Iterator` |
+| **Acoplamiento** | Alto: `List` depende de cómo se recorre | Bajo: separación clara de responsabilidades |
 
 ---
 
@@ -296,11 +357,11 @@ __Delegar__ hacia otra clase
 
 Los principios aplicados han sido:
 
-- __Abstracción__: diferenciar el *qué* y el *cómo*
-- __Cohesión__ (maximizar): módulos auto-contenidos, independientes y con un
+- **Abstracción**: diferenciar el *qué* y el *cómo*
+- **Cohesión** (maximizar): módulos auto-contenidos, independientes y con un
     único propósito
-- __Acoplamiento__ (minimizar): dependencias entre módulos
-- __Modularidad__: clases, interfaces y componentes/módulos
+- **Acoplamiento** (minimizar): dependencias entre módulos
+- **Modularidad**: clases, interfaces y componentes/módulos
 
 ---
 
@@ -318,12 +379,12 @@ Reducir el acoplamiento usando módulos o componentes con distintas responsabili
 
 ### Técnicas de ocultación
 
-- __Encapsular__: agrupar en módulos y clases
-- __Visibilidad__: `public`, `private`, `protected`, etc.
-- __Delegación__: incrementar la cohesión extrayendo funcionalidad pensada para otros propósitos fuera de un módulo
-- __Herencia__: delegar _en vertical_
-- __Polimorfismo__: ocultar la implementación de un método, manteniendo la misma interfaz de la clase base
-- __Interfaces__: usar interfaces bien documentadas
+- **Encapsular**: agrupar en módulos y clases
+- **Visibilidad**: `public`, `private`, `protected`, etc.
+- **Delegación**: incrementar la cohesión extrayendo funcionalidad pensada para otros propósitos fuera de un módulo
+- **Herencia**: delegar _en vertical_
+- **Polimorfismo**: ocultar la implementación de un método, manteniendo la misma interfaz de la clase base
+- **Interfaces**: usar interfaces bien documentadas
 
 ---
 
@@ -385,13 +446,13 @@ class Complejo(real: Double, imaginaria: Double) {
 
 - Cuando se redefine un método abstracto, no es necesario `override`
 - Pero si se quiere redefinir un método concreto, `override` es necesario para evitar sobreescrituras accidentales.
-- En Scala, el riesgo de redefinición accidental de métodos es mayor debido a los mixins (`trait` en Scala). 
+- En Scala, el riesgo de redefinición accidental de métodos es mayor debido a los mixins (`trait` en Scala).
 
 ---
 
 ### Scala Traits
 
-Un __trait__ es una forma de separar las dos principales responsabilidades de una clase: definir el __estado__ de sus instancias y definir su __comportamiento__.
+Un **trait** es una forma de separar las dos principales responsabilidades de una clase: definir el **estado** de sus instancias y definir su **comportamiento**.
 
 - Las clases y los objetos en Scala pueden extender un `trait`
 - Los `trait`de Scala son similares a las `interface` de Java.
@@ -557,7 +618,7 @@ Si no se añade `@Override`, podemos confundirnos y hacer un _overload_ accident
 
 ---
 
-#### Ejemplo 4: Override en C#
+#### Ejemplo 4: Override en C\#
 
 - `DescribeCar` muestra una descripción básica de un coche y llama a `ShowDetails` para información adicional.
 - Cada clase define su propia versión de `ShowDetails`
@@ -568,16 +629,16 @@ Si no se añade `@Override`, podemos confundirnos y hacer un _overload_ accident
 ```csharp
 class Car  
 {  
-    public void DescribeCar()  
-    {  
-        System.Console.WriteLine("Four wheels and an engine.");  
-        ShowDetails();  
-    }  
-  
-    public virtual void ShowDetails()  
-    {  
-        System.Console.WriteLine("Standard transportation.");  
-    }  
+  public void DescribeCar()  
+  {  
+    System.Console.WriteLine("Four wheels and an engine.");  
+    ShowDetails();  
+  }  
+
+  public virtual void ShowDetails()  
+  {  
+    System.Console.WriteLine("Standard transportation.");  
+  }  
 }  
 ```
 
@@ -586,18 +647,18 @@ class Car
 ```csharp
 class ConvertibleCar : Car  
 {  
-    public new void ShowDetails()  
-    {  
-        System.Console.WriteLine("A roof that opens up.");  
-    }  
+  public new void ShowDetails()  
+  {  
+    System.Console.WriteLine("A roof that opens up.");  
+  }  
 }  
   
 class Minivan : Car  
 {  
-    public override void ShowDetails()  
-    {  
-        System.Console.WriteLine("Carries seven people.");  
-    }  
+  public override void ShowDetails()  
+  {  
+    System.Console.WriteLine("Carries seven people.");  
+  }  
 } 
 ```
 
@@ -606,16 +667,18 @@ class Minivan : Car
 ```csharp
 public static void TestCars1()  
 {  
-    System.Console.WriteLine("\nTestCars1\n----------");  
-  
-    var cars = new List<Car> { new Car(), new ConvertibleCar(),
-        new Minivan() };  
-  
-    foreach (var car in cars)  
-    {  
-        car.DescribeCar();  
-        System.Console.WriteLine("----------");  
-    }  
+  System.Console.WriteLine("\nTestCars1\n----------");
+
+  var cars = new List<Car> {
+        new Car(),
+        new ConvertibleCar(),
+        new Minivan() };
+
+  foreach (var car in cars)  
+  {  
+    car.DescribeCar();  
+    System.Console.WriteLine("----------");
+  }  
 }  
 ```
 
@@ -623,23 +686,26 @@ public static void TestCars1()
 
 `TestCars` produce la salida siguiente:
 
-```csharp
-// TestCars1
-// ----------  
-// Four wheels and an engine.  
-// Standard transportation.  
-// ----------  
-// Four wheels and an engine.  
-// Standard transportation.  
-// ----------  
-// Four wheels and an engine.  
-// Carries seven people.  
-// ----------  
+```txt
+TestCars1
+----------  
+Four wheels and an engine.  
+Standard transportation.  
+----------  
+Four wheels and an engine.  
+Standard transportation.  
+----------  
+Four wheels and an engine.  
+Carries seven people.  
+----------  
 ```
 
-- ¿Los resultados son los esperados?
+¿Los resultados son los esperados?
+
+---
+
 - El tipo del segundo objeto de la lista es `ConvertibleCar`, pero `DescribeCar` no accede a la versión de `ShowDetails` definida en `ConvertibleCar` (debido a `new`).
-- El tipo del tercer objeto de la lista es `Minivar`, que redefine con `override` el método `ShowDetails` declarado en la clase base.
+- El tipo del tercer objeto de la lista es `Minivan`, que redefine con `override` el método `ShowDetails` declarado en la clase base.
 
 ---
 
@@ -667,30 +733,84 @@ public static void TestCars3()
 
 Estos métodos producirían las salidas siguientes:
 
-```csharp
-// TestCars2
-// ----------  
-// A roof that opens up.  
-// Carries seven people.  
+```txt
+TestCars2
+----------  
+A roof that opens up.  
+Carries seven people.  
   
-// TestCars3  
-// ----------  
-// Standard transportation.  
-// Carries seven people.  
+TestCars3  
+----------  
+Standard transportation.  
+Carries seven people.  
 ```
 
 - En `TextCars2`, el tipo de los objetos creados coincide con el tipo declarado.
 - En `TextCars3`, el tipo de los objetos creados es una subclase de la clase del tipo declarado.
 
+<!--
+¿En qué se parece el modificador `new` de C# a `final` en Java?
+
+Ambos controlan el comportamiento de la herencia, pero tienen finalidades opuestas:
+
+- `final` en Java: Impide que una clase derivada sobrescriba (override) el método. El método no puede ser redefinido.
+- `new` en C#: Oculta un método de la clase base con una nueva implementación. Permite que un método con la misma firma exista en la clase derivada sin ser un verdadero override polimórfico.
+
+Ambos permiten que una clase derivada tenga un método con el mismo nombre que el de la clase base, sin seguir el comportamiento de override estándar. Sin embargo:
+
+- final prohíbe cualquier redefinición
+- new permite redefinición pero la marca como intencional y rompe el polimorfismo
+
+-->
+
 ---
 
+<style scoped>
+p {
+  text-align: center;
+  font-size: 125%;
+  color: green;
+}
+</style>
 
-## Moldes o _casting_
+¿Sobre qué mecanismo funciona el polimorfismo?
+
+<!--
+Sobre el tipado (no sobre la herencia).
+Herencia = (sub)tipado + comportamiento
+-->
+
+---
+
+## Tipado
+
+- Tipado estático vs. dinámico
+  - Tipado estático: el tipo de cada variable se conoce en tiempo de compilación
+  - Tipado dinámico (_duck typing_): el tipo de cada variable se conoce en tiempo de ejecución
+
+- Contrato nominal vs. estructural
+  - Contrato nominal: hay que escribir un tipo explícito
+  - Contrato estructural: el tipo se deduce de la estructura de métodos
+
+---
+
+<style scoped>
+.cols {
+  display: grid;
+  grid-template-columns: 50% 50%;
+}
+</style>
+
+<div class="cols">
+<div>
+
+### Moldes o _casting_ de tipos
 
 - *Upcasting:* Interpretar un objeto de una clase derivada como del mismo tipo que la clase base
 - *Downcasting:* Interpretar un objeto de una clase base como del mismo tipo que una clase derivada suya
 
----
+</div>
+<div>
 
 ### Ejemplo de casting: Aventura v0.1
 
@@ -716,6 +836,9 @@ public class Creador {
   }
 }
 ```
+
+</div>
+</div>
 
 ---
 
@@ -747,7 +870,17 @@ public class Aventura {
 
 ---
 
-### Ejemplo de casting: Aventura v0.2
+<style scoped>
+.cols {
+  display: grid;
+  grid-template-columns: 40% 60%;
+}
+</style>
+
+#### Ejemplo de casting: Aventura v0.2
+
+<div class="cols">
+<div>
 
 ```java
 interface SabeLuchar {
@@ -765,14 +898,15 @@ class PersonajeDeAccion {
 class Heroe
     extends PersonajeDeAccion
     implements SabeLuchar,
-              SabeNadar,
-              SabeVolar {
+               SabeNadar,
+               SabeVolar {
   public void nadar() {}
   public void volar() {}
 }
 ```
 
----
+</div>
+<div>
 
 ```java
 public class Aventura {
@@ -795,6 +929,119 @@ public class Aventura {
 }
 ```
 
+</div>
+</div>
+
+---
+
+<style scoped>
+.cols {
+  display: grid;
+  grid-template-columns: 60% 40%;
+}
+</style>
+
+#### Aventura v0.3 en C++
+
+<div class="cols">
+<div>
+
+```cpp
+template <typename T>
+concept SabeLuchar = requires(T t) { t.luchar(); };
+
+template <typename T>
+concept SabeNadar = requires(T t) { t.nadar(); };
+
+template <typename T>
+concept SabeVolar = requires(T t) { t.volar(); };
+
+// Clase base normal
+struct PersonajeDeAccion {
+    void luchar() { std::cout << "Pum! (Luchando)\n"; }
+};
+
+struct Heroe : public PersonajeDeAccion {
+    void nadar() { std::cout << "Splash! (Nadando)\n"; }
+    void volar() { std::cout << "Whoosh! (Volando)\n"; }
+};
+```
+
+</div>
+<div>
+
+- En lugar de `interface` (Java), definimos qué requiere el tipo
+- `Heroe` hereda código de `PersonajeDeAccion`, pero NO necesita declarar `implements SabeNadar, SabeVolar`
+- `Heroe` cumple los concepts automáticamente por tener los métodos
+
+</div>
+</div>
+
+---
+
+<style scoped>
+.cols {
+  display: grid;
+  grid-template-columns: 60% 40%;
+}
+</style>
+
+<div class="cols">
+<div>
+
+```cpp
+// Usamos 'auto&' para pasar por
+// referencia (evitar copias).
+
+void t(SabeLuchar auto& x) { 
+    x.luchar(); 
+}
+
+void u(SabeNadar auto& x) { 
+    x.nadar(); 
+}
+
+void v(SabeVolar auto& x) { 
+    x.volar(); 
+}
+
+void w(PersonajeDeAccion& x) { 
+    x.luchar(); 
+}
+```
+
+</div>
+<div>
+
+- `t`, `u`, `v` usan concepts (<emph>tipado estructural</emph>): aceptan cualquier tipo T que satisfaga el concept
+- `w` usa herencia clásica con <emph>tipado nominal</emph>: acepta solo `PersonajeDeAccion` o sus hijos explícitos (como en Java).
+
+</div>
+</div>
+
+<!--
+
+`void u(SabeNadar auto& x)` significa: genera una versión de esta función para el tipo de x, pero solo compila si x cumple los requisitos estructurales de `SabeNadar`"
+
+-->
+
+---
+
+```cpp
+int main() {
+    Heroe i;
+
+    t(i); // Heroe hereda luchar(), así que cumple SabeLuchar
+    u(i); // Heroe tiene nadar(), cumple SabeNadar
+    v(i); // Heroe tiene volar(), cumple SabeVolar
+    w(i); // Heroe es hijo de PersonajeDeAccion
+
+    return 0;
+}
+```
+
+- Con `concept` se resuelve en tiempo de compilación, sin necesidad de casting
+
 ---
 
 ## Uso de la herencia
@@ -804,7 +1051,7 @@ public class Aventura {
   - ¿Hay herencia sólo de comportamiento? Pista: pensar en C++
   
 - Herencia como **tipo** vs herencia como **estructura**:
-  - En herencia de tipos, cada subclase es un subtipo. Debe satisfacerse el principio de __sustitución__ de Liskov (LSP, _Liskov Substitution Principle_): toda operación que funciona para un objeto de la clase $C$ también debe funcionar para un objeto de una subclase de $C$
+  - En herencia de tipos, cada subclase es un subtipo. Debe satisfacerse el principio de **sustitución** de Liskov: toda operación que funciona para un objeto de la clase $C$ también debe funcionar para un objeto de una subclase de $C$ (subtipado de comportamiento _fuerte_)
   - Usar la herencia como una forma de estructurar programas es **erróneo**, pues provoca que no se satisfaga la propiedad LSP.
 
 ---
@@ -823,7 +1070,7 @@ p {
 
 ## Polimorfismo paramétrico
 
-- **Genéricos**
+- Tipos **genéricos**
   - Ada
   - C++ generics
   - Java _templates_ (desde JDK 1.5)
@@ -846,7 +1093,7 @@ h2 {
 
 ---
 
-### Mal Ejemplo 1 (Java): herencia como estructura
+### Mal ejemplo 1 (Java): herencia como estructura
 
 ```java
 class Account {
@@ -987,7 +1234,7 @@ class ChecksumWriter extends ConsoleWriter {
 
 ---
 
-##### Ejemplo: Herencia fuera de control
+#### Ejemplo: Herencia fuera de control
 
 @startuml
 
@@ -1008,7 +1255,6 @@ WithSpacesWriter <|-- UppercaseWithSpacesWriter
 WithSpacesWriter <|-- ChecksumWithSpacesWriter
 ChecksumWriter <|-- ChecksumWithSpacesWriter
 UppercaseWriter <|-- UppercaseWithSpacesWriter
-
 
 UppercaseWithSpacesWriter <|-- UppercaseChecksumWithSpacesWriter
 ChecksumWithSpacesWriter <|-- UppercaseChecksumWithSpacesWriter
@@ -1033,7 +1279,6 @@ p {
 ¡Mal uso de la herencia!
 
 ---
-
 
 ### Ejemplo 2 (Scala): herencia de interfaz (traits)
 
@@ -1071,10 +1316,12 @@ object Test {
 ```
 
 Genera la salida:
-```
+
+```txt
 ABC
 A B C
 ```
+
 ---
 
 ### Stackable traits
@@ -1100,6 +1347,9 @@ h2 {
 
 Geométricamente, un cuadrado es un rectángulo, así que usamos herencia pura (*es-un*):
 
+<div class="cols">
+<div>
+
 ```csharp
 public class Rectangle {
   private Point topLeft;
@@ -1116,11 +1366,19 @@ public class Rectangle {
     set { height = value; }
   }
 }
+```
 
+</div>
+<div>
+
+```csharp
 public class Square: Rectangle {
    ...
 }
 ```
+
+</div>
+</div>
 
 ---
 
@@ -1157,7 +1415,7 @@ public class Square: Rectangle {
 ```
 
 Nota: [Diferencia entre `new` y `override` en C#](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/knowing-when-to-use-override-and-new-keywords)
- 
+
 ---
 
 - El comportamiento de un objeto `Square` no es consistente con el de un objeto `Rectangle`:
@@ -1183,7 +1441,10 @@ Nota: [Diferencia entre `new` y `override` en C#](https://docs.microsoft.com/en-
 
 ### Ejemplo: rectángulos versión 0.3
 
-Hacemos que los métodos `Width`y `Height` sean `virtual`...
+Hacemos que los métodos `Width`y `Height` sean [`virtual` en C\#]((https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/virtual)):
+
+<div class="cols">
+<div>
 
 ```csharp
 public class Rectangle
@@ -1204,13 +1465,11 @@ public class Rectangle
 }
 ```
 
-Nota: [Métodos redefinibles con `virtual` en C#](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/virtual)
-
----
+</div>
+<div>
 
 ```csharp
-public class Square: Rectangle
-{
+public class Square: Rectangle {
   public override double Width
   {
     set {
@@ -1228,16 +1487,18 @@ public class Square: Rectangle
 }
 ```
 
+</div>
+</div>
+
 ---
 
 ### Extensión y ocultación de métodos
 
 - La [diferencia entre `new` y `override` en un método en C#](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/classes-and-structs/knowing-when-to-use-override-and-new-keywords) es que `new` oculta la implementación de la clase base y `override` la extiende.
 
-Sin embargo, cuando la creación de una clase derivada provoca cambios en la clase base, es síntoma de un __mal diseño__.
+Sin embargo, cuando la creación de una clase derivada provoca cambios en la clase base, es síntoma de un **mal diseño**.
 
 El principio LSP pone en evidencia que la relación **es-un** tiene que ver con el comportamiento público extrínseco, del que los clientes dependen.
-
 
 ---
 
@@ -1259,9 +1520,9 @@ void g(Rectangle r)
 
 ¿Qué pasa si llamamos a `g(new Square(3))`?
 
-El autor de `g` asumió que cambiar el ancho de un rectángulo deja intacto el alto. Si pasamos un cuadrado esto no es así 
+El autor de `g` asumió que cambiar el ancho de un rectángulo deja intacto el alto. Si pasamos un cuadrado esto no es así.
 
-__Violación de LSP__: Si pasamos una instancia de una clase derivada (`Square`), se altera el comportamiento definido por la clase base (`Rectangle`) de forma que `g` deja de funcionar.
+**Violación de LSP**: Si pasamos una instancia de una clase derivada (`Square`), se altera el comportamiento definido por la clase base (`Rectangle`) de forma que `g` deja de funcionar.
 
 ---
 

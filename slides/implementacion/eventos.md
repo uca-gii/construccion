@@ -1,7 +1,12 @@
 ---
 marp: true
-title: Apuntes IISS
+author:
+- Juan Manuel Dodero
+date: Enero 2026
+subject: Implementación e Implantación de Sistemas Software, curso 2025/26
+title: Programación asíncrona y eventos
 description: Apuntes de Implementación e Implantación de Sistemas Software
+math: mathjax
 ---
 
 <!-- size: 16:9 -->
@@ -19,7 +24,7 @@ h2 {
 }
 </style>
 
-# PROGRAMACIÓN ASÍNCRONA
+# PROGRAMACIÓN ASÍNCRONA Y EVENTOS
 
 ---
 

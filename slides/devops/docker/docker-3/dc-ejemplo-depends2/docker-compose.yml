@@ -1,0 +1,17 @@
+services:
+  app:
+    build: .
+    environment:
+      FLASK_ENV: development
+    ports:
+      - "5500:5000"
+    depends_on:
+      redis:
+        condition: service_healthy
+  redis:
+    image: "redis:4.0.11-alpine"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 2s
+      retries: 5

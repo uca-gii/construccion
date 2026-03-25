@@ -1,7 +1,12 @@
 ---
 marp: true
-title: Apuntes IISS
+author:
+- Juan Manuel Dodero
+date: Enero 2026
+subject: Implementación e Implantación de Sistemas Software, curso 2025/26
+title: Inyección de Dependencias
 description: Apuntes de Implementación e Implantación de Sistemas Software
+math: mathjax
 ---
 
 <!-- size: 16:9 -->
@@ -511,7 +516,11 @@ p {
 ¿Es necesario usar la inyección de dependencias para especificar las _partituras_ con las que deben funcionar los instrumentos de la _orquesta_?
 
 <!--
+<details>
+<summary>Inyección de partituras</summary>
+
 Sólo si queremos que la orquesta pueda tocar con diferentes partituras, o si queremos probar la orquesta con diferentes partituras.
+</details>
 -->
 
 ---
