@@ -1,0 +1,43 @@
+pipeline {
+    agent { 
+        dockerfile {
+            filename 'Dockerfile'
+            dir 'ejercicio-marp'
+        }
+    }
+
+    options {
+        timeout(time: 20, unit: 'MINUTES')
+        disableConcurrentBuilds()
+        buildDiscarder(logRotator(numToKeepStr: '10'))
+    }
+
+    parameters {
+        string(name: 'SLIDES_FILE', defaultValue: 'ejercicio-marp/slides/docker.md', description: 'Fichero Markdown de entrada para Marp')
+    }
+
+    triggers {
+        pollSCM('H/5 * * * *')
+    }
+
+    stages {
+        stage('Install dependencies') {
+            steps {
+                sh 'npm install @marp-team/marp-cli'
+            }
+        }
+
+        stage('Generate PDF') {
+            steps {
+                sh 'mkdir -p pdf'
+                sh 'npx marp --allow-local-files --pdf --output pdf/slides.pdf "$SLIDES_FILE"'
+            }
+        }
+
+        stage('Archive artifact') {
+            steps {
+                archiveArtifacts artifacts: 'pdf/*.pdf', fingerprint: true
+            }
+        }
+    }
+}
