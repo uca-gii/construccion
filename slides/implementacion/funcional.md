@@ -610,7 +610,7 @@ __Tutoriales recomendado:__
 
 ##### Captura de variables en lambdas
 
-Una expresión lambda en Java puede **capturar** (o no)...
+Una expresión lambda en Java puede __capturar__ (o no)...
 
 - variables de instancia no locales (atributos de la clase contenedora) y
 - variables locales (declaradas o no `final`, pero cuyo valor no es modificado)
@@ -678,19 +678,19 @@ public class LambdaInstanceCapturing implements Runnable {
 
 ##### Lambdas y clases anónimas internas
 
-En Java, una expresión lambda y una clase anónima interna (_inner class_) tienen un propósito similar, pero son diferentes en un aspecto: el **ámbito** (_scope_) de la definición de las variables locales.
+En Java, una expresión lambda y una _inner class_ tienen un propósito similar, pero son diferentes en el __ámbito__ (_scope_) de definición de las variables locales.
 
-- Cuando se usa una inner class, se crea un __nuevo ámbito__ para dicha clase.
-  - Se pueden ocultar las variables locales para el ámbito contenedor instanciando nuevas variables con el mismo nombre.
-  - También se puede usar la palabra reservada `this` dentro de una clase anónima para hacer referencia a su instancia.
+- Con una inner class se crea un __nuevo ámbito__ para la clase
+  - Se pueden ocultar las variables locales para el ámbito contenedor instanciando nuevas variables con el mismo nombre
+  - También se puede usar `this` dentro de una clase anónima para hacer referencia a su instancia
 
-- Sin embargo, las expresiones lambda trabajan con el __ámbito contenedor__.
-  - No se pueden ocultar las variables del ámbito contenedor dentro del cuerpo de la expresión lambda.
-  - `this` hace referencia a una instancia de la clase contenedora.
+- Las expresiones lambda trabajan con el __ámbito contenedor__
+  - No se pueden ocultar las variables del ámbito contenedor dentro del cuerpo de la expresión lambda
+  - `this` hace referencia a una instancia de la clase contenedora
 
 ---
 
-En el ejemplo siguiente, ¿qué valor devuelve `scopeExperiment()`?:
+En el ejemplo siguiente, ¿qué valor devuelve `scopeExperiment()`?
 
 ```java
 @FunctionalInterface
@@ -703,12 +703,12 @@ private String variable = "Valor de la contenedora";
 public String scopeExperiment() {
 
   ClaseFuncional unaInnerClass = new ClaseFuncional() {
-      String variable = "Valor de la inner class";
-      @Override
-      public String method(String string) {
-          return this.variable;
-            /*  Con o sin this, no hay lambdas ni variables libres */
-      }
+    String variable = "Valor de la inner class";
+    @Override
+    public String method(String string) {
+      return this.variable;
+      /*  Con o sin this, no hay lambdas ni variables libres */
+    }
   };
   String resultadoInnerClass = unaInnerClass.method("");
 
@@ -718,7 +718,7 @@ public String scopeExperiment() {
 
 ---
 
-El valor será:
+El valor devuelto será:
 
 ```text
 resultadoInnerClass  = Valor de la inner class
@@ -726,7 +726,7 @@ resultadoInnerClass  = Valor de la inner class
 
 ---
 
-En el ejemplo siguiente, ¿qué valor devuelve `scopeExperiment()`?:
+En el ejemplo siguiente, ¿qué valor devuelve `scopeExperiment()`?
 
 ```java
 @FunctionalInterface
@@ -739,10 +739,10 @@ private String variable = "Valor de la contenedora";
 public String scopeExperiment() {
 
   ClaseFuncional unaLambda = parametro -> {
-      String variable= "Valor de la lambda";
-      return this.variable; 
-        /* Con this, la clausura de la variable libre se produce
-           con el valor de ClaseFuncional::variable */
+    String variable= "Valor de la lambda";
+    return this.variable; 
+    /* Con this, la clausura de la variable libre se produce
+       con el valor de ClaseFuncional::variable */
   };
   String resultadoLambda = unaLambda.method("");
 
@@ -764,21 +764,30 @@ resultadoLambda = Valor de la contenedora
 
 ##### Bloques (_blocks_)
 
+<div class="cols">
+<div>
+
 __Sintaxis `do` ... `end`__
 
-  ```ruby
-  some_list = [ 10, 20, 30 ]
-  some_list.map do |i|
-      i += 1
-  end
-  ```
+```ruby
+some_list = [ 10, 20, 30 ]
+some_list.map do |i|
+    i += 1
+end
+```
+
+</div>
+<div>
 
 __Sintaxis `{` ... `}`__
 
-  ```ruby
-  some_list = [ 10, 20, 30 ]
-  some_list.map { |i| i += 1 }
-  ```
+```ruby
+some_list = [ 10, 20, 30 ]
+some_list.map { |i| i += 1 }
+```
+
+</div>
+</div>
 
 El método `map` itera y aplica un bloque repetitivamente a cada elemento de una colección (representado por el parámetro `i`)
 
@@ -788,33 +797,44 @@ El método `map` itera y aplica un bloque repetitivamente a cada elemento de una
 
 __Sin bloques:__
 
-
-  ```ruby
-  class SongList
-    def with_title(title)
-      for i in 0...@songs.length
-        return @songs[i] if title == @songs[i].name
-      end
-      return nil
+```ruby
+class SongList
+  def with_title(title)
+    for i in 0...@songs.length
+      return @songs[i] if title == @songs[i].name
     end
+    return nil
   end
-  ```
-
-__Con bloques (sintaxis `do` ... `end`):__
-
-  ```ruby
-  class SongList
-    def with_title(title)
-      @songs.find do |song|
-        title == song.name
-      end
-    end
-  end
-  ```
+end
+```
 
 ---
+<style scoped>
+.cols {
+  display: grid;
+  grid-template-columns: 40% 60%;
+}
+</style>
 
-__Con bloques (sintaxis `{` ... `}`):__
+<div class="cols">
+<div>
+
+__Con bloques `do` ... `end`:__
+
+```ruby
+class SongList
+  def with_title(title)
+    @songs.find do |song|
+      title == song.name
+    end
+  end
+end
+```
+
+</div>
+<div>
+
+__Con bloques `{` ... `}`:__
 
   ```ruby
   class SongList
@@ -824,6 +844,9 @@ __Con bloques (sintaxis `{` ... `}`):__
   end
   ```
 
+</div>
+</div>
+
 El método `find` itera y aplica el test del bloque a cada elemento `song` de la colección.
 
 ---
@@ -832,13 +855,20 @@ El método `find` itera y aplica el test del bloque a cada elemento `song` de la
 
 - El bloque debe aparecer al lado de una llamada a método
 - No se ejecuta el bloque, sino que se recuerda el contexto (variables locales, objeto actual, etc.) en que aparece
-- Cuando se ejecuta el método, el bloque es invocado donde aparezca `yield`
-- El control vuelve al método después del `yield`
 - Al bloque se le pueden pasar parámetros
 
 ---
+<style scoped>
+.cols {
+  display: grid;
+  grid-template-columns: 60% 40%;
+}
+</style>
 
-**Ejemplo: fibonacci**
+__Ejemplo: fibonacci__
+
+<div class="cols">
+<div>
 
 ```ruby
 def fib_up_to(max)
@@ -848,14 +878,28 @@ def fib_up_to(max)
     i1, i2 = i2, i1+i2
   end
 end
-fib_up_to(1000) {|f| print f, " " }
+fib_up_to(200) {|f| print f, " " }
 
-#Salida => 1 1 2 3 5 8 13 21 34 55 89 144 233 377 610 987
+#Salida => 1 1 2 3 5 8 13 21 34 55 89 144
 ```
+
+</div>
+<div>
+
+Ejecución con `yield`:
+
+- Cuando se ejecuta el método, el bloque es invocado donde aparezca `yield`
+- El control vuelve al método después del `yield`
+
+</div>
+</div>
 
 ---
 
-**Ejemplo de `yield`:**
+__Ejemplos de `yield`:__
+
+<div class="cols">
+<div>
 
 ```ruby
 def three_times
@@ -866,9 +910,8 @@ end
 three_times { puts "Hello" }
 ```
 
----
-
-**Ejemplo: implementación de `Array.find`**
+</div>
+<div>
 
 ```ruby
 class Array
@@ -881,6 +924,9 @@ class Array
   end
 end
 ```
+
+</div>
+</div>
 
 ---
 
@@ -1012,7 +1058,6 @@ end
     my_proc.call
     puts "After proc"
   end
-
   puts call_proc
   # Prints "Before proc" but not "After proc"
 
@@ -1022,14 +1067,13 @@ end
     my_lambda.call
     puts "After lambda"
   end
-
   puts call_lambda
   # Prints "Before lambda" and "After lambda"
   ```
 
 ---
 
-**Diferencias entre `Proc` y `lambda`:**
+__Diferencias entre `Proc` y `lambda`:__
 
 - Las lambdas se definen con `-> {}` y los procs con `Proc.new {}`
 - Los `Proc` retornan del método actual, las lambdas retornan de la propia función lambda
@@ -1045,7 +1089,7 @@ end
 
 ---
 
-**Ejemplos de paso de bloques:**
+__Ejemplos de paso de bloques:__
 
 - Llamada a un bloque sin parámetros
 
@@ -1174,25 +1218,21 @@ Las operaciones sobre un stream pueden ser intermediarias o terminales
 
 ---
 
-### Ejemplo v0.1
+#### Ejemplo v0.1
 
 \[Probar en [paiza.io](https://paiza.io/projects/K6lkbmKSYAKnF0o0fo0oEQ?language=java)\]
 
 ```java
-public class Main{
-  public static void main(String []args){
-      
-    List<String> myList =
-      Arrays.asList("a1", "a2", "b1", "c2", "c1");
+void main() {      
+  List<String> myList =
+    Arrays.asList("a1", "a2", "b1", "c2", "c1");
 
-    myList
-      .stream()
-      .filter(s -> s.startsWith("c"))
-      .map(String::toUpperCase)
-      .sorted()
-      .forEach(System.out::println);
-      
-  }
+  myList
+    .stream()
+    .filter(s -> s.startsWith("c"))
+    .map(String::toUpperCase)
+    .sorted()
+    .forEach(System.out::println);
 }
 ```
 
@@ -1218,24 +1258,70 @@ En el ejemplo anterior, se puede observar que:
 
 ---
 
-### Ejemplo v0.2
+#### Ejemplo v0.2
 
 ```java
-List<String> myList =
-  Arrays.asList("a1", "a2", "b1", "c2", "c1");
+void main() {
+  List<String> myList =
+    Arrays.asList("a1", "a2", "b1", "c2", "c1");
 
-myList
-  .stream()
-  .filter(s -> s.startsWith("c"))
-  .map(String::toUpperCase)
-  .sorted()
-  .forEach(System.out::println);
+  myList
+    .stream()
+    .filter(s -> s.startsWith("c"))
+    .map(String::toUpperCase)
+    .sorted()
+    .forEach(System.out::println);
 
-myList
-  .stream()
-  .reduce( (a,b) -> a + " " + b )
-  .ifPresent(System.out::println);
+  myList
+    .stream()
+    .reduce( (a,b) -> a + " " + b )
+    .ifPresent(System.out::println);
+}
 ```
+
+---
+
+#### Ejemplo práctico: partidos de una competición con lambdas
+
+Reutilizamos el caso de filtrado de partidos que vimos en el apartado de __Predicados__, pero implementando `fixture()` como una factoría con una expresión lambda, en lugar de una clase concreta:
+
+```java
+import java.util.List;
+import java.util.function.Predicate;
+
+private Predicate<Match> fixture(Team local, Team visiting) {
+    return match -> match.getLocalTeam().equals(local)
+                    && match.getVisitingTeam().equals(visiting);
+}
+```
+
+La lambda captura los parámetros `local` y `visiting` y devuelve un `Predicate<Match>` funcional. No hace falta clase auxiliar; la lógica de filtrado está integrada en la expresión lambda.
+
+---
+
+Ahora usamos la factoría en un stream para validar que en una competición no hay partidos repetidos ni un equipo enfrentado a sí mismo:
+
+```java
+private void checkMatchesInGroup(List<Match> matchesInGroup) {
+  for (Match match : matchesInGroup) {
+    Team t1 = match.getLocalTeam();
+    Team t2 = match.getVisitingTeam();
+    assertNotSame(t1, t2); // no juega contra sí mismo
+
+    List<Match> firstLeg = matchesInGroup.stream()
+        .filter(fixture(t1, t2))
+        .toList();
+    assertTrue(firstLeg.size() == 1);
+
+    List<Match> secondLeg = matchesInGroup.stream()
+        .filter(fixture(t2, t1))
+        .toList();
+    assertTrue(secondLeg.size() == 0);
+  }
+}
+```
+
+El pipeline de streams no cambia: sigue siendo `stream().filter(...).toList()`. Lo que cambia es que ahora el criterio de filtrado (`fixture(...)`) devuelve una **lambda inline** en lugar de una instancia de una clase que implementa `Predicate`.
 
 ---
 
