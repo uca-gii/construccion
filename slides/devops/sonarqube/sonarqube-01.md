@@ -423,23 +423,13 @@ De este modo, SonarQube pasa de ser una herramienta manual a formar parte del pr
 
 # Ejercicio
 
-Investigar sobre integración de SonarQube en un flujo CI para automatizar el análisis.
+Integrar SonarQube en un flujo CI para automatizar el análisis.
 
-### Opción 1
-Partiendo del ejercicio de Marp de la práctica de Jenkins, añadir una etapa de análisis con SonarQube. Notas:
+Partiendo del ejercicio de Marp de la práctica de Jenkins, añadir una etapa de análisis con SonarQube:
 
 - Debéis conectar Jenkins con el servidor SonarQube que montamos antes
 - Jenkins tiene un plugin oficial de SonarQube que facilita la integración y el escaneo desde el pipeline
 - En Jenkins, se pueden usar distintos agentes para diferentes etapas
-
----
-
-### Opción 2
-
-Podéis conectar SonarQube con cualquier otro proyecto que tengáis en Jenkins, o directamente con GitHub usando GitHub Actions.
-
-
-### Entrega
 
 No hay entrega al uso: en cualquiera de los dos casos, la defensa consistirá en explicar cómo lo habéis hecho, qué problemas habéis encontrado y cómo los habéis resuelto (recomiendo tomar notas durante el proceso).
 
