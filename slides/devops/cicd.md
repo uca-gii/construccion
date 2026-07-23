@@ -23,14 +23,20 @@ h2 {
 h3 {
   color: #005877;
 }
-
 img[alt~="center"] {
   display: block;
   margin: 0 auto;
 }
-
 emph {
   color: #E87B00;
+}
+.cols {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+.cols > div {
+  align-self: start;
 }
 </style>
 
@@ -636,15 +642,15 @@ Se hace CD cuando:
 - Progreso creíble: ¿quién garantiza el _done_? ¿que esté en producción? ¿que lo digan los desarrolladores?
 - Feedback de los usuarios: reduce el riesgo de construir algo inútil
 
-Cuanto antes te des cuenta...
+_Cuanto antes te des cuenta..._
 
 ---
 
 <style scoped>
-section { justify-content: start; text-align: center; }
+h4 {
+  text-align: center;
+}
 </style>
-
-#### Cuanto antes te des cuenta, mejor
 
 ![bg 80% User requirements](img/dilbert-user-requirements.png)
 

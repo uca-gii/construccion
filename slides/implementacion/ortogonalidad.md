@@ -24,6 +24,14 @@ h2 {
 emph {
   color: #E87B00;
 }
+.cols {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+.cols > div {
+  align-self: start;
+}
 </style>
 
 # ORTOGONALIDAD Y DEPENDENCIAS
@@ -43,22 +51,30 @@ Dos componentes A y B son ortogonales ($A \perp B$) si los cambios en uno no afe
 
 ---
 
-![Mandos de un helicóptero](./img/helicoptero.png)
+![Cómo se pilota un helicóptero](./img/helicoptero-infografia.png)
 
----
-
-> Helicopters have four basic controls. The cyclic is the stick you hold in your right hand. Move it, and the helicopter moves in the corresponding direction. Your left hand holds the collective pitch lever. Pull up on this and you increase the pitch on all the blades, generating lift. At the end of the pitch lever is the throttle. Finally you have two foot pedals, which vary the amount of tail rotor thrust and so help turn the helicopter.
->
-> However, when you try it, you discover that life isn’t that simple. The helicopter’s nose drops, and you start to spiral down to the left. Suddenly you discover that you’re flying a system where every control input has secondary effects. Lower the left-hand lever and you need to add compensating backward movement to the right-hand stick and push the right pedal. But then each of these changes affects all of the other controls again. Suddenly you’re juggling an unbelievably complex system, where every change impacts all the other inputs. Your workload is phenomenal: your hands and feet are constantly moving, trying to balance all the interacting forces.
-> -- (Hunt & Thomas, 2020)
-
----
+<!--
 
 El **cíclico** (mano derecha) hace que el helicóptero se mueve en la dirección correspondiente. El **colectivo** (mano izquierda) aumenta o disminuye el _pitch_ en todas las palas, generando sustentación. Al final del colectivo (_pitch_) está el **acelerador**. Finalmente, dos **pedales** varían la cantidad de empuje del rotor de cola y ayudan a girar el helicóptero.
 
 Sin embargo, cuando lo intentas, descubres que la vida no es tan simple. La nariz del helicóptero cae, y comienzas una espiral hacia abajo hacia la izquierda. De repente descubres que estás volando un sistema donde cada entrada de control tiene efectos secundarios. Baja la palanca de la mano izquierda y necesitas añadir un movimiento compensatorio hacia atrás al mando de la mano derecha y empujar el pedal derecho. Pero entonces cada uno de estos cambios afecta todos los otros controles de nuevo.
 
 De repente estás haciendo malabares con un sistema increíblemente complejo, donde cada cambio impacta todas las otras entradas.
+
+-->
+
+---
+
+![Mandos de un helicóptero](./img/helicoptero.png)
+
+<!--
+
+> Helicopters have four basic controls. The cyclic is the stick you hold in your right hand. Move it, and the helicopter moves in the corresponding direction. Your left hand holds the collective pitch lever. Pull up on this and you increase the pitch on all the blades, generating lift. At the end of the pitch lever is the throttle. Finally you have two foot pedals, which vary the amount of tail rotor thrust and so help turn the helicopter.
+>
+> However, when you try it, you discover that life isn’t that simple. The helicopter’s nose drops, and you start to spiral down to the left. Suddenly you discover that you’re flying a system where every control input has secondary effects. Lower the left-hand lever and you need to add compensating backward movement to the right-hand stick and push the right pedal. But then each of these changes affects all of the other controls again. Suddenly you’re juggling an unbelievably complex system, where every change impacts all the other inputs. Your workload is phenomenal: your hands and feet are constantly moving, trying to balance all the interacting forces.
+> -- (Hunt & Thomas, 2020)
+
+-->
 
 ---
 
@@ -82,7 +98,10 @@ De repente estás haciendo malabares con un sistema increíblemente complejo, do
 
 ---
 
-## Niveles de aplicación de la ortogonalizad
+## Aplicación de la ortogonalizad
+
+<div class="cols">
+<div>
 
 La ortogonalidad es aplicable a:
 
@@ -92,7 +111,13 @@ La ortogonalidad es aplicable a:
 - bibliotecas
 - la documentación
 
+</div>
+<div>
+
 A nivel de _diseño_, los patrones de diseño y las arquitecturas como MVC facilitan la construcción de componentes ortogonales.
+
+</div>
+</div>
 
 ### Lectura recomendada
 
@@ -142,6 +167,9 @@ Al pedir un servicio a un objeto, el servicio debe ser realizado de parte nuestr
 
 ### Ley de Demeter para funciones
 
+<div class="cols">
+<div>
+
 Los métodos de un objeto solo deben hacer llamadas a métodos...
 
 1. **propios**
@@ -149,7 +177,8 @@ Los métodos de un objeto solo deben hacer llamadas a métodos...
 3. de objetos **creados** por ellos mismos
 4. de objetos **declarados** en el mismo método
 
----
+</div>
+<div>
 
 ```java
 class Demeter {
@@ -167,18 +196,25 @@ class Demeter {
 }
 ```
 
+</div>
+</div>
+
 ---
 
 #### Excepción: Interfaces _fluent_
 
-Hay una excepción notable a la prohibición de encadenar llamadas a funciones de la ley de Demeter. Esta regla no aplica si es muy poco probable que haya cambios en las cosas que se encadenan. En la práctica, cualquier parte de tu aplicación debe considerarse como algo que es probable que cambie; cualquier elemento de una biblioteca de un tercero debe considerarse volátil, en particular si quienes mantienen dicha biblioteca suelen cambiar su API de una versión a otra.
+Hay una excepción notable a la prohibición de encadenar llamadas a funciones de la ley de Demeter. Esta regla no aplica si es muy poco probable que haya cambios en las cosas que se encadenan.
 
-Las librerías que vienen con el lenguaje suelen ser bastante estables, así que ejemplos de código como el siguiente son aceptables como excepción a esta interpretación de la ley de Demeter:
+En la práctica, cualquier parte de tu aplicación debe considerarse como algo que es probable que cambie; cualquier elemento de una biblioteca de un tercero debe considerarse volátil, en particular si quienes mantienen dicha biblioteca suelen cambiar su API de una versión a otra.
 
 ---
 
+Ejemplos de código como el siguiente son aceptables como excepción a esta interpretación de la ley de Demeter.
+
+¿Por qué?
+
 ```java
-List<String> myList =
+java.util.List<String> myList =
     Arrays.asList("a1", "a2", "b1", "c2", "c1");
 
 myList
@@ -189,13 +225,19 @@ myList
     .forEach(System.out::println);
 ```
 
+<!--
+Todos los métodos encadenados devuelven objetos del mismo tipo `Stream`
+-->
+
 ---
 
 Los métodos `stream`, `filter`, `map`, `sorted` y `forEach` son parte de las nuevas _interfaces funcionales_ de Java para manejar _streams_, incorporadas a las colecciones (v.g. `List`) desde la versión Java 8.
 
 Este tipo de interfaces como la del API de streams de Java se conoce como [_fluent interfaces_](https://en.wikipedia.org/wiki/Fluent_interface).
 
-> La programación con streams y se tratarán en el bloque sobre **Programación Funcional**
+<!--
+La programación con streams y se tratarán en el bloque sobre Programación Funcional
+-->
 
 ---
 

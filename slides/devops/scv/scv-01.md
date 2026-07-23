@@ -33,6 +33,8 @@ img[alt~="float"] {
 emph {
   color: #E87B00;
 }
+
+
 </style>
 
 # Sistema de Control de Versiones (SCV)
@@ -59,11 +61,11 @@ Puede estar ubicado localmente en la máquina del usuario o de forma remota en u
 
 ---
 
-## SCV: Source Code Versioning
+## SCV
 
 ![width:1100px SCV systems](img/scv-vcs-scm.png)
 
-<emph>VCS: Version Control Systems</emph> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <emph>SCM: Source Code Management</emph>
+**SCM: Source Code Management**: control de versiones + otras prácticas y herramientas para gestionar el código y su ciclo de vida (branching policies, code review, CI/CD...)
 
 ¿Para qué sirven?
 
@@ -83,11 +85,11 @@ También sirven para coordinar a un equipo de programadores que trabajan en un c
 
 ## Herramientas SCV
 
-- <emph>Subversion (SVN)</emph>: sistema **centralizado** de control de versiones
+- **Subversion (SVN)**: sistema **centralizado** de control de versiones
   - Un solo repositorio central que almacena todas las versiones
   - Los usuarios deben estar conectados al repositorio central para trabajar
 
-- <emph>Git</emph>: sistema **distribuido** de control de versiones
+- **Git**: sistema **distribuido** de control de versiones
   - Cada usuario tiene una copia completa del repositorio
   - Los usuarios pueden trabajar de forma independiente sin necesidad de una conexión constante a un servidor central
 
@@ -97,7 +99,7 @@ Git fue creado por Linus Torvalds en 2005 y se ha convertido en uno de los SCV m
 
 ## Plataformas en la nube
 
-Alojamiento de repositorios (y más cosas) en la nube como GitHub, GitLab y Bitbucket.
+Alojamiento de repositorios (y otros servicios) en la nube como GitHub, GitLab y Bitbucket.
 
 Permiten a los desarrolladores alojar y colaborar en proyectos de código abierto y repositorios públicos o privados de forma remota.
 
@@ -176,13 +178,11 @@ Los repositorios tendrán sus propios permisos de lectura y escritura.
 
 Si son privados, necesitareis autenticaros para poder clonarlos.
 
-Vamos a usar un repositorio público de Github:
+<!-- Vamos a usar un repositorio público de Github:
   
 ```bash
-  git clone https://github.com/sistemas-sw/iiss-git-<curso_actual>.git
-```
-
-Donde `<curso_actual>` es el curso actual (por ejemplo, `24-25`).
+  git clone https://github.com/jacaballero/github-testing-25-26.git
+```-->
 
 ---
 
@@ -439,22 +439,20 @@ Donde `ours` es la rama actual y `theirs` es la rama que estamos fusionando.
 Rebase soluciona el mismo problema que la fusión de ramas, pero de forma muy distinta:
 
 - `merge` crea un nuevo commit que contiene los cambios de ambas ramas
-- `rebase` mueve los commits de una rama a otra
-
+- `rebase` coloca los commits de una rama en otra reescribiendo el historial de cambios de la rama que se está rebasing (actualizando el punto de partida de la rama)
 ![width:500 center](img/rebase.png)
 
 [Ejemplo de rebase de ramas en un repositorio de Git](https://www.atlassian.com/es/git/tutorials/merging-vs-rebasing)
 
 ---
 
-<!-- _class: invert -->
-<style scoped>
-  section { justify-content: start; text-align: center; }
-</style>
+### Merge vs Rebase vs Cherry-pick
 
-### Merge vs rebase vs cherry-pick
+![width:600 center](img/merge-rebase-cherry.png)
 
-![Conflicts](img/merge-rebase-cherry-b.png)
+* Merge: integra el historial de una rama en otra (según punto común), y crea un merge excepto en *fast-forward* (si la rama de destino no ha avanzado desde el punto común)
+* Rebase: "recoloca" una rama encima de otra: reescribe los commits de la rama *feature* como si hubiera empezado desde el último commit de la rama *main*.
+* Cherry-pick: copia uno o varios commits concretos de una rama y los palica en otra, creando nuevos commits con el mismo cambio (pero con otro hash).
 
 ---
 
@@ -529,12 +527,12 @@ Los IDEs más populares (VS Code, JetBrains', etc.) tienen integración con Git
 
 | 📙 | Repositorios |
 ----:|:----
-<emph>fork</emph> |  Una copia de un repositorio en el que se puede trabajar de forma independiente (te haces propietario)
-<emph>clone</emph> | Copia de un repo remoto (<emph>origin</emph>) en la máquina local, para trabajar independientemente (pero no eres propietario)
-<emph>origin</emph> | Nombre para referirse al repositorio remoto del que se clonó un repo local
-<emph>upstream</emph> | Nombre para referirse al repositorio original desde el que se forkeó un repo
-<emph>commit</emph> | Conjunto de cambios en el código fuente que se registra en el repo
-<emph>checkout</emph> | Cambiar de rama activa en el repo local
+**fork** |  Una copia de un repositorio en el que se puede trabajar de forma independiente (te haces propietario)
+**clone** | Copia de un repo remoto (**origin**) en la máquina local, para trabajar independientemente (pero no eres propietario)
+**origin** | Nombre para referirse al repositorio remoto del que se clonó un repo local
+**upstream** | Nombre para referirse al repositorio original desde el que se forkeó un repo
+**commit** | Conjunto de cambios en el código fuente que se registra en el repo
+**checkout** | Cambiar de rama activa en el repo local
 
 ---
 
@@ -542,30 +540,33 @@ Los IDEs más populares (VS Code, JetBrains', etc.) tienen integración con Git
 
 | 📙 | Ramas |
 ----:|:----
-<emph>branch</emph> | Una secuencia de commits
-<emph>head</emph> | Último commit de una rama
-<emph>stage</emph> | Cambios preparados para el próximo commit
-<emph>push/pull </emph> | Sincronizar commits con/desde el repositorio remoto/local
-<emph>merge </emph> | Fusionar una rama con otra
-<emph>rebase </emph> | Mover commits de una rama a otra
-<emph>stash </emph> | Dejar a un lado (guardar) los cambios en la rama actual
+**branch** | Una secuencia de commits
+**head** | Último commit de una rama
+**stage** | Cambios preparados para el próximo commit
+**push/pull** | Sincronizar commits con/desde el repositorio remoto/local
+**merge** | Fusionar una rama con otra
+**rebase** | Copiar commits de una rama a otra
+**stash** | Dejar a un lado (guardar) los cambios en la rama actual
+**pull request** | Propuesta de fusión de una rama con otra (en repositorios remotos)
 
 ---
+<!--
 
 ## Tarea
 
-1. Crear un repositorio en GitHub
-2. Clonar el repositorio en local
-3. Añadir cambios a la rama `main` añadiendo un directorio vacío y un archivo `.gitignore` para ignorar todos los archivos markdown excepto el `README.md` y el `LICENSE.md`
-4. Crea una rama `feature` y añade cambios a esa rama
-5. Crear dos ramas desde main, añadir cambios, fusionarlas en main y eliminarlas. Una de las ramas debe contener conflictos a resolver
-6. Hacer rebase de la rama `feature` con la rama `main`
-7. Añadir un cambio más a la rama `feature`
-8. Fusionar la rama `feature` con la rama `main`
-9. Subir los cambios al repositorio remoto
-10. Eliminar la rama `feature`
+1. Crear un repositorio en GitHub y clonarlo en local
+2. Añadir cambios a la rama `main` añadiendo un directorio vacío y un archivo `.gitignore` para ignorar todos los archivos markdown excepto el `README.md` y el `LICENSE.md`
+3. Crea una rama `feature` y añade cambios a esa rama
+4. Crear dos ramas desde main, añadir cambios, fusionarlas en main y eliminarlas. Una de las ramas debe contener conflictos a resolver
+5. Hacer rebase de la rama `feature` con la rama `main`
+6. Añadir un cambio más a la rama `feature`
+7. Fusionar la rama `feature` con la rama `main`
+8. Subir los cambios al repositorio remoto
+9. Eliminar la rama `feature`
 
----
+--- 
+
+-->
 
 <style scoped>
   section { text-align: center; }

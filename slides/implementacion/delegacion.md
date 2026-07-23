@@ -62,9 +62,8 @@ p {
 
 Criticar la siguiente implementación de una orquesta.
 
-_**Pista**:_
-
-Minimizar el <emph>acoplamiento</emph> y maximizar la <emph>cohesión</emph>
+> **Pista**:
+> Minimizar el _acoplamiento_ y maximizar la _cohesión_
 
 </div>
 <div>
@@ -96,8 +95,6 @@ abstract class Instrumento {
 ---
 
 ### Orquesta v0.1 (cont.)
-
-- Los instrumentos concretos...
 
 <div class="cols">
 <div>
@@ -149,12 +146,12 @@ class Cuerda extends Instrumento {
 
 ### Orquesta v0.1 (cont.)
 
-- La orquesta...
-
 </div>
 <div>
 
 ```java
+import java.util.ArrayList;
+
 public class Orquesta {
   ArrayList<Instrumento> instrumentos;
   public Orquesta() {
@@ -215,10 +212,15 @@ p {
 
 Seguir criticando la implementación...
 
+> **Pista**:
+> Visibilidad de la implementación
+
 </div>
 <div>
 
 ```java
+import java.util.ArrayList;
+
 class Orquesta {
   ArrayList<Instrumento> instrumentos;
   public Orquesta() {
@@ -330,11 +332,10 @@ h4 {
 
 - **Encapsulación**: visibilidad de `Orquesta::instrumentos` (en C++ sería `friend`)
 - **Encapsulación**: el método `add` de `orquesta.instrumentos` expone la implementación de la colección (un `ArrayList`)
-- **Flexibilidad**: la implementación `Orquesta::instrumentos` puede variar, pero no hay colección (agregado) en quien confíe `Orquesta` por delegación.
 
 #### Cambio propuesto
 
-- Delegar las altas/bajas de `Instrumento` en la colección (agregado) de `Orquesta`
+- Proteger la forma de hacer altas/bajas de `Instrumento` en la colección de `Orquesta`
 
 ---
 
@@ -433,12 +434,14 @@ h4 {
 
 #### Críticas a la Orquesta v0.3
 
-- **Acoplamiento**: `PruebaOrquesta` conoce la implementación basada en un `ArrayList` de la colección de instrumentos de la orquesta.
 - **Variabilidad**: ¿La colección de instrumentos será siempre lineal?
+- **Flexibilidad**: la implementación `Orquesta::instrumentos` puede variar, pero...
+- **Acoplamiento**: `PruebaOrquesta` sigue conociendo la implementación basada en un `ArrayList` de la colección de instrumentos de la orquesta.
 
 #### Cambio propuesto
 
-- Definir una __interfaz__ para iterar en la colección de instrumentos
+
+- Definir una **interfaz** para iterar en la colección de instrumentos
 
 ---
 
@@ -454,6 +457,8 @@ p {
 <div>
 
 ```java
+import java.util.List;
+
 class Orquesta {
   protected List<Instrumento> instrumentos;
   public Orquesta() {
@@ -483,17 +488,17 @@ class Orquesta {
 
 ```java
 public class PruebaOrquesta {
-    public static void main(String[] args) {
-      Orquesta orquesta = new Orquesta();
-      orquesta.addInstrumento(new Viento());
-      orquesta.addInstrumento(new Cuerda());
-      orquesta.addInstrumento(new Percusion());
-      for (Iterator<Instrumento> i =
-            orquesta.instrumentos.iterator();
-            i.hasNext(); )
-          orquesta.afinar(i.next());
-      orquesta.tocar();
-    }
+  public static void main(String[] args) {
+    Orquesta orquesta = new Orquesta();
+    orquesta.addInstrumento(new Viento());
+    orquesta.addInstrumento(new Cuerda());
+    orquesta.addInstrumento(new Percusion());
+    for (Iterator<Instrumento> i =
+          orquesta.instrumentos.iterator();
+          i.hasNext(); )
+        orquesta.afinar(i.next());
+    orquesta.tocar();
+  }
 }
 ```
 
@@ -517,7 +522,7 @@ h4 {
 
 #### Cambio propuesto
 
-Usar delegación, interfaces y el __*for each*__ (disponible desde el JDK 1.5), que permite iterar sobre una colección que implemente la interfaz `Iterable`
+Usar delegación, interfaces y el nuevo `for` (disponible desde el JDK 1.5), que permite iterar sobre una colección que implemente la interfaz `Iterable`
 
 ---
 
@@ -656,95 +661,54 @@ class Orquesta implements Iterable<Instrumento> {
   }
 ```
 
-Seguir criticando la implementación...
-
 </div>
 </div>
 
 ---
 
-### Implementación alternativa: Orquesta v0.7
-
 #### Cambio de requisitos
 
-- Supongamos que queremos sustituir la implementación basada en una `List` por otra (quizá más eficiente) basada en un `Map`
+- Supongamos que queremos poder iterar solo sobre un grupo de instrumentos de un mismo tipo (viento, cuerda, percusión). Hacerlo sobre una colección lineal es ineficiente.
+- Proponemos sustituir la implementación actual (basada en una `List`) por otra (quizá más eficiente) basada en un `Map`
 
-- Consultar la interfaz de `Map`: [`java.util.Map`](http://docs.oracle.com/javase/6/docs/api/java/util/Map.html) de Java 6 o [`java.util.Map<K,V>`](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html) de Java 11...
+- Consultamos la interfaz de `Map`: [`java.util.Map`](http://docs.oracle.com/javase/6/docs/api/java/util/Map.html) o [`java.util.Map<K,V>`](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html)...
 
-¡ `Map` no implementa `Iterable` !
+  ¡Sorpresa!...  `Map` no implementa `Iterable`
+
+---
+
+**Pegas**:
+
+- Tenemos que implementar la interfaz `Iterable` en `Orquesta` para que el cliente siga funcionando sin cambios.
+- El método `Orquesta::iterator()` queda un poco ineficiente al tener que iterar sobre todos los valores de un `Map`. 
+
+A pesar de esto, ¿construimos un `Map` en lugar de una `List` para almacenar los instrumentos?
+
+#### Más de lo que necesitamos
+
+`Map<K,V>` ofrece más de lo que necesitamos: ¡hay un `clear()` en el `Map`!
 
 ---
 
 #### Tensión de frontera
 
-Existe una cierta tensión proveedor-cliente en la **frontera** de la interfaz
+Existe una cierta tensión proveedor-cliente en la **frontera** de una interfaz
 
 - Los proveedores de packages y frameworks quieren ampliar aplicabilidad
 - Los clientes quieren una interfaz centrada en sus necesidades particulares
 
-Si construimos un `Map` y lo pasamos...
+Es mejor ocultar lo que no necesitamos:
 
-- Ninguno de los receptores deberá poder borrar algo del map. Pero ¡hay un `clear()` en el `Map`!
-- Algunos de los métodos de `Map` esperan un `Object`: `containsKey(Object key)`, `containsValue(Object value)`
+- Ocultar la implementación en una interfaz
+- Filtrar los métodos que no nos sirven
+- Más fácil de hacer evolucionar sin impacto en el resto de la aplicación
 
 ---
 
-¿La interfaz `Map` es siempre satisfactoria? ¿seguro que no va a cambiar?
+### Implementación alternativa: Orquesta v0.7
 
 <div class="cols">
 <div>
-
-JDK < 5.0:
-
-```java
-  Map sensors = new HashMap();
-  sensors.put(1, new Sensor());
-  sensors.put(2, new Sensor());
-  ...
-  Sensor s = (Sensor)sensors.get(id);
-```
-
-</div>
-<div>
-
-JDK >= 5.0:
-
-```java
-  Map<Integer,Sensor> sensors =
-      new HashMap<Integer,Sensor>();
-  sensors.put(1, new Sensor());
-  sensors.put(2, new Sensor());
-  ...
-  Sensor s = sensors.get(id);
-```
-
-</div>
-</div>
-
----
-
-#### Conclusión
-
-`Map<Integer,Sensor>` ofrece más de lo que necesitamos
-
-```java
-  public class Sensors {
-    private Map sensors = new HashMap();
-    public Sensor getById(String id) {
-      return (Sensor) sensors.get(id);
-    }
-    //...
-  }
-```
-
-- La interfaz `Map` queda oculta en `Sensors`
-- Se filtran los métodos que no nos sirven
-- Más fácil de hacer evolucionar sin impacto en el resto de la aplicación
-- El casting queda confinado en la clase `Sensors`, que es más seguro
-
----
-
-Así que proponemos este **rediseño** para la Orquesta v0.7:
 
 ```java
 class Orquesta implements Iterable<Instrumento> {
@@ -772,27 +736,8 @@ class Orquesta implements Iterable<Instrumento> {
 }
 ```
 
----
-
-```java
-public class Instrumentos implements Iterable<Instrumento> {
-  private List instrumentos;
-  public Instrumentos(int numero) {
-    instrumentos = new ArrayList<Instrumento>(numero);
-  }
-  public Iterator<Instrumento> iterator() {
-      return instrumentos.iterator();
-  }
-  public boolean addInstrument(Instrumento i) {
-    return instrumentos.add(i);
-  }
-  public boolean removeInstrument(Instrumento i) {
-    return instrumentos.remove(i);
-  }
-}
-```
-
----
+</div>
+<div>
 
 ```java
 public class PruebaOrquesta {
@@ -808,9 +753,87 @@ public class PruebaOrquesta {
 }
 ```
 
-Esta implementación podemos adaptarla más fácilmente para cambiar el `List` por un `Map`, pues la responsabilidad de ser iterable queda confinada en `Instrumentos`, que desacopla `Orquesta` y la implementación elegida (`List`, `Map`, etc.) para la colección de instrumentos.
+Añadimos método para saber el tipo:
 
-Esto ya es más <emph>diseño</emph> que implementación (separación de responsabilidades)...
+```java
+abstract class Instrumento {
+  ...
+  public String tipo() {
+    return getClass().getSimpleName().toLowerCase();
+  }
+}
+```
+
+</div>
+</div>
+
+---
+
+<style scoped>
+.cols {
+  display: grid;
+  grid-template-columns: 55% 45%;
+}
+</style>
+
+<div class="cols">
+<div>
+
+```java
+public class Instrumentos
+       implements Iterable<Instrumento> {
+  private Map<String,List<Instrumento>> instrumentos;
+
+  public Instrumentos(int numero) {
+    instrumentos = 
+        new LinkedHashMap<String,List<Instrumento>>(numero);
+  }
+
+  public Iterator<Instrumento> iterator() {
+    List<Instrumento> todos = 
+        new ArrayList<Instrumento>();
+    for (List<Instrumento> grupo: instrumentos.values())
+      todos.addAll(grupo);
+    return todos.iterator();
+  }
+```
+
+</div>
+<div>
+
+```java
+  public boolean addInstrument(Instrumento i) {
+    String tipo = i.tipo();
+    List<Instrumento> grupo =
+          instrumentos.get(tipo);
+    if (grupo == null) {
+      grupo = new ArrayList<Instrumento>();
+      instrumentos.put(tipo, grupo);
+    }
+    return grupo.add(i);
+  }
+  public boolean removeInstrument(Instrumento i) {
+    String tipo = i.tipo();
+    List<Instrumento> grupo =
+          instrumentos.get(tipo);
+    if (grupo == null)
+      return false;
+    boolean removed = grupo.remove(i);
+    if (grupo.isEmpty())
+      instrumentos.remove(tipo);
+    return removed;
+  }
+}
+```
+
+</div>
+</div>
+
+---
+
+Esta implementación desacopla `Orquesta` de la estructura concreta de almacenamiento, pues la responsabilidad de ser iterable queda confinada en `Instrumentos`, que encapsula y filtra la implementación elegida (`List`, `Map`, etc.) para la colección de instrumentos.
+
+Esto ya es más re-<emph>diseño</emph> que implementación (separación de responsabilidades)...
 
 ---
 
@@ -835,7 +858,7 @@ Críticas acumuladas aplicables a la v0.1 para llegar a la implementación final
 
 Delegación _en horizontal_ hacia otras clases cuya interfaz es bien conocida
 
-- Los objetos miembro __delegados__ son cambiables en tiempo de ejecución sin afectar al código cliente ya existente
+- Los objetos miembro **delegados** son cambiables en tiempo de ejecución sin afectar al código cliente ya existente
 - Alternativa más flexible que la herencia. Ejemplo: `Cola extends ArrayList` implica que una cola va a implementarse como un `ArrayList` para toda la vida, sin posibilidad de cambio en ejecución
 
 ---
@@ -843,13 +866,13 @@ Delegación _en horizontal_ hacia otras clases cuya interfaz es bien conocida
 ### Composición vs. Herencia
 
 - **Composición** (delegación _en horizontal_)
-    - Útil cuando hacen falta las características de una clase existente dentro de una nueva, _pero no su interfaz_.
-    - Los objetos miembro privados pueden cambiarse en tiempo de ejecución.
-    - Los cambios en el objeto miembro no afectan al código del cliente.
+  - Útil cuando hacen falta las características de una clase existente dentro de una nueva, _pero no su interfaz_.
+  - Los objetos miembro privados pueden cambiarse en tiempo de ejecución.
+  - Los cambios en el objeto miembro no afectan al código del cliente.
 
 - **Herencia** (delegación _en vertical_)
-    - Útil para hacer una versión especial de una clase existente, reutilizando su interfaz.
-    - La relación de herencia en los lenguajes de programación _suele ser_ __estática__ (definida en tiempo de compilación) y no __dinámica__ (que pueda cambiarse en tiempo de ejecución).
+  - Útil para hacer una versión especial de una clase existente, reutilizando su interfaz.
+  - La relación de herencia en los lenguajes de programación _suele ser_ **estática** (definida en tiempo de compilación) y no **dinámica** (que pueda cambiarse en tiempo de ejecución).
 
 ---
 
@@ -875,7 +898,7 @@ Cada lenguaje tiene sus mecanismos de implementación...
 
 `java.lang.Comparable` es una interfaz implementada por `String`, `File`, `Date`, etc. y todas las llamadas _clases de envoltura_ del JDK (i.e. `Integer`, `Long`, etc.)
 
-#####  Métodos de la interfaz `Comparable`
+##### Métodos de la interfaz `Comparable`
 
 ```java
 // JDK 1.4
@@ -893,7 +916,7 @@ public interface Comparable<T> {
 
 ---
 
-#####  Invariantes
+##### Invariantes
 
 - Anticonmutativa:
   
@@ -911,14 +934,14 @@ public interface Comparable<T> {
 
 ---
 
-####  Identificador de BankAccount: Implementación en Java ≥ 1.5
+#### Identificador de BankAccount: Implementación en Java ≥ 1.5
 
 - Utilizando _templates_ (**polimorfismo paramétrico**)
 - Delegar en `compareTo` y `equals` del tipo de id _envuelto_ (e.g. `String`)
 
 ---
 
-```java 
+```java
 import java.util.*;
 import java.io.*;
 
@@ -993,7 +1016,7 @@ public final class BankAccount implements Comparable {
 
 Cuando una clase hereda de una clase concreta que implementa `Comparable` y le añade un campo significativo para la comparación, no se puede construir una implementación correcta de `compareTo`. La única alternativa entonces es la composición en lugar de la herencia.
 
-Una alternativa (no excluyente) a implementar `Comparable` es pasar un `Comparator` como parámetro (se prefiere __composición__ frente a __herencia__):
+Una alternativa (no excluyente) a implementar `Comparable` es pasar un `Comparator` como parámetro (se prefiere **composición** frente a **herencia**):
 
 ---
 
@@ -1070,14 +1093,14 @@ class Fecha(d: Int, m: Int, a: Int) extends Ord {
 
 ---
 
-Un __mixin__ es un módulo/clase con métodos disponibles para otros módulos/clases _sin tener que usar la herencia_
+Un **mixin** es un módulo/clase con métodos disponibles para otros módulos/clases _sin tener que usar la herencia_
 
 - Los mixin son un mecanismo de **reutilización de código** sin herencia
-- Es una __alternativa__ a la herencia múltiple
-- Incluye una __interfaz__ con métodos ya implementados
-- No se heredan sino que se __incluyen__
-- Un mixin es una (sub)clase, luego define un comportamiento y un __estado__
-- Es una forma de implementar la __inversión de dependencias__
+- Es una **alternativa** a la herencia múltiple
+- Incluye una **interfaz** con métodos ya implementados
+- No se heredan sino que se **incluyen**
+- Un mixin es una (sub)clase, luego define un comportamiento y un **estado**
+- Es una forma de implementar la **inversión de dependencias**
 
 ¿Qué lenguajes tienen mixins?
 
@@ -1094,11 +1117,11 @@ En Ruby los mixins se implementan mediante módulos (`module`).
 
 ### Comparadores: Implementación en Ruby
 
-Una manera de implementar un `Comparable` en ruby mediante el __módulo__ [Comparable](https://ruby-doc.org/core-2.2.3/Comparable.html):
+Una manera de implementar un `Comparable` en ruby mediante el **módulo** [Comparable](https://ruby-doc.org/core-2.2.3/Comparable.html):
 
 - La clase que incluye el módulo `Comparable` tiene que implementar:
 
-  - el método `<=>`: es un método que incluye los siguientes operadores/métodos: `<, <=, ==, >, >=, between?` 
+  - el método `<=>`: es un método que incluye los siguientes operadores/métodos: `<, <=, ==, >, >=, between?`
   - el atributo-criterio de comparación
 
 - En `x <=> y`, `x` es el receptor del mensaje/método e `y` es el argumento
@@ -1133,7 +1156,7 @@ s3.between?(s1,s2) #true
 
 ### Scala Traits
 
-Un __trait__ es una forma de separar las dos principales responsabilidades de una clase: definir el __estado__ de sus instancias y definir su __comportamiento__.
+Un **trait** es una forma de separar las dos principales responsabilidades de una clase: definir el **estado** de sus instancias y definir su **comportamiento**.
 
 - Las clases y los objetos en Scala pueden extender un `trait`
 - Los `trait`de Scala son similares a las `interface` de Java.
@@ -1180,6 +1203,12 @@ p {
 </style>
 
 ¿Un `trait` de Scala es un _mixin_?
+
+<!--
+Puede serlo, pero no todo trait necesariamente se usa como mixin.
+- Al mezclarlo en una clase con `extends ... with ...`, actúa como mixin.
+- Pero también muchos traits se usan como abstracciones de tipo/interfaz.
+-->
 
 ---
 
@@ -1236,7 +1265,7 @@ Los traits de Scala tienen una interfaz que las clases heredan (`extends`)
 
 Entonces... una clase que extiende un trait con un comportamiento, ¿va contra el principio general de que la [herencia de comportamiento](https://en.wikipedia.org/wiki/Composition_over_inheritance#Benefits) es una mala idea?
 
-- Odersky llama __mixin traits__ a los traits con comportamiento
+- Odersky llama **mixin traits** a los traits con comportamiento
 - Para ser un mixin genuino, un trait debería mezclar comportamiento y no interfaces heredadas
 
 Lectura recomendada: [Scala Mixins: The right way](http://baddotrobot.com/blog/2014/09/22/scala-mixins/)
@@ -1263,6 +1292,59 @@ p {
 ---
 
 <style scoped>
+.cols {
+  display: grid;
+  grid-template-columns: 45% 55%;
+}
+</style>
+
+#### Ejemplo de métodos `default`
+
+Resolver la ambigüedad en la herencia múltiple con métodos `default`
+
+<div class="cols">
+<div>
+
+```java
+interface Volador {
+  default void mover() {
+    System.out.println("Moviendo por aire");
+  }
+}
+
+interface Nadador {
+  default void mover() {
+    System.out.println("Moviendo por agua");
+  }
+}
+```
+
+</div>
+<div>
+
+```java
+class Pato implements Volador, Nadador {
+  @Override
+  public void mover() {
+    // Obligatorio resolver el conflicto
+    Volador.super.mover(); // o Nadador.super.mover()
+    System.out.println("... como un pato");
+  }
+}
+
+// Válido desde JDK 25...
+void main() {
+  var pato = new Pato();
+  pato.mover();
+}
+```
+
+</div>
+</div>
+
+---
+
+<style scoped>
 p {
   text-align: center;
   font-size: 125%;
@@ -1270,7 +1352,7 @@ p {
 }
 </style>
 
-¿Qué ventajas tienen las implementaciones basadas en __Composición__ frente a las basadas en __Herencia__ (estática)?
+¿Qué ventajas tienen las implementaciones basadas en **Composición** frente a las basadas en **Herencia** (estática)?
 
 ---
 

@@ -1,0 +1,18 @@
+services:
+  jenkins:
+    image: my-custom-jenkins
+    build: .
+    container_name: jenkins
+    user: root # Ejecutar como root para permitir el acceso a Docker del host
+    restart: unless-stopped
+    ports:
+      - "8080:8080" # Puerto para acceder a Jenkins
+      - "50000:50000" # Puerto para agentes de Jenkins
+    volumes:
+      - jenkins_home:/var/jenkins_home # Persistencia de datos de Jenkins
+      - /var/run/docker.sock:/var/run/docker.sock # Permite a Jenkins usar Docker del host
+    environment:
+      - DOCKER_HOST=unix:///var/run/docker.sock # Configura Jenkins para usar Docker del host
+
+volumes:
+  jenkins_home:

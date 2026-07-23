@@ -22,6 +22,20 @@ h2 {
   color: darkblue;
   text-align: center;
 }
+h3 {
+  color: #E87B00;
+}  
+emph {
+  color: #E87B00;
+}
+.cols {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+.cols > div {
+  align-self: start;
+}
 </style>
 
 # PROGRAMACIÓN FUNCIONAL Y STREAMS
@@ -48,7 +62,7 @@ Deseamos ordenar por criterios distintos cada vez (id, fecha, etc.)
   - Mucho código repetido (no cumple DRY)
   - Muchos cambios si se añade un nuevo criterio (no cumple OCP)
 
-- Alternativa 2: No usar herencia, sino composición/delegación
+- Alternativa 2: no usar herencia, sino composición/delegación
   - Factorizar la _función_ de comparación
   - No delegar hacia las subclases
   - Delegar en objeto de otra clase que implemente la interfaz `java.util.Comparator`
@@ -73,7 +87,7 @@ La __función factorizada__ (la implementación de `Comparator`) es sustituible 
 
 ### Clases anónimas
 
-#### Ejemplo: versión con clases anónimas
+#### Comparador: versión con clases anónimas
 
 ```java
 Collections.sort(personas, 
@@ -87,6 +101,9 @@ Collections.sort(personas,
 
 ---
 
+<div class="cols">
+<div>
+
 __Clases anónimas (Java 7)__
 
 ```java
@@ -99,7 +116,6 @@ public class ComparatorTest {
         return p1.getLastname().compareTo(p2.getLastname());
       }
     });
-
     System.out.println("=== Sorted Asc Lastname ===");
     for(Person p: personList){
       p.printName();
@@ -110,7 +126,6 @@ public class ComparatorTest {
         return p2.getLastname().compareTo(p1.getLastname());
       }
     });
-
     System.out.println("=== Sorted Desc Lastname ===");
     for(Person p: personList){
       p.printName();
@@ -119,7 +134,8 @@ public class ComparatorTest {
 }
 ```
 
----
+</div>
+<div>
 
 __Lambdas (Java 8)__
 
@@ -133,7 +149,6 @@ public class ComparatorTest {
     System.out.println("=== Sorted Asc Lastname ===");
     Collections.sort(personList, (Person p1, Person p2) ->
       p1.getLastname().compareTo(p2.getLastname()));
-
     for(Person p:personList){
       p.printName();
     }
@@ -142,7 +157,6 @@ public class ComparatorTest {
     System.out.println("=== Sorted Desc Lastname ===");
     Collections.sort(personList, (p1,  p2) ->
       p2.getLastname().compareTo(p1.getLastname()));
-
     for(Person p:personList){
       p.printName();
     }
@@ -150,123 +164,245 @@ public class ComparatorTest {
 }
 ```
 
----
-
-### Clases locales o internas
-
-- Son clases locales (_inner classes_) declaradas sin nombre, dentro de métodos
-- Pueden hacer referencia a identificadores declarados en la clase y a variables de solo lectura (`final`) del método en que se declaran
-- Sirven para clases que solo aparecen una vez en la aplicación
+</div>
+</div>
 
 ---
+
+### Clases Internas (_inner_)
+
+<div class="cols">
+<div>
+
+- Son clases locales anónimas, declaradas dentro de métodos
+- Pueden hacer referencia a identificadores declarados en la clase contenedora y a variables locales `final` (o _effectively final_) del método en que se declaran
+- Aglutinan funcionalidades que solo se necesitan una vez en la aplicación
+
+$\triangleright$ Viven en el _heap_
+$\triangleright$ Capturan el valor de las variables locales
+
+</div>
+<div>
 
 ```java
-public class EnclosingClass {
-  public class InnerClass {
-    public int incrementAndReturnCounter() {
+public class Enclosing {
+  public class Inner {
+    public int incrementAndReturn() {
       return counter++;
     }
   }
 
-  private int counter;
-  {
-    counter = 0;
-  }
+  private int counter = 0;
 
   public int getCounter() {
     return counter;
   }
 
   public static void main(String[] args) {
-    EnclosingClass enclosingClassInstance = new EnclosingClass();
-    EnclosingClass.InnerClass innerClassInstance =
-      enclosingClassInstance.new InnerClass();
-    for( int i = enclosingClassInstance.getCounter();
-         (i = innerClassInstance.incrementAndReturnCounter()) < 10; ) {
-      System.out.println(i);
+    var anEnclosing = new Enclosing();
+    var anInner = anEnclosing.new Inner();
+    int value;
+
+    while ((value = inner.incrementAndReturn()) < 10)
+    {
+        System.out.println(value);
     }
   }
 }
 ```
 
+</div>
+</div>
+
 ---
 
 ### Predicados
 
-En Java 8, inspirado por la biblioteca _guava_, se incluyen predicados como una forma de interfaz funcional.
+#### Ejemplo: partidos de una competición
 
-En la biblioteca Guava, los [`Iterators`](https://google.github.io/guava/releases/15.0/api/docs/com/google/common/collect/Iterators.html) tienen un método [`filter`](https://google.github.io/guava/releases/15.0/api/docs/com/google/common/collect/Iterators.html#filter) que recibe un objeto de tipo [`Predicate`](https://google.github.io/guava/releases/15.0/api/docs/com/google/common/base/Predicate.html).
+Queremos iterar sobre una colección de partidos de una competición y quedarnos sólo con los partidos que enfrentan a dos equipos concretos.
 
-Desde Java 8 existe una clase similar [`Predicate`](https://docs.oracle.com/javase/8/docs/api/java/util/function/Predicate.html).
+- ¿Cómo implementamos el __criterio__ de filtrado?
+- ¿Cómo resolvemos el retorno de `null` en algún paso de la iteración?
 
 ---
 
-### Ejemplo: partidos de una competición
+#### Guava y Java
 
-__Con clases anónimas:__
+Guava es una aitigua biblioteca open source de Google que proporciona una amplia gama de utilidades para Java, incluyendo colecciones, cachés, primitivas, concurrencia, etc.
+
+Iteración:
+
+- Guava usa una interfaz funcional [`com.google.common.base.Predicate`](https://google.github.io/guava/releases/15.0/api/docs/com/google/common/base/Predicate.html) (inspiraron la clase [`java.util.function.Predicate`](https://docs.oracle.com/javase/8/docs/api/java/util/function/Predicate.html) de Java) —Guava define `Predicate::apply()` y Java define `Predicate::test()`
+- Guava añade un método [`filter`](https://google.github.io/guava/releases/15.0/api/docs/com/google/common/collect/Iterators.html#filter) a los [`Iterators`](https://google.github.io/guava/releases/15.0/api/docs/com/google/common/collect/Iterators.html), que recibe un `Predicate` como criterio de filtrado
+- Guava no comprueba `null` en la programación fluent
+
+---
+
+#### Ejemplo con Guava: null en la iteración
 
 ```java
-final Predicate<Match> condition = new Predicate<Match>() {
-  final Team team1 = new Team("Cadiz CF");
-  final Team team2 = new Team("RC Betis");
-  public boolean apply(Match match) {
-    return match.getLocalTeam().equals(team1) &&
-           match.getVisitingTeam().equals(team2);
-  }
+import java.util.Iterator;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterators;
+
+Iterator<Match> matches = repository.findMatches(); // puede ser null
+
+final Predicate<Match> condition = new Predicate<>() {
+    final Team team1 = new Team("Cadiz CF");
+    final Team team2 = new Team("RC Betis");
+
+    @Override
+    public boolean apply(Match match) {
+        return match.getLocalTeam().equals(team1)
+            && match.getVisitingTeam().equals(team2);
+    }
 };
-Iterator matchesByTeam = Iterators.filter(matches, condition);
-for (matches: matchesByTeam) { ... };
+
+Iterator<Match> matchesByTeam =
+    Iterators.filter(matches, condition); // 💥 Excepción si matches == null
+
+while (matchesByTeam.hasNext()) {
+    System.out.println(matchesByTeam.next());
+}
 ```
 
 ---
 
-__Sin clases anónimas:__
+Supongamos que `matches` se obtiene de una API heredada que puede devolver `null`. Entonces al hacer...
 
 ```java
-class FilterByTeam implements Predicate<Match> {
-  Team localTeam, visitingTeam;
+Iterator<Match> matchesByTeam = Iterators.filter(matches, condition);
+```
 
-  public FilterByTeam(Team t1, Team t2) {
-      this.localTeam = t1;
-      this.visitingTeam = t2;
+- El pipeline espera un iterador, no un `null`.
+- Si `matches` es `null`, se lanzará una excepción `NullPointerException` al intentar iterar sobre `matchesByTeam`.
+
+---
+
+#### Ejemplo con Java 9+: null en la iteración
+
+```java
+import java.util.Iterator;
+import java.util.Spliterators;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+
+class MatchByTeamsPredicate implements Predicate<Match> {
+  private final Team localTeam;
+  private final Team visitingTeam;
+
+  MatchByTeamsPredicate(Team localTeam, Team visitingTeam) {
+    this.localTeam = localTeam;
+    this.visitingTeam = visitingTeam;
   }
 
-  public boolean apply(Match match) {
-      return match.getLocalTeam().equals(t1) || 
-             match.getVisitingTeam().equals(t2);
+  @Override
+  public boolean test(Match match) {
+    return match.getLocalTeam().equals(localTeam)
+        && match.getVisitingTeam().equals(visitingTeam);
   }
 }
 ```
 
 ---
 
-__Guava y Java 8__
+```java
+Stream<Match> toStream(Iterator<Match> iterator) {
+    return StreamSupport.stream(
+        Spliterators.spliteratorUnknownSize(iterator, 0),
+        false
+    );
+}
 
-Guava emplea `FluentIterable` para poder encadenar varios `Iterable` sin que haya problemas con el retorno de null en la programación _fluent_. La biblioteca estándar de Java 8 sustituye la solución del `FluentIterable` por los `Predicate` o por el uso de `StreamSupport` para resolver dicho problema.
+void main() {
+  Iterator<Match> matches = repository.findMatches(); // puede ser null
 
-Lectura recomendada: [From Guava's FluentIterable via StreamSupport to Java 8 Streams](https://verhoevenv.github.io/2015/08/18/fluentiterable-streamsupport-java8.html)
+  Predicate<Match> condition =
+      new MatchByTeamsPredicate(
+          new Team("Cadiz CF"),
+          new Team("RC Betis")
+      );
+
+  Stream.ofNullable(matches)
+      .flatMap(this::toStream)
+      .filter(condition)
+      .forEach(System.out::println);
+}
+```
 
 ---
 
-Comprobar que, en un cierto grupo de la competición, un mismo partido no está repetido ni se enfrenta un equipo contra sí mismo:
+### Guava y Java 8
+
+Programación <emph>fluent</emph> y retorno de `null`en los iterables:
+
+- Guava usa `FluentIterable` para encadenar varios `Iterable`
+- Java 8 sustituye el `FluentIterable` por los `Predicate` o por el uso de `StreamSupport`
+- Java 9 introduce `Stream.ofNullable()`
+
+Lectura recomendada: [From Guava's FluentIterable via StreamSupport to Java 8 Streams](https://verhoevenv.github.io/2015/08/18/fluentiterable-streamsupport-java8.html)
+
+Colecciones <emph>immutables</emph>:
+
+- Implementaciones immutables de colecciones: `ImmutableList`, `ImmutableSet`, `ImmutableMap`... en Guava
+- Adoptadas con `List.of()`, `Set.of()`, `Map.of()`... en Java 8
+
+---
+
+#### Ejemplo con Java 8+: criterios de filtrado
+
+Comprobar que un mismo partido (_fixture_) no está repetido ni se enfrenta un equipo contra sí mismo en un grupo de la competición...
+
+---
+
+```java
+import java.util.List;
+import java.util.function.Predicate;
+
+class FixturePredicate implements Predicate<Match> {
+    private final Team localTeam;
+    private final Team visitingTeam;
+
+    public FixturePredicate(Team local, Team visiting) {
+        this.localTeam = local; this.visitingTeam = visiting;
+    }
+
+    @Override
+    public boolean test(Match match) {
+        return match.getLocalTeam().equals(localTeam)
+            && match.getVisitingTeam().equals(visitingTeam);
+    }
+}
+
+private Predicate<Match> fixture(Team localTeam, Team visitingTeam) {
+    return new FixturePredicate(localTeam, visitingTeam);
+}
+```
+
+---
 
 ```java
 private void checkMatchesInGroup(List<Match> matchesInGroup) {
-  for (Match match: matchesInGroup) {
-      Team t1 = match.getLocalTeam();
-      Team t2 = match.getVisitingTeam();
-      assertNotSame(t1, t2);
-      List<Match> firstLeg =
-          FluentIterable.from(matchesInGroup)
-                        .filter(new FilterByTeam(t1, t2))
-                        .toImmutableList();
-      assertTrue(firstLeg.size()==1);
-      List<Match> secondLeg =
-          FluentIterable.from(matchesInGroup)
-                        .filter(new FilterByTeam(t2, t1))
-                        .toImmutableList();
-      assertTrue(secondLeg.size()==0);
-  }
+    for (Match match : matchesInGroup) {
+        Team t1 = match.getLocalTeam();
+        Team t2 = match.getVisitingTeam();
+
+        assertNotSame(t1, t2);
+
+        List<Match> firstLeg = matchesInGroup.stream()
+            .filter(fixture(t1, t2))
+            .toList();
+
+        assertTrue(firstLeg.size() == 1);
+
+        List<Match> secondLeg = matchesInGroup.stream()
+            .filter(fixture(t2, t1))
+            .toList();
+
+        assertTrue(secondLeg.size() == 0);
+    }
 }
 ```
 
@@ -474,7 +610,7 @@ __Tutoriales recomendado:__
 
 ##### Captura de variables en lambdas
 
-Una expresión lambda en Java puede **capturar** (o no)...
+Una expresión lambda en Java puede __capturar__ (o no)...
 
 - variables de instancia no locales (atributos de la clase contenedora) y
 - variables locales (declaradas o no `final`, pero cuyo valor no es modificado)
@@ -542,19 +678,19 @@ public class LambdaInstanceCapturing implements Runnable {
 
 ##### Lambdas y clases anónimas internas
 
-En Java, una expresión lambda y una clase anónima interna (_inner class_) tienen un propósito similar, pero son diferentes en un aspecto: el **ámbito** (_scope_) de la definición de las variables locales.
+En Java, una expresión lambda y una _inner class_ tienen un propósito similar, pero son diferentes en el __ámbito__ (_scope_) de definición de las variables locales.
 
-- Cuando se usa una inner class, se crea un __nuevo ámbito__ para dicha clase.
-  - Se pueden ocultar las variables locales para el ámbito contenedor instanciando nuevas variables con el mismo nombre.
-  - También se puede usar la palabra reservada `this` dentro de una clase anónima para hacer referencia a su instancia.
+- Con una inner class se crea un __nuevo ámbito__ para la clase
+  - Se pueden ocultar las variables locales para el ámbito contenedor instanciando nuevas variables con el mismo nombre
+  - También se puede usar `this` dentro de una clase anónima para hacer referencia a su instancia
 
-- Sin embargo, las expresiones lambda trabajan con el __ámbito contenedor__.
-  - No se pueden ocultar las variables del ámbito contenedor dentro del cuerpo de la expresión lambda.
-  - `this` hace referencia a una instancia de la clase contenedora.
+- Las expresiones lambda trabajan con el __ámbito contenedor__
+  - No se pueden ocultar las variables del ámbito contenedor dentro del cuerpo de la expresión lambda
+  - `this` hace referencia a una instancia de la clase contenedora
 
 ---
 
-En el ejemplo siguiente, ¿qué valor devuelve `scopeExperiment()`?:
+En el ejemplo siguiente, ¿qué valor devuelve `scopeExperiment()`?
 
 ```java
 @FunctionalInterface
@@ -567,12 +703,12 @@ private String variable = "Valor de la contenedora";
 public String scopeExperiment() {
 
   ClaseFuncional unaInnerClass = new ClaseFuncional() {
-      String variable = "Valor de la inner class";
-      @Override
-      public String method(String string) {
-          return this.variable;
-            /*  Con o sin this, no hay lambdas ni variables libres */
-      }
+    String variable = "Valor de la inner class";
+    @Override
+    public String method(String string) {
+      return this.variable;
+      /*  Con o sin this, no hay lambdas ni variables libres */
+    }
   };
   String resultadoInnerClass = unaInnerClass.method("");
 
@@ -582,7 +718,7 @@ public String scopeExperiment() {
 
 ---
 
-El valor será:
+El valor devuelto será:
 
 ```text
 resultadoInnerClass  = Valor de la inner class
@@ -590,7 +726,7 @@ resultadoInnerClass  = Valor de la inner class
 
 ---
 
-En el ejemplo siguiente, ¿qué valor devuelve `scopeExperiment()`?:
+En el ejemplo siguiente, ¿qué valor devuelve `scopeExperiment()`?
 
 ```java
 @FunctionalInterface
@@ -603,10 +739,10 @@ private String variable = "Valor de la contenedora";
 public String scopeExperiment() {
 
   ClaseFuncional unaLambda = parametro -> {
-      String variable= "Valor de la lambda";
-      return this.variable; 
-        /* Con this, la clausura de la variable libre se produce
-           con el valor de ClaseFuncional::variable */
+    String variable= "Valor de la lambda";
+    return this.variable; 
+    /* Con this, la clausura de la variable libre se produce
+       con el valor de ClaseFuncional::variable */
   };
   String resultadoLambda = unaLambda.method("");
 
@@ -628,21 +764,30 @@ resultadoLambda = Valor de la contenedora
 
 ##### Bloques (_blocks_)
 
+<div class="cols">
+<div>
+
 __Sintaxis `do` ... `end`__
 
-  ```ruby
-  some_list = [ 10, 20, 30 ]
-  some_list.map do |i|
-      i += 1
-  end
-  ```
+```ruby
+some_list = [ 10, 20, 30 ]
+some_list.map do |i|
+    i += 1
+end
+```
+
+</div>
+<div>
 
 __Sintaxis `{` ... `}`__
 
-  ```ruby
-  some_list = [ 10, 20, 30 ]
-  some_list.map { |i| i += 1 }
-  ```
+```ruby
+some_list = [ 10, 20, 30 ]
+some_list.map { |i| i += 1 }
+```
+
+</div>
+</div>
 
 El método `map` itera y aplica un bloque repetitivamente a cada elemento de una colección (representado por el parámetro `i`)
 
@@ -652,33 +797,44 @@ El método `map` itera y aplica un bloque repetitivamente a cada elemento de una
 
 __Sin bloques:__
 
-
-  ```ruby
-  class SongList
-    def with_title(title)
-      for i in 0...@songs.length
-        return @songs[i] if title == @songs[i].name
-      end
-      return nil
+```ruby
+class SongList
+  def with_title(title)
+    for i in 0...@songs.length
+      return @songs[i] if title == @songs[i].name
     end
+    return nil
   end
-  ```
-
-__Con bloques (sintaxis `do` ... `end`):__
-
-  ```ruby
-  class SongList
-    def with_title(title)
-      @songs.find do |song|
-        title == song.name
-      end
-    end
-  end
-  ```
+end
+```
 
 ---
+<style scoped>
+.cols {
+  display: grid;
+  grid-template-columns: 40% 60%;
+}
+</style>
 
-__Con bloques (sintaxis `{` ... `}`):__
+<div class="cols">
+<div>
+
+__Con bloques `do` ... `end`:__
+
+```ruby
+class SongList
+  def with_title(title)
+    @songs.find do |song|
+      title == song.name
+    end
+  end
+end
+```
+
+</div>
+<div>
+
+__Con bloques `{` ... `}`:__
 
   ```ruby
   class SongList
@@ -688,6 +844,9 @@ __Con bloques (sintaxis `{` ... `}`):__
   end
   ```
 
+</div>
+</div>
+
 El método `find` itera y aplica el test del bloque a cada elemento `song` de la colección.
 
 ---
@@ -696,13 +855,20 @@ El método `find` itera y aplica el test del bloque a cada elemento `song` de la
 
 - El bloque debe aparecer al lado de una llamada a método
 - No se ejecuta el bloque, sino que se recuerda el contexto (variables locales, objeto actual, etc.) en que aparece
-- Cuando se ejecuta el método, el bloque es invocado donde aparezca `yield`
-- El control vuelve al método después del `yield`
 - Al bloque se le pueden pasar parámetros
 
 ---
+<style scoped>
+.cols {
+  display: grid;
+  grid-template-columns: 60% 40%;
+}
+</style>
 
-**Ejemplo: fibonacci**
+__Ejemplo: fibonacci__
+
+<div class="cols">
+<div>
 
 ```ruby
 def fib_up_to(max)
@@ -712,14 +878,28 @@ def fib_up_to(max)
     i1, i2 = i2, i1+i2
   end
 end
-fib_up_to(1000) {|f| print f, " " }
+fib_up_to(200) {|f| print f, " " }
 
-#Salida => 1 1 2 3 5 8 13 21 34 55 89 144 233 377 610 987
+#Salida => 1 1 2 3 5 8 13 21 34 55 89 144
 ```
+
+</div>
+<div>
+
+Ejecución con `yield`:
+
+- Cuando se ejecuta el método, el bloque es invocado donde aparezca `yield`
+- El control vuelve al método después del `yield`
+
+</div>
+</div>
 
 ---
 
-**Ejemplo de `yield`:**
+__Ejemplos de `yield`:__
+
+<div class="cols">
+<div>
 
 ```ruby
 def three_times
@@ -730,9 +910,8 @@ end
 three_times { puts "Hello" }
 ```
 
----
-
-**Ejemplo: implementación de `Array.find`**
+</div>
+<div>
 
 ```ruby
 class Array
@@ -745,6 +924,9 @@ class Array
   end
 end
 ```
+
+</div>
+</div>
 
 ---
 
@@ -876,7 +1058,6 @@ end
     my_proc.call
     puts "After proc"
   end
-
   puts call_proc
   # Prints "Before proc" but not "After proc"
 
@@ -886,14 +1067,13 @@ end
     my_lambda.call
     puts "After lambda"
   end
-
   puts call_lambda
   # Prints "Before lambda" and "After lambda"
   ```
 
 ---
 
-**Diferencias entre `Proc` y `lambda`:**
+__Diferencias entre `Proc` y `lambda`:__
 
 - Las lambdas se definen con `-> {}` y los procs con `Proc.new {}`
 - Los `Proc` retornan del método actual, las lambdas retornan de la propia función lambda
@@ -909,7 +1089,7 @@ end
 
 ---
 
-**Ejemplos de paso de bloques:**
+__Ejemplos de paso de bloques:__
 
 - Llamada a un bloque sin parámetros
 
@@ -1038,25 +1218,21 @@ Las operaciones sobre un stream pueden ser intermediarias o terminales
 
 ---
 
-### Ejemplo v0.1
+#### Ejemplo v0.1
 
 \[Probar en [paiza.io](https://paiza.io/projects/K6lkbmKSYAKnF0o0fo0oEQ?language=java)\]
 
 ```java
-public class Main{
-  public static void main(String []args){
-      
-    List<String> myList =
-      Arrays.asList("a1", "a2", "b1", "c2", "c1");
+void main() {      
+  List<String> myList =
+    Arrays.asList("a1", "a2", "b1", "c2", "c1");
 
-    myList
-      .stream()
-      .filter(s -> s.startsWith("c"))
-      .map(String::toUpperCase)
-      .sorted()
-      .forEach(System.out::println);
-      
-  }
+  myList
+    .stream()
+    .filter(s -> s.startsWith("c"))
+    .map(String::toUpperCase)
+    .sorted()
+    .forEach(System.out::println);
 }
 ```
 
@@ -1082,24 +1258,70 @@ En el ejemplo anterior, se puede observar que:
 
 ---
 
-### Ejemplo v0.2
+#### Ejemplo v0.2
 
 ```java
-List<String> myList =
-  Arrays.asList("a1", "a2", "b1", "c2", "c1");
+void main() {
+  List<String> myList =
+    Arrays.asList("a1", "a2", "b1", "c2", "c1");
 
-myList
-  .stream()
-  .filter(s -> s.startsWith("c"))
-  .map(String::toUpperCase)
-  .sorted()
-  .forEach(System.out::println);
+  myList
+    .stream()
+    .filter(s -> s.startsWith("c"))
+    .map(String::toUpperCase)
+    .sorted()
+    .forEach(System.out::println);
 
-myList
-  .stream()
-  .reduce( (a,b) -> a + " " + b )
-  .ifPresent(System.out::println);
+  myList
+    .stream()
+    .reduce( (a,b) -> a + " " + b )
+    .ifPresent(System.out::println);
+}
 ```
+
+---
+
+#### Ejemplo práctico: partidos de una competición con lambdas
+
+Reutilizamos el caso de filtrado de partidos que vimos en el apartado de __Predicados__, pero implementando `fixture()` como una factoría con una expresión lambda, en lugar de una clase concreta:
+
+```java
+import java.util.List;
+import java.util.function.Predicate;
+
+private Predicate<Match> fixture(Team local, Team visiting) {
+    return match -> match.getLocalTeam().equals(local)
+                    && match.getVisitingTeam().equals(visiting);
+}
+```
+
+La lambda captura los parámetros `local` y `visiting` y devuelve un `Predicate<Match>` funcional. No hace falta clase auxiliar; la lógica de filtrado está integrada en la expresión lambda.
+
+---
+
+Ahora usamos la factoría en un stream para validar que en una competición no hay partidos repetidos ni un equipo enfrentado a sí mismo:
+
+```java
+private void checkMatchesInGroup(List<Match> matchesInGroup) {
+  for (Match match : matchesInGroup) {
+    Team t1 = match.getLocalTeam();
+    Team t2 = match.getVisitingTeam();
+    assertNotSame(t1, t2); // no juega contra sí mismo
+
+    List<Match> firstLeg = matchesInGroup.stream()
+        .filter(fixture(t1, t2))
+        .toList();
+    assertTrue(firstLeg.size() == 1);
+
+    List<Match> secondLeg = matchesInGroup.stream()
+        .filter(fixture(t2, t1))
+        .toList();
+    assertTrue(secondLeg.size() == 0);
+  }
+}
+```
+
+El pipeline de streams no cambia: sigue siendo `stream().filter(...).toList()`. Lo que cambia es que ahora el criterio de filtrado (`fixture(...)`) devuelve una **lambda inline** en lugar de una instancia de una clase que implementa `Predicate`.
 
 ---
 

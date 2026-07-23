@@ -1,6 +1,7 @@
 # Prácticas de Jenkins
 
 - [Práctica 1](jenkins-01.md)
+- [Práctica 2](jenkins-02.md)
 
 # Instalar marp
 

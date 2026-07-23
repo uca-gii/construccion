@@ -107,7 +107,6 @@ p {
 - Demasiados parámetros en una función
 - Jerarquías de herencia en paralelo
 - Muchas sentencias _case_ en paralelo
-- Hay muchos cambios en una clase que tienden a estar compartimentalizados (afectan solo a una parte)
 - Hay muchos cambios que requieren modificaciones en paralelo a varias clases
 - Etc.
 
@@ -226,6 +225,9 @@ public class Autonomo extends Empleado {
 }
 ```
 
+<!--
+Hasta la versión Java 25, super() no podía ser llamado en medio del constructor, sino que tenía que ser la primera línea del constructor. Desde el JDK 25, se ha flexibilizado esta restricción y ahora es posible llamar a super() en cualquier parte del constructor, lo que permite una mayor flexibilidad en la inicialización de objetos.
+-->
 ---
 
 ```java
@@ -349,16 +351,8 @@ public class Autonomo extends Empleado {
 </div>
 
 > __Lectura recomendada__
-> A. Hunt & D. Thomas. <emph>The Pragmatic Programmer.</emph> Addison-Wesley, 1999.
+> A. Hunt & D. Thomas. <emph>The Pragmatic Programmer.</emph> Addison-Wesley, 2019.
 > Capítulo *DRY—The Evils of Duplication*
-
----
-
-### El peligro del copy&paste
-
-> Copy and paste is a design error
->
-> -- Steve McConnell. <emph>Code Complete: A practical handbook of software construction</emph>, 2nd edition, 2004.
 
 ---
 
@@ -391,18 +385,16 @@ Principio AHA: "Avoid Hasty Abstractions" (Evitar abstracciones precipitadas)
 
 ## 1. Duplicación impuesta
 
-La gestión del proyecto así nos lo exige. Algunos ejemplos:
-
 - Representaciones múltiples de la información:
-    - Varias implementaciones de un TAD que necesita guardar elementos de distintos tipos, cuando el lenguaje no permite genericidad
-    - Esquema de BD configurado en la BD y en código fuente a través de un [ORM](http://www.agiledata.org/essays/mappingObjects.html)
+  - Varias implementaciones de un TAD que necesita guardar elementos de distintos tipos, cuando el lenguaje no permite genericidad
+  - Esquema de BD configurado en la BD y en código fuente a través de un [ORM](http://www.agiledata.org/essays/mappingObjects.html)
 - Documentación del código:
-    - Código incrustado en javadocs
+  - Código incrustado en javadocs
 - Casos de prueba:
-    - Pruebas unitarias con jUnit (Cuidado!)
+  - Pruebas unitarias con jUnit (Cuidado!)
 - Características del lenguaje:
-    - C/C++ header files
-    - IDL specs
+  - C/C++ header files
+  - IDL specs
 
 <!--
 
@@ -419,7 +411,7 @@ Cuando el lenguaje no tenía capacidad de usar tipos genéricos (hasta el JDK 1.
 
 Para evitarlo, Java usó un _workaround_: todas las clases en Java heredan de `Object`. Así una clase que implementara un TAD contenedor de elementos de otra clase, tan solo tenía que declarar los elementos contenidos de tipo `Object`.
 
-Más tarde (a partir del JDK 1.5) introdujo los tipos genéricos y ya no era necesario usar dicho _workaround_ basado en `Object` para evitar la duplicación
+A partir del JDK 1.5, se introdujeron los tipos genéricos y ya no era necesario usar dicho _workaround_, que se mantuvo por compatibilidad con versiones anteriores.
 
 ---
 
@@ -534,47 +526,59 @@ p {
 
 ¿Es conveniente aplicar siempre DRY?
 
-<!--
-En tiempo de IA, el coste de la duplicación de código es principalmente el mantenimiento (esfuerzo humano). La IA puede ayudar con esto. Pero el coste de elegir una abstracción incorrecta no disminuye. La IA todavía tiene dificultades con los sistemas sobreacoplados.
--->
-
 ---
 
-- ¿DRY es tan importante en tiempos de la IA?
-  - Si se usa IA, ¿cuál es el coste de mantener código duplicado vs el coste de mantener sistemas muy acoplados?
-- Otras veces se puede optar por violar DRY por razones de rendimiento...
+- A veces se puede optar por violar DRY por razones de rendimiento...
   - [_Memoization_](https://en.wikipedia.org/wiki/Memoization): cachear los resultados de cómputos costosos
+  - La técnica de memoization es menos problemática si queda dentro de los límites de la clase/módulo.
+  - Otras razones de rendimiento: las cachés y los optimizadores de código también hacen su labor
 
 ---
 
 ### Ejemplo: aplicando memoization – versión 2
 
 ```java
-  public class Line {
-    private boolean changed;
-    private double length;
-    private Point start;
-    private Point end;
+public class Line {
+  private boolean changed;
+  private double length;
+  private Point start;
+  private Point end;
 
-    public void setStart(Point p) { start = p; changed = true; }
-    public void setEnd(Point p)   { end   = p; changed = true; }
-    public Point getStart() { return start; }
-    public Point getEnd() { return end; }
-    public double getLength() {
-       if (changed) {
-          length = start.distanceTo(end);
-          changed = false;
-       }
-       return length;
+  public void setStart(Point p) { start = p; changed = true; }
+  public void setEnd(Point p)   { end   = p; changed = true; }
+  public Point getStart() { return start; }
+  public Point getEnd() { return end; }
+  public double getLength() {
+    if (changed) {
+      length = start.distanceTo(end);
+      changed = false;
     }
+    return length;
   }
+}
 ```
 
 ---
 
-La técnica de memoization es menos problemática si queda dentro de los límites de la clase/módulo.
+<style scoped>
+p {
+  text-align: center;
+  font-size: 125%;
+  color: green;
+}
+</style>
 
-Otras veces no merece la pena violar DRY por rendimiento: ¡las cachés y los optimizadores de código también hacen su labor!
+¿Es tan importante DRY en tiempos de la IA?
+
+<!--
+En tiempo de IA, el coste de la duplicación de código es principalmente el mantenimiento (esfuerzo humano). La IA puede ayudar con esto. Pero el coste de elegir una abstracción incorrecta no disminuye. La IA todavía tiene dificultades con los sistemas sobreacoplados.
+-->
+
+---
+
+- Si se usa IA, ¿cuál es el coste de mantener código duplicado vs el coste de mantener sistemas muy acoplados?
+  - El coste de la duplicación de código es principalmente el mantenimiento (esfuerzo humano). La IA puede ayudar con esto.
+  - Pero el coste de elegir una abstracción incorrecta no disminuye. La IA todavía tiene dificultades con los sistemas sobreacoplados.
 
 ---
 
@@ -584,8 +588,7 @@ Otras veces no merece la pena violar DRY por rendimiento: ¡las cachés y los op
 >
 > – B. Meyer. <emph>Object-Oriented Software Construction.</emph> Prentice-Hall, 2nd edition, 1997.
 
-
-Conviene aplicar el principio de acceso uniforme para que sea más fácil añadir mejoras de rendimiento (v.g. caching)
+Conviene aplicar el principio de acceso uniforme para que sea más fácil añadir mejoras de rendimiento (por ejemplo, caching)
 
 ---
 
@@ -628,7 +631,7 @@ class Complejo(real: Double, imaginaria: Double) {
 }
 
 object NumerosComplejos {
-  def main() : Unit = {
+  def main(): Unit = {
     val c = new Complejo(1.2, 3.4)
     println("Número complejo: " + c.toString())
     println("Parte imaginaria: " + c.im())
@@ -649,7 +652,7 @@ class Complejo(real: Double, imaginaria: Double) {
 }
 
 object NumerosComplejos {
-  def main() : Unit = {
+  def main(): Unit = {
     val c = new Complejo(1.2, 3.4)
     println("Número complejo: " + c)
     println("Parte imaginaria: " + c.im)
@@ -661,17 +664,23 @@ object NumerosComplejos {
 
 ## 3. Duplicación por impaciencia
 
-- Los peligros del *copy&paste*
-- "Vísteme despacio que tengo prisa" (_shortcuts make for long delays_). Ejemplos:
-    - Meter el `main` de Java en cualquier clase
-    - Fiasco del año 2000
+### El peligro del copy&paste
+
+> Copy and paste is a design error
+>
+> -- Steve McConnell. <emph>Code Complete: A practical handbook of software construction</emph>, 2nd edition, 2004.
+
+### Las prisas y los ahorros
+
+"Vísteme despacio que tengo prisa" (_shortcuts make for long delays_).
+Ejemplo: Fiasco del año 2000
 
 ---
 
 ## 4. Duplicación por simultaneidad
 
 - No resoluble a nivel de técnicas de construcción
-- Hace falta metodología, gestión de equipos + herramientas de comunicación
+- Hace falta metodologías de integración, gestión de equipos y herramientas de comunicación
   - CI/CD (_Continuous Integration_ / _Continuous Delivery_)
   - Prácticas DevOps
 
@@ -688,6 +697,6 @@ Según Fowler:
    - dividir un método
    - renombrar una variable
 
-Yo añado...
+Añadimos...
 
 - Reflejar cada cambio en un _commit_ separado

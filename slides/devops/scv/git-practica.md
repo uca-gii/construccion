@@ -90,6 +90,11 @@ Los repositorios para realizar las prácticas por todos los estudiantes serán p
         git push origin --delete feature/licencia
         ```
 
+9. Entrega
+
+   - Entregar el historial de commits y el enlace al repositorio al profesor para su evaluación.
+   - Puedes obtener el historial de commits con `git log --all --decorate --graph --date=iso > historial.log`
+
 ## Notas adicionales:
 
 - Es fundamental que los mensajes de los commits sean descriptivos y claros.

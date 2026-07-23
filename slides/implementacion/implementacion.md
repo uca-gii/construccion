@@ -11,6 +11,7 @@
 - [Programación asertiva y contratos](#programación-asertiva-y-contratos)
 - [Programación asíncrona y eventos](#programación-asíncrona-y-eventos)
 
+
 <!-- Source: oop.md -->
 # PROGRAMACIÓN CON OBJETOS
 
@@ -754,7 +755,8 @@ struct Heroe : public PersonajeDeAccion {
 <div>
 
 ```cpp
-// Usamos 'auto&' para pasar por referencia (evitar copias).
+// Usamos 'auto&' para pasar por
+// referencia (evitar copias).
 
 void t(SabeLuchar auto& x) {
     x.luchar();
@@ -1267,9 +1269,8 @@ Para evaluar si un diseño es apropiado, no se debe tener en cuenta la solución
 
 Criticar la siguiente implementación de una orquesta.
 
-_**Pista**:_
-
-Minimizar el **acoplamiento** y maximizar la **cohesión**
+> **Pista**:
+> Minimizar el _acoplamiento_ y maximizar la _cohesión_
 
 </div>
 <div>
@@ -1300,8 +1301,6 @@ abstract class Instrumento {
 
 
 ### Orquesta v0.1 (cont.)
-
-- Los instrumentos concretos...
 
 <div class="cols">
 <div>
@@ -1344,12 +1343,12 @@ class Cuerda extends Instrumento {
 
 ### Orquesta v0.1 (cont.)
 
-- La orquesta...
-
 </div>
 <div>
 
 ```java
+import java.util.ArrayList;
+
 public class Orquesta {
   ArrayList<Instrumento> instrumentos;
   public Orquesta() {
@@ -1390,10 +1389,15 @@ public class Orquesta {
 
 Seguir criticando la implementación...
 
+> **Pista**:
+> Visibilidad de la implementación
+
 </div>
 <div>
 
 ```java
+import java.util.ArrayList;
+
 class Orquesta {
   ArrayList<Instrumento> instrumentos;
   public Orquesta() {
@@ -1481,11 +1485,10 @@ class Percusion extends Instrumento {
 
 - **Encapsulación**: visibilidad de `Orquesta::instrumentos` (en C++ sería `friend`)
 - **Encapsulación**: el método `add` de `orquesta.instrumentos` expone la implementación de la colección (un `ArrayList`)
-- **Flexibilidad**: la implementación `Orquesta::instrumentos` puede variar, pero no hay colección (agregado) en quien confíe `Orquesta` por delegación.
 
 #### Cambio propuesto
 
-- Delegar las altas/bajas de `Instrumento` en la colección (agregado) de `Orquesta`
+- Proteger la forma de hacer altas/bajas de `Instrumento` en la colección de `Orquesta`
 
 
 
@@ -1556,12 +1559,14 @@ public class PruebaOrquesta {
 
 #### Críticas a la Orquesta v0.3
 
-- **Acoplamiento**: `PruebaOrquesta` conoce la implementación basada en un `ArrayList` de la colección de instrumentos de la orquesta.
 - **Variabilidad**: ¿La colección de instrumentos será siempre lineal?
+- **Flexibilidad**: la implementación `Orquesta::instrumentos` puede variar, pero...
+- **Acoplamiento**: `PruebaOrquesta` sigue conociendo la implementación basada en un `ArrayList` de la colección de instrumentos de la orquesta.
 
 #### Cambio propuesto
 
-- Definir una __interfaz__ para iterar en la colección de instrumentos
+
+- Definir una **interfaz** para iterar en la colección de instrumentos
 
 
 ### Implementación alternativa: Orquesta v0.4
@@ -1570,6 +1575,8 @@ public class PruebaOrquesta {
 <div>
 
 ```java
+import java.util.List;
+
 class Orquesta {
   protected List<Instrumento> instrumentos;
   public Orquesta() {
@@ -1599,17 +1606,17 @@ class Orquesta {
 
 ```java
 public class PruebaOrquesta {
-    public static void main(String[] args) {
-      Orquesta orquesta = new Orquesta();
-      orquesta.addInstrumento(new Viento());
-      orquesta.addInstrumento(new Cuerda());
-      orquesta.addInstrumento(new Percusion());
-      for (Iterator<Instrumento> i =
-            orquesta.instrumentos.iterator();
-            i.hasNext(); )
-          orquesta.afinar(i.next());
-      orquesta.tocar();
-    }
+  public static void main(String[] args) {
+    Orquesta orquesta = new Orquesta();
+    orquesta.addInstrumento(new Viento());
+    orquesta.addInstrumento(new Cuerda());
+    orquesta.addInstrumento(new Percusion());
+    for (Iterator<Instrumento> i =
+          orquesta.instrumentos.iterator();
+          i.hasNext(); )
+        orquesta.afinar(i.next());
+    orquesta.tocar();
+  }
 }
 ```
 
@@ -1625,7 +1632,7 @@ Seguir criticando la implementación...
 
 #### Cambio propuesto
 
-Usar delegación, interfaces y el __*for each*__ (disponible desde el JDK 1.5), que permite iterar sobre una colección que implemente la interfaz `Iterable`
+Usar delegación, interfaces y el nuevo `for` (disponible desde el JDK 1.5), que permite iterar sobre una colección que implemente la interfaz `Iterable`
 
 
 ### Implementación alternativa: Orquesta v0.5
@@ -1742,90 +1749,50 @@ class Orquesta implements Iterable<Instrumento> {
   }
 ```
 
-Seguir criticando la implementación...
-
 </div>
 </div>
 
-
-### Implementación alternativa: Orquesta v0.7
 
 #### Cambio de requisitos
 
-- Supongamos que queremos sustituir la implementación basada en una `List` por otra (quizá más eficiente) basada en un `Map`
+- Supongamos que queremos poder iterar solo sobre un grupo de instrumentos de un mismo tipo (viento, cuerda, percusión). Hacerlo sobre una colección lineal es ineficiente.
+- Proponemos sustituir la implementación actual (basada en una `List`) por otra (quizá más eficiente) basada en un `Map`
 
-- Consultar la interfaz de `Map`: [`java.util.Map`](http://docs.oracle.com/javase/6/docs/api/java/util/Map.html) de Java 6 o [`java.util.Map<K,V>`](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html) de Java 11...
+- Consultamos la interfaz de `Map`: [`java.util.Map`](http://docs.oracle.com/javase/6/docs/api/java/util/Map.html) o [`java.util.Map<K,V>`](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html)...
 
-¡ `Map` no implementa `Iterable` !
+  ¡Sorpresa!...  `Map` no implementa `Iterable`
+
+
+**Pegas**:
+
+- Tenemos que implementar la interfaz `Iterable` en `Orquesta` para que el cliente siga funcionando sin cambios.
+- El método `Orquesta::iterator()` queda un poco ineficiente al tener que iterar sobre todos los valores de un `Map`.
+
+A pesar de esto, ¿construimos un `Map` en lugar de una `List` para almacenar los instrumentos?
+
+#### Más de lo que necesitamos
+
+`Map<K,V>` ofrece más de lo que necesitamos: ¡hay un `clear()` en el `Map`!
 
 
 #### Tensión de frontera
 
-Existe una cierta tensión proveedor-cliente en la **frontera** de la interfaz
+Existe una cierta tensión proveedor-cliente en la **frontera** de una interfaz
 
 - Los proveedores de packages y frameworks quieren ampliar aplicabilidad
 - Los clientes quieren una interfaz centrada en sus necesidades particulares
 
-Si construimos un `Map` y lo pasamos...
+Es mejor ocultar lo que no necesitamos:
 
-- Ninguno de los receptores deberá poder borrar algo del map. Pero ¡hay un `clear()` en el `Map`!
-- Algunos de los métodos de `Map` esperan un `Object`: `containsKey(Object key)`, `containsValue(Object value)`
+- Ocultar la implementación en una interfaz
+- Filtrar los métodos que no nos sirven
+- Más fácil de hacer evolucionar sin impacto en el resto de la aplicación
 
 
-¿La interfaz `Map` es siempre satisfactoria? ¿seguro que no va a cambiar?
+### Implementación alternativa: Orquesta v0.7
 
 <div class="cols">
 <div>
-
-JDK < 5.0:
-
-```java
-  Map sensors = new HashMap();
-  sensors.put(1, new Sensor());
-  sensors.put(2, new Sensor());
-  ...
-  Sensor s = (Sensor)sensors.get(id);
-```
-
-</div>
-<div>
-
-JDK >= 5.0:
-
-```java
-  Map<Integer,Sensor> sensors =
-      new HashMap<Integer,Sensor>();
-  sensors.put(1, new Sensor());
-  sensors.put(2, new Sensor());
-  ...
-  Sensor s = sensors.get(id);
-```
-
-</div>
-</div>
-
-
-#### Conclusión
-
-`Map<Integer,Sensor>` ofrece más de lo que necesitamos
-
-```java
-  public class Sensors {
-    private Map sensors = new HashMap();
-    public Sensor getById(String id) {
-      return (Sensor) sensors.get(id);
-    }
-    //...
-  }
-```
-
-- La interfaz `Map` queda oculta en `Sensors`
-- Se filtran los métodos que no nos sirven
-- Más fácil de hacer evolucionar sin impacto en el resto de la aplicación
-- El casting queda confinado en la clase `Sensors`, que es más seguro
-
-
-Así que proponemos este **rediseño** para la Orquesta v0.7:
 
 ```java
 class Orquesta implements Iterable<Instrumento> {
@@ -1853,25 +1820,8 @@ class Orquesta implements Iterable<Instrumento> {
 }
 ```
 
-
-```java
-public class Instrumentos implements Iterable<Instrumento> {
-  private List instrumentos;
-  public Instrumentos(int numero) {
-    instrumentos = new ArrayList<Instrumento>(numero);
-  }
-  public Iterator<Instrumento> iterator() {
-      return instrumentos.iterator();
-  }
-  public boolean addInstrument(Instrumento i) {
-    return instrumentos.add(i);
-  }
-  public boolean removeInstrument(Instrumento i) {
-    return instrumentos.remove(i);
-  }
-}
-```
-
+</div>
+<div>
 
 ```java
 public class PruebaOrquesta {
@@ -1887,9 +1837,78 @@ public class PruebaOrquesta {
 }
 ```
 
-Esta implementación podemos adaptarla más fácilmente para cambiar el `List` por un `Map`, pues la responsabilidad de ser iterable queda confinada en `Instrumentos`, que desacopla `Orquesta` y la implementación elegida (`List`, `Map`, etc.) para la colección de instrumentos.
+Añadimos método para saber el tipo:
 
-Esto ya es más **diseño** que implementación (separación de responsabilidades)...
+```java
+abstract class Instrumento {
+  ...
+  public String tipo() {
+    return getClass().getSimpleName().toLowerCase();
+  }
+}
+```
+
+</div>
+</div>
+
+
+<div class="cols">
+<div>
+
+```java
+public class Instrumentos
+       implements Iterable<Instrumento> {
+  private Map<String,List<Instrumento>> instrumentos;
+
+  public Instrumentos(int numero) {
+    instrumentos =
+        new LinkedHashMap<String,List<Instrumento>>(numero);
+  }
+
+  public Iterator<Instrumento> iterator() {
+    List<Instrumento> todos =
+        new ArrayList<Instrumento>();
+    for (List<Instrumento> grupo: instrumentos.values())
+      todos.addAll(grupo);
+    return todos.iterator();
+  }
+```
+
+</div>
+<div>
+
+```java
+  public boolean addInstrument(Instrumento i) {
+    String tipo = i.tipo();
+    List<Instrumento> grupo =
+          instrumentos.get(tipo);
+    if (grupo == null) {
+      grupo = new ArrayList<Instrumento>();
+      instrumentos.put(tipo, grupo);
+    }
+    return grupo.add(i);
+  }
+  public boolean removeInstrument(Instrumento i) {
+    String tipo = i.tipo();
+    List<Instrumento> grupo =
+          instrumentos.get(tipo);
+    if (grupo == null)
+      return false;
+    boolean removed = grupo.remove(i);
+    if (grupo.isEmpty())
+      instrumentos.remove(tipo);
+    return removed;
+  }
+}
+```
+
+</div>
+</div>
+
+
+Esta implementación desacopla `Orquesta` de la estructura concreta de almacenamiento, pues la responsabilidad de ser iterable queda confinada en `Instrumentos`, que encapsula y filtra la implementación elegida (`List`, `Map`, etc.) para la colección de instrumentos.
+
+Esto ya es más re-**diseño** que implementación (separación de responsabilidades)...
 
 
 ### Resumen (sin versiones intermedias)
@@ -1909,20 +1928,20 @@ Esto ya es más **diseño** que implementación (separación de responsabilidade
 
 Delegación _en horizontal_ hacia otras clases cuya interfaz es bien conocida
 
-- Los objetos miembro __delegados__ son cambiables en tiempo de ejecución sin afectar al código cliente ya existente
+- Los objetos miembro **delegados** son cambiables en tiempo de ejecución sin afectar al código cliente ya existente
 - Alternativa más flexible que la herencia. Ejemplo: `Cola extends ArrayList` implica que una cola va a implementarse como un `ArrayList` para toda la vida, sin posibilidad de cambio en ejecución
 
 
 ### Composición vs. Herencia
 
 - **Composición** (delegación _en horizontal_)
-    - Útil cuando hacen falta las características de una clase existente dentro de una nueva, _pero no su interfaz_.
-    - Los objetos miembro privados pueden cambiarse en tiempo de ejecución.
-    - Los cambios en el objeto miembro no afectan al código del cliente.
+  - Útil cuando hacen falta las características de una clase existente dentro de una nueva, _pero no su interfaz_.
+  - Los objetos miembro privados pueden cambiarse en tiempo de ejecución.
+  - Los cambios en el objeto miembro no afectan al código del cliente.
 
 - **Herencia** (delegación _en vertical_)
-    - Útil para hacer una versión especial de una clase existente, reutilizando su interfaz.
-    - La relación de herencia en los lenguajes de programación _suele ser_ __estática__ (definida en tiempo de compilación) y no __dinámica__ (que pueda cambiarse en tiempo de ejecución).
+  - Útil para hacer una versión especial de una clase existente, reutilizando su interfaz.
+  - La relación de herencia en los lenguajes de programación _suele ser_ **estática** (definida en tiempo de compilación) y no **dinámica** (que pueda cambiarse en tiempo de ejecución).
 
 
 ## CASO PRÁCTICO: Implementación de comparadores
@@ -1945,7 +1964,7 @@ Cada lenguaje tiene sus mecanismos de implementación...
 
 `java.lang.Comparable` es una interfaz implementada por `String`, `File`, `Date`, etc. y todas las llamadas _clases de envoltura_ del JDK (i.e. `Integer`, `Long`, etc.)
 
-#####  Métodos de la interfaz `Comparable`
+##### Métodos de la interfaz `Comparable`
 
 ```java
 // JDK 1.4
@@ -1962,7 +1981,7 @@ public interface Comparable<T> {
 ```
 
 
-#####  Invariantes
+##### Invariantes
 
 - Anticonmutativa:
 
@@ -1979,7 +1998,7 @@ public interface Comparable<T> {
   `(x.compareTo(y)=0)` $\leftarrow$ `(x.equals(y))`
 
 
-####  Identificador de BankAccount: Implementación en Java ≥ 1.5
+#### Identificador de BankAccount: Implementación en Java ≥ 1.5
 
 - Utilizando _templates_ (**polimorfismo paramétrico**)
 - Delegar en `compareTo` y `equals` del tipo de id _envuelto_ (e.g. `String`)
@@ -2057,7 +2076,7 @@ public final class BankAccount implements Comparable {
 
 Cuando una clase hereda de una clase concreta que implementa `Comparable` y le añade un campo significativo para la comparación, no se puede construir una implementación correcta de `compareTo`. La única alternativa entonces es la composición en lugar de la herencia.
 
-Una alternativa (no excluyente) a implementar `Comparable` es pasar un `Comparator` como parámetro (se prefiere __composición__ frente a __herencia__):
+Una alternativa (no excluyente) a implementar `Comparable` es pasar un `Comparator` como parámetro (se prefiere **composición** frente a **herencia**):
 
 
 - Si `BankAccount` implementa `Comparable`:
@@ -2129,14 +2148,14 @@ class Fecha(d: Int, m: Int, a: Int) extends Ord {
 ## Mixins
 
 
-Un __mixin__ es un módulo/clase con métodos disponibles para otros módulos/clases _sin tener que usar la herencia_
+Un **mixin** es un módulo/clase con métodos disponibles para otros módulos/clases _sin tener que usar la herencia_
 
 - Los mixin son un mecanismo de **reutilización de código** sin herencia
-- Es una __alternativa__ a la herencia múltiple
-- Incluye una __interfaz__ con métodos ya implementados
-- No se heredan sino que se __incluyen__
-- Un mixin es una (sub)clase, luego define un comportamiento y un __estado__
-- Es una forma de implementar la __inversión de dependencias__
+- Es una **alternativa** a la herencia múltiple
+- Incluye una **interfaz** con métodos ya implementados
+- No se heredan sino que se **incluyen**
+- Un mixin es una (sub)clase, luego define un comportamiento y un **estado**
+- Es una forma de implementar la **inversión de dependencias**
 
 ¿Qué lenguajes tienen mixins?
 
@@ -2151,7 +2170,7 @@ En Ruby los mixins se implementan mediante módulos (`module`).
 
 ### Comparadores: Implementación en Ruby
 
-Una manera de implementar un `Comparable` en ruby mediante el __módulo__ [Comparable](https://ruby-doc.org/core-2.2.3/Comparable.html):
+Una manera de implementar un `Comparable` en ruby mediante el **módulo** [Comparable](https://ruby-doc.org/core-2.2.3/Comparable.html):
 
 - La clase que incluye el módulo `Comparable` tiene que implementar:
 
@@ -2188,7 +2207,7 @@ s3.between?(s1,s2) #true
 
 ### Scala Traits
 
-Un __trait__ es una forma de separar las dos principales responsabilidades de una clase: definir el __estado__ de sus instancias y definir su __comportamiento__.
+Un **trait** es una forma de separar las dos principales responsabilidades de una clase: definir el **estado** de sus instancias y definir su **comportamiento**.
 
 - Las clases y los objetos en Scala pueden extender un `trait`
 - Los `trait`de Scala son similares a las `interface` de Java.
@@ -2225,6 +2244,10 @@ println(iterator.next())  // prints 1
 
 
 ¿Un `trait` de Scala es un _mixin_?
+
+Puede serlo, pero no todo trait necesariamente se usa como mixin.
+- Al mezclarlo en una clase con `extends ... with ...`, actúa como mixin.
+- Pero también muchos traits se usan como abstracciones de tipo/interfaz.
 
 
 ### Ejemplo: mezcla de traits con comportamiento
@@ -2278,7 +2301,7 @@ Los traits de Scala tienen una interfaz que las clases heredan (`extends`)
 
 Entonces... una clase que extiende un trait con un comportamiento, ¿va contra el principio general de que la [herencia de comportamiento](https://en.wikipedia.org/wiki/Composition_over_inheritance#Benefits) es una mala idea?
 
-- Odersky llama __mixin traits__ a los traits con comportamiento
+- Odersky llama **mixin traits** a los traits con comportamiento
 - Para ser un mixin genuino, un trait debería mezclar comportamiento y no interfaces heredadas
 
 Lectura recomendada: [Scala Mixins: The right way](http://baddotrobot.com/blog/2014/09/22/scala-mixins/)
@@ -2293,7 +2316,52 @@ Lectura recomendada: [Scala Mixins: The right way](http://baddotrobot.com/blog/2
 - Sirven para implementar herencia múltiple
 
 
-¿Qué ventajas tienen las implementaciones basadas en __Composición__ frente a las basadas en __Herencia__ (estática)?
+#### Ejemplo de métodos `default`
+
+Resolver la ambigüedad en la herencia múltiple con métodos `default`
+
+<div class="cols">
+<div>
+
+```java
+interface Volador {
+  default void mover() {
+    System.out.println("Moviendo por aire");
+  }
+}
+
+interface Nadador {
+  default void mover() {
+    System.out.println("Moviendo por agua");
+  }
+}
+```
+
+</div>
+<div>
+
+```java
+class Pato implements Volador, Nadador {
+  @Override
+  public void mover() {
+    // Obligatorio resolver el conflicto
+    Volador.super.mover(); // o Nadador.super.mover()
+    System.out.println("... como un pato");
+  }
+}
+
+// Válido desde JDK 25...
+void main() {
+  var pato = new Pato();
+  pato.mover();
+}
+```
+
+</div>
+</div>
+
+
+¿Qué ventajas tienen las implementaciones basadas en **Composición** frente a las basadas en **Herencia** (estática)?
 
 
 La respuesta está en la **inyección de dependencias**...
@@ -2308,36 +2376,91 @@ La respuesta está en la **inyección de dependencias**...
 
 Retocamos un poco la implementación de la orquesta para introducir partituras...
 
+<div class="cols">
+<div>
+
 ```java
-public class Partitura implements Iterable<String> {
+public class Partitura
+             implements Iterable<String> {
   private String score;
   public Partitura(String score) {
     this.score = score;
   }
   public Iterator<String> iterator() {
-    return Arrays.stream(score.split(" ")).iterator();
+    return Arrays.stream(score.split(" "))
+           .iterator();
   }
 }
+```
 
+</div>
+<div>
+
+```java
 public abstract class Instrumento {
-    protected String nombre;
-    protected Partitura partitura = new Partitura("G D7 C D7 G");
+  protected String nombre;
+  protected Partitura partitura =
+              new Partitura("G D7 C D7 G");
 
-    public abstract String tocar(String nota);
-    public String afinar() { return "Afinando "+nombre; }
-    public String tocarPartitura() {
-      StringBuffer sb = new StringBuffer();
-      partitura.forEach( nota -> sb.append(tocar(nota)) );
-      return sb.toString();
-      //for (String nota: partitura)
-      //  tocar(nota);
-    }
+  public abstract String tocar(String nota);
+  public String tipo() {
+    return getClass().getSimpleName().toLowerCase();
+  }
+  public String afinar() {
+    return "Afinando "+nombre;
+  }
+  public String tocarPartitura() {
+    StringBuffer sb = new StringBuffer();
+    partitura.forEach(
+      nota -> sb.append(tocar(nota))
+    );
+    return sb.toString();
+    //for (String nota: partitura)
+    //  tocar(nota);
+  }
+}
+```
+
+</div>
+</div>
+
+
+```java
+public class Viento extends Instrumento {
+  public Viento(String nombre) {
+    this.nombre = nombre;
+  }
+  public String tocar(String nota) { soplar(nota); return nota; }
+  private void soplar() { System.out.println(nombre+" soplando "+partitura); }
+  private void soplar(String nota) { System.out.println(nombre+" soplando "+nota); }
+}
+
+public class Cuerda extends Instrumento {
+  public Cuerda(String nombre) {
+    this.nombre = nombre;
+  }
+  public String tocar(String nota) { rasgar(nota); return nota; }
+  private void rasgar() { System.out.println(nombre+" rasgando "+partitura); }
+  private void rasgar(String nota) { System.out.println(nombre+" rasgando "+nota); }
+}
+
+public class Percusion extends Instrumento {
+  public Percusion(String nombre) {
+    this.nombre = nombre;
+  }
+  public String tocar(String nota) { golpear(nota); return nota; }
+  private void golpear() { System.out.println(nombre+ "golpeando "+partitura); }
+  private void golpear(String nota) { System.out.println(nombre+" golpeando "+nota); }
 }
 ```
 
 
+<div class="cols">
+<div>
+
 ```java
-class Orquesta implements Iterable<Instrumento> {
+public class Orquesta
+             implements Iterable<Instrumento> {
   private Instrumentos instrumentos;
   public Orquesta() {
       instrumentos = new Instrumentos(3);
@@ -2364,59 +2487,47 @@ class Orquesta implements Iterable<Instrumento> {
 }
 ```
 
+</div>
+<div>
 
 ```java
-class Viento extends Instrumento {
-    public Viento(String nombre) {
-      this.nombre = nombre;
-    }
-    public String tocar(String nota) { soplar(nota); return nota; }
-    public void soplar() { System.out.println(nombre+" soplando "+partitura); }
-    public void soplar(String nota) { System.out.println(nombre+" soplando "+nota); }
-}
-
-class Cuerda extends Instrumento {
-    public Cuerda(String nombre) {
-      this.nombre = nombre;
-    }
-    public String tocar(String nota) { rasgar(nota); return nota; }
-    public void rasgar() { System.out.println(nombre+" rasgando "+partitura); }
-    public void rasgar(String nota) { System.out.println(nombre+" rasgando "+nota); }
-}
-
-class Percusion extends Instrumento {
-    public Percusion(String nombre) {
-      this.nombre = nombre;
-    }
-    public String tocar(String nota) { golpear(nota); return nota; }
-    public void golpear() { System.out.println(nombre+ "golpeando "+partitura); }
-    public void golpear(String nota) { System.out.println(nombre+" golpeando "+nota); }
+public class Instrumentos
+             implements Iterable<Instrumento> {
+  /* Es lo mismo si se implementa internamente con
+     una List o con un Map, pues esta clase oculta
+     la implementación concreta de la colección de
+     instrumentos */
 }
 ```
 
-
 ```java
-public class Instrumentos implements Iterable<Instrumento> {
-  private List instrumentos;
-  public Instrumentos(int numero) {
-    instrumentos = new ArrayList<Instrumento>(numero);
-  }
-  public Iterator<Instrumento> iterator() {
-      return instrumentos.iterator();
-  }
-  public boolean addInstrument(Instrumento i) {
-    return instrumentos.add(i);
-  }
-  public boolean removeInstrument(Instrumento i) {
-    return instrumentos.remove(i);
+import java.util.Iterator;
+import java.util.Map;
+import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.ArrayList;
+import java.util.Arrays;
+
+public class PruebaOrquesta {
+  public void main() {
+    Orquesta orquesta = new Orquesta();
+    orquesta.addInstrumento(new Viento("trompeta"));
+    orquesta.addInstrumento(new Cuerda("violín"));
+    orquesta.addInstrumento(new Percusion("bombo"));
+    for (Instrumento i: orquesta)
+      System.out.println ( orquesta.afinar(i) );
+    orquesta.tocar();
   }
 }
 ```
+
+</div>
+</div>
 
 
 ### Diagrama de clases
 
-![PlantUML diagram](https://kroki.io/plantuml/svg/eNptkbEOwjAMRHd_hWek9AtQVYmJiU7saWpBpTYBOxED9N9JKS2NyHh37yzHqcRr9mHowfRaBOuoOh9Y4xMQxTgmGAF0I5618ThTRxtlGMh69-GsG5oIIt6W-lTaUvuXat3DKjx3k85nh0Dc6nxWE5sgnbPpXMWq_C0NcOJ7oPimOdiQkvQEd6pNAYCaAzV6nVBwUeKi8mlS9-5C_ko8HeR7zKSy2n9GsuaYm5QQGTO2KrJt_Mc3f-SkjQ)
+![PlantUML diagram](https://kroki.io/plantuml/svg/eNptkbEOwjAMRPd8hWek9AsQqsTERCf2tLGgUpuA7YgB-u-klNIGMp7f3Sl2ShZDEvpONZ1hhiqqVgIZeCgAbjyhGpQyNQuZRmByHVyUoUcn_u1zvq-jEeA6x8fQ2rV9auvvTsOpHXWe7QOSNXlWITWBW-_SXk16tzxaqSPdAsadJrBy8ooVtkhYUsmw0Vb_8IoC1mYpoFgwqzxN4uLPKBek8VafOyeR7_hvkGww5JoSR2YYUyU6G7_4BR8Vrds)
 
 <details>
 <summary>PlantUML source</summary>
@@ -2439,6 +2550,8 @@ Instrumento <|-down- Percusion
 Instrumento -r-> Partitura
 
 Orquesta -r-> Instrumentos
+
+Orquesta .d.> Instrumento
 
 Instrumentos *-d-> Instrumento
 
@@ -2466,15 +2579,15 @@ together{
 
 ```java
 public class PruebaOrquesta {
-    public static void main(String[] args) {
-      Orquesta orquesta = new Orquesta();
-      orquesta.addInstrumento(new Viento("trompeta"));
-      orquesta.addInstrumento(new Cuerda("guitarra"));
-      orquesta.addInstrumento(new Percusion("tambor"));
-      for (Instrumento i: orquesta)
-          System.out.println ( orquesta.afinar(i) );
-      orquesta.tocar();
-    }
+  public void main() {
+    Orquesta orquesta = new Orquesta();
+    orquesta.addInstrumento(new Viento("trompeta"));
+    orquesta.addInstrumento(new Cuerda("violín"));
+    orquesta.addInstrumento(new Percusion("bombo"));
+    for (Instrumento i: orquesta)
+        System.out.println ( orquesta.afinar(i) );
+    orquesta.tocar();
+  }
 }
 ```
 
@@ -2485,7 +2598,7 @@ Si quisiéramos probar la orquesta con otros instrumentos, tendríamos que modif
 
 #### Diagrama de clases - Dependencias
 
-![PlantUML diagram](https://kroki.io/plantuml/svg/eNp9kjEOwjAMRXefwhIbUjgBQpWYmOjEnjZWqUQTcBwxAHcnJVCICIzf_30rtlN50SxhOEB70N5jHVUvgTVeANG3jgluALrxwroVTNTGRhkGsuIenHVDE0HE4ys-hj6p5VUZd7YKd_2oy946EBtd9mriNvje2byvYrV6Pxpgy6dAcaZkfJA-y3mcK5MDADUHavTUYcGLFb5U2f0f77u9RChNjDMm85NJk_9npg0kDMR1JHvi8QDP42XJqfxVyNZyK3XKiEIxpiqyJv6bO870y7E)
+![PlantUML diagram](https://kroki.io/plantuml/svg/eNp9ksEOwiAQRO98xSbeTPALjGniyZM9eadlU5tY0GWJB-2_S0Xbouhxd95MYKBwrIh9dxL1STkHZZha9qTgJgBcbQlFL4SqHJOqGSK1M2H0HRq2T87YrgogwPltH0xzan2X2l6NhEM7zHlt65G0ymslUu1da02aK0lupkMLsaeLx3CnKMxIN9NWepVoSaSDpdTyQy_JY6WmAAoB7ymv_re3zZEDFMuABaH-ycRS_jNjORETbBvkI9LwNq93TZzj-muRNNbnkhIiswyuAo0OX-oBgIHU_w)
 
 <details>
 <summary>PlantUML source</summary>
@@ -2508,6 +2621,8 @@ Instrumento <|-down- Percusion
 Instrumento -r-> Partitura
 
 Orquesta -r-> Instrumentos
+
+Orquesta .d.> Instrumento
 
 Instrumentos *-d-> Instrumento
 
@@ -2584,8 +2699,7 @@ Dependencia `Orquesta` $\dashrightarrow$ `Instrumento`:
 
 
 ¿Quién le añade los instrumentos a la orquesta?
-¿Quién le pone el cascabel (partitura) al gato (instrumento)?
-¿A qué gato (orquesta o instumento)?
+¿Quién asigna la partitura? ¿A la orquesta o al instrumento?
 
 
 ## Framework DI
@@ -2601,14 +2715,117 @@ El framework DI inyecta dependencias de forma universal, no de modo particular a
 - [Weld CDI](http://weld.cdi-spec.org/)
 - [Eclipse RCP](https://wiki.eclipse.org/Eclipse4/RCP/Dependency_Injection)
 
+<!--
+En lenguajes como C++ no es típico usar un framework DI, aunque también existen (por ejemplo, [Boost.DI](https://boost-ext.github.io/di/)
+
+En C++, para que el ejemplo de la Orquesta sea testeable, utilizaremos Interfaces (clases con métodos virtuales puros) y pasaremos las dependencias por punteros inteligentes (std::unique_ptr o std::shared_ptr).
+
+```cpp
+#include <gtest/gtest.h>
+#include <gmock/gmock.h>
+#include <memory>
+#include <string>
+#include <vector>
+
+// --- Interfaces ---
+class IPartitura {
+public:
+    virtual ~IPartitura() = default;
+    virtual std::string obtenerNotas() const = 0;
+};
+
+class IInstrumento {
+public:
+    virtual ~IInstrumento() = default;
+    virtual void setPartitura(std::shared_ptr<IPartitura> p) = 0;
+    virtual std::string tocar() = 0;
+};
+
+// --- Clase Orquesta (El Sistema Bajo Prueba) ---
+class Orquesta {
+    std::vector<std::shared_ptr<IInstrumento>> instrumentos;
+public:
+    void agregarInstrumento(std::shared_ptr<IInstrumento> i) { instrumentos.push_back(i); }
+
+    void darConcierto() {
+        for (auto& i : instrumentos) {
+            i->tocar(); // La orquesta hace que los instrumentos toquen
+        }
+    }
+};
+```
+
+```cpp
+class MockPartitura : public IPartitura {
+public:
+    MOCK_METHOD(std::string, obtenerNotas, (), (const, override));
+};
+
+class MockInstrumento : public IInstrumento {
+public:
+    MOCK_METHOD(void, setPartitura, (std::shared_ptr<IPartitura>), (override));
+    MOCK_METHOD(std::string, tocar, (), (override));
+};
+```
+
+```cpp
+using ::testing::Return;
+using ::testing::Exactly;
+
+// Test 1: Verificar que el Instrumento pide las notas a la Partitura inyectada
+TEST(InstrumentoTest, DebeLlamarAPartituraAlTocar) {
+    // 1. Setup: Inyectamos el Mock de Partitura en un instrumento real (p.ej. Violin)
+    auto partituraMock = std::make_shared<MockPartitura>();
+
+    // Configuramos la expectativa: esperamos que se llame a obtenerNotas y devuelva "SOL"
+    EXPECT_CALL(*partituraMock, obtenerNotas())
+        .Times(Exactly(1))
+        .WillOnce(Return("SOL"));
+
+    // Aquí usaríamos una clase real como 'Violin', supongamos que hereda de IInstrumento
+    // Para el ejemplo, si no tenemos la clase real implementada, el Mock basta para probar la Orquesta.
+}
+
+// Test 2: Verificar que la Orquesta coordina a los instrumentos
+TEST(OrquestaTest, DebeLlamarATocarEnTodosLosInstrumentos) {
+    // 1. Setup
+    Orquesta miOrquesta;
+    auto instrumento1 = std::make_shared<MockInstrumento>();
+    auto instrumento2 = std::make_shared<MockInstrumento>();
+
+    // Definimos expectativas: cada instrumento debe tocar exactamente 1 vez
+    EXPECT_CALL(*instrumento1, tocar()).Times(1).WillOnce(Return("Sonido 1"));
+    EXPECT_CALL(*instrumento2, tocar()).Times(1).WillOnce(Return("Sonido 2"));
+
+    // 2. Inyección
+    miOrquesta.agregarInstrumento(instrumento1);
+    miOrquesta.agregarInstrumento(instrumento2);
+
+    // 3. Ejecución
+    miOrquesta.darConcierto();
+
+    // GTest verificará automáticamente al final del test si las expectativas se cumplieron.
+}
+```
+
+¿Qué ganamos con GTest y DI?
+- EXPECT_CALL: No solo probamos que el código no explota, sino que interactúa correctamente. Podemos asegurar que la Orquesta no se olvida de ningún músico.
+- Desacoplamiento total: El test de la Orquesta no necesita que el código del Violín esté terminado. Solo necesita que la interfaz IInstrumento esté definida.
+- Inyección Limpia: Al usar std::shared_ptr, GTest puede mantener vivo el Mock mientras la Orquesta lo necesite y destruirlo después para limpiar la memoria de la prueba.
+
+-->
+
+
 ### Inyección con Spring Framework
 
-A través de un fichero de configuración `orquesta.xml` le indicamos los valores inyectables:
+En un fichero de configuración `orquesta.xml` le indicamos los valores inyectables:
+
+<div class="cols">
+<div>
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
-  "http://www.springframework.org/dtd/spring-beans.dtd">
+<!DOCTYPE beans PUBLIC "..." ...>
 <beans>
   <bean id="trompeta"
     class="Viento"/>
@@ -2620,6 +2837,8 @@ A través de un fichero de configuración `orquesta.xml` le indicamos los valore
     class="Cuerda"/>
 ```
 
+</div>
+<div>
 
 ```xml
   <bean id="cuarteto"
@@ -2639,6 +2858,9 @@ A través de un fichero de configuración `orquesta.xml` le indicamos los valore
   </bean>
 </beans>
 ```
+
+</div>
+</div>
 
 
 La inyección de la dependencia concreta la hace el contenedor (_spring_ en este ejemplo):
@@ -2694,33 +2916,10 @@ Un _contenedor_ de dependencias en el framework debe responsabilizarse de crear 
 
 ## Anotaciones
 
-
-### Anotaciones @ en Java
-
-JSR 330 es un estándar de Java para describir las dependencias de una clase con `@Inject` y otras anotaciones. Hay diversas implementaciones de [JSR 330](http://javax-inject.github.io/javax-inject/).
-
-```java hl_lines="2 4 5"
-public class MyPart {
-  @Inject private Logger logger;
-  // inject class for database access
-  @Inject private DatabaseAccessClass dao;
-  @Inject
-  public void createControls(Composite parent) {
-    logger.info("UI will start to build");
-    Label label = new Label(parent, SWT.NONE);
-    label.setText("Eclipse 4");
-    Text text = new Text(parent, SWT.NONE);
-    text.setText(dao.getNumber());
-  }
-}
-```
-
-La clase `MyPart` sigue usando `new` para ciertos elementos de la interfaz. Esto significa que no pensamos reemplazarlos ni siquiera para hacer pruebas.
+Otra manera de inyectar dependencias
 
 
-### Otra manera de inyectar dependencias
-
-jUnit 4 usa anotaciones para programar casos de prueba:
+### Anotaciones @ de Java en jUnit 4
 
 ```java
 import org.junit.*;
@@ -2774,11 +2973,19 @@ Resolvemos mediante inyección de dependencias...
 
 `BankAcccount.java`:
 
+<div class="cols">
+<div>
+
 ```java
 import java.util.*;
 import java.io.*;
 import java.time.*;
+````
 
+</div>
+<div>
+
+```java
 public final class BankAccount implements Comparable<BankAccount> {
   private final String id;
   private LocalDate creationDate;
@@ -2799,6 +3006,15 @@ public final class BankAccount implements Comparable<BankAccount> {
   }
 ```
 
+</div>
+</div>
+
+
+<div class="cols">
+<div>
+
+</div>
+<div>
 
 ```java
   public void setComparator(Comparator cmp) {
@@ -2827,11 +3043,14 @@ public final class BankAccount implements Comparable<BankAccount> {
 }
 ```
 
+</div>
+</div>
+
 
 `BankAcccountComparatorById.java`:
 
 ```java
-import java.util.*;
+import java.util.Comparator;
 
 class BankAccountComparatorById implements Comparator<BankAccount> {
     public int compare(BankAccount o1, BankAccount o2) {
@@ -2843,7 +3062,7 @@ class BankAccountComparatorById implements Comparator<BankAccount> {
 `BankAcccountComparatorByCreationDate.java`:
 
 ```java
-import java.util.*;
+import java.util.Comparator;
 
 class BankAccountComparatorByCreationDate implements Comparator<BankAccount> {
     public int compare(BankAccount o1, BankAccount o2) {
@@ -2873,6 +3092,7 @@ Ahora podría definirse una anotación del tipo `@comparator(BankAccountComparat
 
 - Java: Ejemplo de cómo [crear una anotación a medida en Java](https://www.baeldung.com/java-custom-annotation)
 - Typescript: las anotaciones se llaman **decorators** y son más sencillas de programar
+- Python: No confundir con los decorators de Python, que son algo diferente
 
 <!--
 
@@ -3014,7 +3234,6 @@ Hacer _refactoring_ es hacer pequeñas transformaciones en el código que mantie
 - Demasiados parámetros en una función
 - Jerarquías de herencia en paralelo
 - Muchas sentencias _case_ en paralelo
-- Hay muchos cambios en una clase que tienden a estar compartimentalizados (afectan solo a una parte)
 - Hay muchos cambios que requieren modificaciones en paralelo a varias clases
 - Etc.
 
@@ -3114,6 +3333,9 @@ public class Autonomo extends Empleado {
   }
 }
 ```
+
+>[!NOTE]
+>Hasta la versión Java 25, super() no podía ser llamado en medio del constructor, sino que tenía que ser la primera línea del constructor. Desde el JDK 25, se ha flexibilizado esta restricción y ahora es posible llamar a super() en cualquier parte del constructor, lo que permite una mayor flexibilidad en la inicialización de objetos.
 
 
 ```java
@@ -3223,15 +3445,8 @@ public class Autonomo extends Empleado {
 </div>
 
 > __Lectura recomendada__
-> A. Hunt & D. Thomas. **The Pragmatic Programmer.** Addison-Wesley, 1999.
+> A. Hunt & D. Thomas. **The Pragmatic Programmer.** Addison-Wesley, 2019.
 > Capítulo *DRY—The Evils of Duplication*
-
-
-### El peligro del copy&paste
-
-> Copy and paste is a design error
->
-> -- Steve McConnell. **Code Complete: A practical handbook of software construction**, 2nd edition, 2004.
 
 
 ### Principio DRY – *Don't Repeat Yourself!*
@@ -3259,18 +3474,16 @@ Principio AHA: "Avoid Hasty Abstractions" (Evitar abstracciones precipitadas)
 
 ## 1. Duplicación impuesta
 
-La gestión del proyecto así nos lo exige. Algunos ejemplos:
-
 - Representaciones múltiples de la información:
-    - Varias implementaciones de un TAD que necesita guardar elementos de distintos tipos, cuando el lenguaje no permite genericidad
-    - Esquema de BD configurado en la BD y en código fuente a través de un [ORM](http://www.agiledata.org/essays/mappingObjects.html)
+  - Varias implementaciones de un TAD que necesita guardar elementos de distintos tipos, cuando el lenguaje no permite genericidad
+  - Esquema de BD configurado en la BD y en código fuente a través de un [ORM](http://www.agiledata.org/essays/mappingObjects.html)
 - Documentación del código:
-    - Código incrustado en javadocs
+  - Código incrustado en javadocs
 - Casos de prueba:
-    - Pruebas unitarias con jUnit (Cuidado!)
+  - Pruebas unitarias con jUnit (Cuidado!)
 - Características del lenguaje:
-    - C/C++ header files
-    - IDL specs
+  - C/C++ header files
+  - IDL specs
 
 >[!NOTE]
 >Google: La legibilidad es más importante que la eliminación de la duplicación de código
@@ -3284,7 +3497,7 @@ Cuando el lenguaje no tenía capacidad de usar tipos genéricos (hasta el JDK 1.
 
 Para evitarlo, Java usó un _workaround_: todas las clases en Java heredan de `Object`. Así una clase que implementara un TAD contenedor de elementos de otra clase, tan solo tenía que declarar los elementos contenidos de tipo `Object`.
 
-Más tarde (a partir del JDK 1.5) introdujo los tipos genéricos y ya no era necesario usar dicho _workaround_ basado en `Object` para evitar la duplicación
+A partir del JDK 1.5, se introdujeron los tipos genéricos y ya no era necesario usar dicho _workaround_, que se mantuvo por compatibilidad con versiones anteriores.
 
 
 ### Técnicas de solución
@@ -3366,43 +3579,46 @@ Realmente `length` ya está definido con `start`y `end`.
 
 ¿Es conveniente aplicar siempre DRY?
 
->[!NOTE]
->En tiempo de IA, el coste de la duplicación de código es principalmente el mantenimiento (esfuerzo humano). La IA puede ayudar con esto. Pero el coste de elegir una abstracción incorrecta no disminuye. La IA todavía tiene dificultades con los sistemas sobreacoplados.
 
-
-- ¿DRY es tan importante en tiempos de la IA?
-  - Si se usa IA, ¿cuál es el coste de mantener código duplicado vs el coste de mantener sistemas muy acoplados?
-- Otras veces se puede optar por violar DRY por razones de rendimiento...
+- A veces se puede optar por violar DRY por razones de rendimiento...
   - [_Memoization_](https://en.wikipedia.org/wiki/Memoization): cachear los resultados de cómputos costosos
+  - La técnica de memoization es menos problemática si queda dentro de los límites de la clase/módulo.
+  - Otras razones de rendimiento: las cachés y los optimizadores de código también hacen su labor
 
 
 ### Ejemplo: aplicando memoization – versión 2
 
 ```java
-  public class Line {
-    private boolean changed;
-    private double length;
-    private Point start;
-    private Point end;
+public class Line {
+  private boolean changed;
+  private double length;
+  private Point start;
+  private Point end;
 
-    public void setStart(Point p) { start = p; changed = true; }
-    public void setEnd(Point p)   { end   = p; changed = true; }
-    public Point getStart() { return start; }
-    public Point getEnd() { return end; }
-    public double getLength() {
-       if (changed) {
-          length = start.distanceTo(end);
-          changed = false;
-       }
-       return length;
+  public void setStart(Point p) { start = p; changed = true; }
+  public void setEnd(Point p)   { end   = p; changed = true; }
+  public Point getStart() { return start; }
+  public Point getEnd() { return end; }
+  public double getLength() {
+    if (changed) {
+      length = start.distanceTo(end);
+      changed = false;
     }
+    return length;
   }
+}
 ```
 
 
-La técnica de memoization es menos problemática si queda dentro de los límites de la clase/módulo.
+¿Es tan importante DRY en tiempos de la IA?
 
-Otras veces no merece la pena violar DRY por rendimiento: ¡las cachés y los optimizadores de código también hacen su labor!
+>[!NOTE]
+>En tiempo de IA, el coste de la duplicación de código es principalmente el mantenimiento (esfuerzo humano). La IA puede ayudar con esto. Pero el coste de elegir una abstracción incorrecta no disminuye. La IA todavía tiene dificultades con los sistemas sobreacoplados.
+
+
+- Si se usa IA, ¿cuál es el coste de mantener código duplicado vs el coste de mantener sistemas muy acoplados?
+  - El coste de la duplicación de código es principalmente el mantenimiento (esfuerzo humano). La IA puede ayudar con esto.
+  - Pero el coste de elegir una abstracción incorrecta no disminuye. La IA todavía tiene dificultades con los sistemas sobreacoplados.
 
 
 ### Principio de acceso uniforme
@@ -3411,8 +3627,7 @@ Otras veces no merece la pena violar DRY por rendimiento: ¡las cachés y los op
 >
 > – B. Meyer. **Object-Oriented Software Construction.** Prentice-Hall, 2nd edition, 1997.
 
-
-Conviene aplicar el principio de acceso uniforme para que sea más fácil añadir mejoras de rendimiento (v.g. caching)
+Conviene aplicar el principio de acceso uniforme para que sea más fácil añadir mejoras de rendimiento (por ejemplo, caching)
 
 
 #### Ejemplo: acceso uniforme en C# – versión 3
@@ -3453,7 +3668,7 @@ class Complejo(real: Double, imaginaria: Double) {
 }
 
 object NumerosComplejos {
-  def main() : Unit = {
+  def main(): Unit = {
     val c = new Complejo(1.2, 3.4)
     println("Número complejo: " + c.toString())
     println("Parte imaginaria: " + c.im())
@@ -3473,7 +3688,7 @@ class Complejo(real: Double, imaginaria: Double) {
 }
 
 object NumerosComplejos {
-  def main() : Unit = {
+  def main(): Unit = {
     val c = new Complejo(1.2, 3.4)
     println("Número complejo: " + c)
     println("Parte imaginaria: " + c.im)
@@ -3484,16 +3699,22 @@ object NumerosComplejos {
 
 ## 3. Duplicación por impaciencia
 
-- Los peligros del *copy&paste*
-- "Vísteme despacio que tengo prisa" (_shortcuts make for long delays_). Ejemplos:
-    - Meter el `main` de Java en cualquier clase
-    - Fiasco del año 2000
+### El peligro del copy&paste
+
+> Copy and paste is a design error
+>
+> -- Steve McConnell. **Code Complete: A practical handbook of software construction**, 2nd edition, 2004.
+
+### Las prisas y los ahorros
+
+"Vísteme despacio que tengo prisa" (_shortcuts make for long delays_).
+Ejemplo: Fiasco del año 2000
 
 
 ## 4. Duplicación por simultaneidad
 
 - No resoluble a nivel de técnicas de construcción
-- Hace falta metodología, gestión de equipos + herramientas de comunicación
+- Hace falta metodologías de integración, gestión de equipos y herramientas de comunicación
   - CI/CD (_Continuous Integration_ / _Continuous Delivery_)
   - Prácticas DevOps
 
@@ -3509,7 +3730,7 @@ Según Fowler:
    - dividir un método
    - renombrar una variable
 
-Yo añado...
+Añadimos...
 
 - Reflejar cada cambio en un _commit_ separado
 <!-- Source: ortogonalidad.md -->
@@ -3526,20 +3747,21 @@ Dos componentes A y B son ortogonales ($A \perp B$) si los cambios en uno no afe
 - En un helicóptero, los mandos de control no suelen ser ortogonales
 
 
-![Mandos de un helicóptero](./img/helicoptero.png)
-
-
-> Helicopters have four basic controls. The cyclic is the stick you hold in your right hand. Move it, and the helicopter moves in the corresponding direction. Your left hand holds the collective pitch lever. Pull up on this and you increase the pitch on all the blades, generating lift. At the end of the pitch lever is the throttle. Finally you have two foot pedals, which vary the amount of tail rotor thrust and so help turn the helicopter.
->
-> However, when you try it, you discover that life isn’t that simple. The helicopter’s nose drops, and you start to spiral down to the left. Suddenly you discover that you’re flying a system where every control input has secondary effects. Lower the left-hand lever and you need to add compensating backward movement to the right-hand stick and push the right pedal. But then each of these changes affects all of the other controls again. Suddenly you’re juggling an unbelievably complex system, where every change impacts all the other inputs. Your workload is phenomenal: your hands and feet are constantly moving, trying to balance all the interacting forces.
-> -- (Hunt & Thomas, 2020)
-
+![Cómo se pilota un helicóptero](./img/helicoptero-infografia.png)
 
 El **cíclico** (mano derecha) hace que el helicóptero se mueve en la dirección correspondiente. El **colectivo** (mano izquierda) aumenta o disminuye el _pitch_ en todas las palas, generando sustentación. Al final del colectivo (_pitch_) está el **acelerador**. Finalmente, dos **pedales** varían la cantidad de empuje del rotor de cola y ayudan a girar el helicóptero.
 
 Sin embargo, cuando lo intentas, descubres que la vida no es tan simple. La nariz del helicóptero cae, y comienzas una espiral hacia abajo hacia la izquierda. De repente descubres que estás volando un sistema donde cada entrada de control tiene efectos secundarios. Baja la palanca de la mano izquierda y necesitas añadir un movimiento compensatorio hacia atrás al mando de la mano derecha y empujar el pedal derecho. Pero entonces cada uno de estos cambios afecta todos los otros controles de nuevo.
 
 De repente estás haciendo malabares con un sistema increíblemente complejo, donde cada cambio impacta todas las otras entradas.
+
+
+![Mandos de un helicóptero](./img/helicoptero.png)
+
+> Helicopters have four basic controls. The cyclic is the stick you hold in your right hand. Move it, and the helicopter moves in the corresponding direction. Your left hand holds the collective pitch lever. Pull up on this and you increase the pitch on all the blades, generating lift. At the end of the pitch lever is the throttle. Finally you have two foot pedals, which vary the amount of tail rotor thrust and so help turn the helicopter.
+>
+> However, when you try it, you discover that life isn’t that simple. The helicopter’s nose drops, and you start to spiral down to the left. Suddenly you discover that you’re flying a system where every control input has secondary effects. Lower the left-hand lever and you need to add compensating backward movement to the right-hand stick and push the right pedal. But then each of these changes affects all of the other controls again. Suddenly you’re juggling an unbelievably complex system, where every change impacts all the other inputs. Your workload is phenomenal: your hands and feet are constantly moving, trying to balance all the interacting forces.
+> -- (Hunt & Thomas, 2020)
 
 
 ## Beneficios de la ortogonalidad
@@ -3560,7 +3782,10 @@ De repente estás haciendo malabares con un sistema increíblemente complejo, do
 - Más fácil de **probar**, pues será más fácil construir pruebas individuales de cada uno de sus componentes (por ejemplo, las técnicas de _[mocking](https://en.wikipedia.org/wiki/Mock_object)_ son más sencillas)
 
 
-## Niveles de aplicación de la ortogonalizad
+## Aplicación de la ortogonalizad
+
+<div class="cols">
+<div>
 
 La ortogonalidad es aplicable a:
 
@@ -3570,7 +3795,13 @@ La ortogonalidad es aplicable a:
 - bibliotecas
 - la documentación
 
+</div>
+<div>
+
 A nivel de _diseño_, los patrones de diseño y las arquitecturas como MVC facilitan la construcción de componentes ortogonales.
+
+</div>
+</div>
 
 ### Lectura recomendada
 
@@ -3616,6 +3847,9 @@ Al pedir un servicio a un objeto, el servicio debe ser realizado de parte nuestr
 
 ### Ley de Demeter para funciones
 
+<div class="cols">
+<div>
+
 Los métodos de un objeto solo deben hacer llamadas a métodos...
 
 1. **propios**
@@ -3623,6 +3857,8 @@ Los métodos de un objeto solo deben hacer llamadas a métodos...
 3. de objetos **creados** por ellos mismos
 4. de objetos **declarados** en el mismo método
 
+</div>
+<div>
 
 ```java
 class Demeter {
@@ -3640,16 +3876,23 @@ class Demeter {
 }
 ```
 
+</div>
+</div>
+
 
 #### Excepción: Interfaces _fluent_
 
-Hay una excepción notable a la prohibición de encadenar llamadas a funciones de la ley de Demeter. Esta regla no aplica si es muy poco probable que haya cambios en las cosas que se encadenan. En la práctica, cualquier parte de tu aplicación debe considerarse como algo que es probable que cambie; cualquier elemento de una biblioteca de un tercero debe considerarse volátil, en particular si quienes mantienen dicha biblioteca suelen cambiar su API de una versión a otra.
+Hay una excepción notable a la prohibición de encadenar llamadas a funciones de la ley de Demeter. Esta regla no aplica si es muy poco probable que haya cambios en las cosas que se encadenan.
 
-Las librerías que vienen con el lenguaje suelen ser bastante estables, así que ejemplos de código como el siguiente son aceptables como excepción a esta interpretación de la ley de Demeter:
+En la práctica, cualquier parte de tu aplicación debe considerarse como algo que es probable que cambie; cualquier elemento de una biblioteca de un tercero debe considerarse volátil, en particular si quienes mantienen dicha biblioteca suelen cambiar su API de una versión a otra.
 
+
+Ejemplos de código como el siguiente son aceptables como excepción a esta interpretación de la ley de Demeter.
+
+¿Por qué?
 
 ```java
-List<String> myList =
+java.util.List<String> myList =
     Arrays.asList("a1", "a2", "b1", "c2", "c1");
 
 myList
@@ -3660,12 +3903,16 @@ myList
     .forEach(System.out::println);
 ```
 
+>[!NOTE]
+>Todos los métodos encadenados devuelven objetos del mismo tipo `Stream`
+
 
 Los métodos `stream`, `filter`, `map`, `sorted` y `forEach` son parte de las nuevas _interfaces funcionales_ de Java para manejar _streams_, incorporadas a las colecciones (v.g. `List`) desde la versión Java 8.
 
 Este tipo de interfaces como la del API de streams de Java se conoce como [_fluent interfaces_](https://en.wikipedia.org/wiki/Fluent_interface).
 
-> La programación con streams y se tratarán en el bloque sobre **Programación Funcional**
+>[!NOTE]
+>La programación con streams y se tratarán en el bloque sobre Programación Funcional
 
 
 #### Críticas a la ley de Demeter
@@ -3723,8 +3970,11 @@ Otro método para implementar la ortogonalidad es usar [Aspectos](aspectos.md) y
 
 ### Ejemplo: editor de figuras
 
+<div class="cols">
+<div>
+
 ```java
-class Line implements FigureElement{
+class Line implements FigureElement {
   private Point p1, p2;
 
   Point getP1() { return p1; }
@@ -3745,46 +3995,19 @@ class Point implements FigureElement {
 }
 ```
 
+</div>
+<div>
 
 Hay que actualizar la pantalla tras mover los objetos:
 
 ![figuras en pantalla](./img/aspectj-1.png)
 
-Hay una colección de figuras que cambian periódicamente. Se deben monitorizar los cambios para refrescar el display.
+Hay una colección de figuras que cambian periódicamente.
 
+Se deben monitorizar los cambios para refrescar el display.
 
-```java
-class Line {
-  private Point p1, p2;
-
-  Point getP1() { return p1; }
-  Point getP2() { return p2; }
-
-  void setP1(Point p1) {
-    this.p1 = p1;
-  }
-  void setP2(Point p2) {
-    this.p2 = p2;
-  }
-}
-```
-
-
-```java
-class Point {
-  private int x = 0, y= 0;
-
-  int getX() { return x; }
-  int getY() { return y; }
-
-  void setX(int x) {
-    this.x = x;
-  }
-  void setY(int y) {
-    this.y = y;
-  }
-}
-```
+</div>
+</div>
 
 
 Implementamos una clase que monitoriza los cambios en las figuras:
@@ -3813,61 +4036,24 @@ class MoveTracking {
 - `Line` $\dashrightarrow$ `MoveTracking`
 - `Point` $\dashrightarrow$ `MoveTracking`
 
-### Implementación sin aspectos
+### Implementaciones sin aspectos
 
-Primero vemos una implementación con las dependencias anteriores, sin aspectos...
+Primero vemos algunas implementaciones con las dependencias anteriores, intentando resolver la no ortogonalizad, pero sin usar aspectos.
+
+- Versión 1: solo detecta el cambio de los extremos de una línea
+- Versión 2: también detecta el cambio de coordenadas de un punto
+- Versión 3: monitoriza las figuras que cambian, evitando el refresco de todas
 
 
 #### Versión 1 sin aspectos
 
-Solo detecta el cambio de los extremos de una línea:
+Solo detecta el cambio de los extremos de una línea: `Line` $\dashrightarrow$ `MoveTracking`
 
-`Line` $\dashrightarrow$ `MoveTracking`
+<div class="cols">
+<div>
 
 ```java hl_lines="9 13 31"
-class Line {
-  private Point p1, p2;
-
-  Point getP1() { return _p1; }
-  Point getP2() { return _p2; }
-
-  void setP1(Point p1) {
-    this.p1 = p1;
-    MoveTracking.setFlag(); // añadido
-  }
-  void setP2(Point p2) {
-    this.p2 = p2;
-    MoveTracking.setFlag(); // añadido
-  }
-}
-```
-
-
-```java
-class Point {
-  private int x = 0, y= 0;
-
-  int getX() { return x; }
-  int getY() { return y; }
-
-  void setX(int x) {
-    this.x = x;
-  }
-  void setY(int y) {
-    this.y = y;
-  }
-}
-```
-
-
-#### Versión 2 sin aspectos
-
-También detecta el cambio de coordenadas de un punto.
-
-`Line` $\dashrightarrow$ `MoveTracking` y `Point` $\dashrightarrow$ `MoveTracking`
-
-```java hl_lines="25 29"
-class Line {
+class Line implements FigureElement {
   private Point p1, p2;
 
   Point getP1() { return p1; }
@@ -3884,25 +4070,41 @@ class Line {
 }
 ```
 
+</div>
+<div>
 
 ```java
-class Point {
-  private int x = 0, y = 0;
+class Point implements FigureElement {
+  private int x = 0, y= 0;
 
   int getX() { return x; }
   int getY() { return y; }
 
   void setX(int x) {
     this.x = x;
-    MoveTracking.setFlag(); //añadido
   }
   void setY(int y) {
     this.y = y;
-    MoveTracking.setFlag(); //añadido
   }
 }
 ```
 
+</div>
+</div>
+
+
+#### Versión 2 sin aspectos
+
+También detecta el cambio de coordenadas de un punto
+
+<div class="cols">
+<div>
+
+- `Line` $\dashrightarrow$ `MoveTracking`
+- `Point` $\dashrightarrow$ `MoveTracking`
+
+</div>
+<div>
 
 ```java
 class MoveTracking {
@@ -3920,22 +4122,15 @@ class MoveTracking {
 }
 ```
 
-
-#### Versión 3 sin aspectos
-
-Las colecciones de figuras son complejas. Las estructuras de objetos son jerárquicas y se producen eventos asíncronos:
-
-![colección de figuras](./img/aspectj-2.png)
-
-La versión 2 hace que un cambio en cualquier elemento provoque un refresco de todas las figuras.
-
-Mejor monitorizar las figuras que cambian...
+</div>
+</div>
 
 
-Decidimos modificar la implementación: cambiar el método `setFlag` por `collectOne`, indicando la figura que se mueve.
+<div class="cols">
+<div>
 
-```java hl_lines="9 13 25 29 34 36 40"
-class Line {
+```java hl_lines="25 29"
+class Line implements FigureElement {
   private Point p1, p2;
 
   Point getP1() { return p1; }
@@ -3943,18 +4138,20 @@ class Line {
 
   void setP1(Point p1) {
     this.p1 = p1;
-    MoveTracking.collectOne(this); // modificado
+    MoveTracking.setFlag();
   }
   void setP2(Point p2) {
     this.p2 = p2;
-    MoveTracking.collectOne(this); // modificado
+    MoveTracking.setFlag();
   }
 }
 ```
 
+</div>
+<div>
 
 ```java
-class Point {
+class Point implements FigureElement {
   private int x = 0, y = 0;
 
   int getX() { return x; }
@@ -3962,19 +4159,41 @@ class Point {
 
   void setX(int x) {
     this.x = x;
-    MoveTracking.collectOne(this); // modificado
+    MoveTracking.setFlag(); //añadido
   }
   void setY(int y) {
     this.y = y;
-    MoveTracking.collectOne(this); // modificado
+    MoveTracking.setFlag(); //añadido
   }
 }
 ```
 
+</div>
+</div>
+
+
+#### Versión 3 sin aspectos
+
+<div class="cols">
+<div>
+
+Las colecciones de figuras son complejas. Las estructuras de objetos son jerárquicas y se producen eventos asíncronos:
+
+![colección de figuras](./img/aspectj-2.png)
+
+Versión 2: un cambio en cualquier elemento provocará un refresco de todas las figuras
+
+</div>
+<div>
+
+Mejor monitorizar las figuras que cambian...
+
+Modificamos la versión 2 para cambiar el método `setFlag` por `collectOne`
 
 ```java
 class MoveTracking {
-  private static Set movees = new HashSet();
+  private static Set movees =
+                       new HashSet();
 
   public static void collectOne(Object o) {
     movees.add(o);
@@ -3987,6 +4206,57 @@ class MoveTracking {
   }
 }
 ```
+
+</div>
+</div>
+
+
+Indicamos la figura que se mueve:
+
+<div class="cols">
+<div>
+
+```java hl_lines="9 13 25 29 34 36 40"
+class Line implements FigureElement {
+  private Point p1, p2;
+
+  Point getP1() { return p1; }
+  Point getP2() { return p2; }
+
+  void setP1(Point p1) {
+    this.p1 = p1;
+    MoveTracking.collectOne(this);
+  }
+  void setP2(Point p2) {
+    this.p2 = p2;
+    MoveTracking.collectOne(this);
+  }
+}
+```
+
+</div>
+<div>
+
+```java
+class Point implements FigureElement {
+  private int x = 0, y = 0;
+
+  int getX() { return x; }
+  int getY() { return y; }
+
+  void setX(int x) {
+    this.x = x;
+    MoveTracking.collectOne(this);
+  }
+  void setY(int y) {
+    this.y = y;
+    MoveTracking.collectOne(this);
+  }
+}
+```
+
+</div>
+</div>
 
 
 La no ortogonalidad de `MoveTracking` con respecto a `Line` y `Point` hace que la solicitud de un cambio de implementación (el seguimiento de los cambios en las figuras para el refresco en pantalla) provoque un cambio en los otros módulos (clases).
@@ -4013,8 +4283,11 @@ La __programación orientada a aspectos__ (_AOP_) es un paradigma de programaci�
 
 En el ejemplo anterior, las clases `Line` y `Point` no se ven afectadas:
 
+<div class="cols">
+<div>
+
 ```java
-class Line {
+class Line implements FigureElement {
   private Point p1, p2;
 
   Point getP1() { return p1; }
@@ -4029,9 +4302,11 @@ class Line {
 }
 ```
 
+</div>
+<div>
 
 ```java
-class Point {
+class Point implements FigureElement {
   private int x = 0, y = 0;
 
   int getX() { return x; }
@@ -4046,7 +4321,10 @@ class Point {
 }
 ```
 
-Vamos a eliminar las dependencias, gracias a la implementación de aspectos...
+</div>
+</div>
+
+Vamos a eliminar las dependencias ($\Delta$ ortogonalidad) implementando aspectos...
 
 
 #### Versión 1 con aspectos
@@ -4063,8 +4341,7 @@ aspect MoveTracking {
   }
 
   pointcut move():
-    call(void Line.setP1(Point)) ||
-    call(void Line.setP2(Point));
+    call(void Line.setP1(Point)) || call(void Line.setP2(Point));
 
   after(): move() {
     flag = true;
@@ -4087,10 +4364,8 @@ aspect MoveTracking {
   }
 
   pointcut move():
-    call(void Line.setP1(Point)) ||
-    call(void Line.setP2(Point)) ||
-    call(void Point.setX(int))   ||
-    call(void Point.setY(int));
+    call(void Line.setP1(Point)) || call(void Line.setP2(Point)) ||
+    call(void Point.setX(int))   || call(void Point.setY(int));
 
   after(): move() {
     flag = true;
@@ -4126,10 +4401,8 @@ aspect MoveTracking {
 
   pointcut move(FigureElement figElt):
     target(figElt) &&
-    (call(void Line.setP1(Point)) ||
-     call(void Line.setP2(Point)) ||
-     call(void Point.setX(int))   ||
-     call(void Point.setY(int)));
+    (call(void Line.setP1(Point)) || call(void Line.setP2(Point)) ||
+     call(void Point.setX(int))   || call(void Point.setY(int)));
 
   after(FigureElement fe): move(fe) {
     movees.add(fe);
@@ -4192,13 +4465,18 @@ public enum Error {
 
 - Los programadores intentan evitar añadir nuevos motivos de error, porque eso significa tener que volver a compilar y desplegar todo el código.
 
-Otros ejemplos de imanes de dependencias son las clases con nombres como _Utilidades_, _Tools_, etc.
+Otros imanes de dependencias: clases con nombres como _Utilidades_, _Tools_, etc.
 
 
 ## EXCEPCIONES
 
 
 Muchos lenguajes usan __excepciones__ en lugar de códigos de error:
+
+<div class="cols">
+<div>
+
+Queda más claro:
 
 ```java hl_lines="2 3 4"
 try {
@@ -4211,19 +4489,30 @@ catch (Exception e) {
 }
 ```
 
-¿No queda más claro?
+</div>
+<div>
 
-### Ventaja
+### Ventaja...?
 
 Las nuevas excepciones son derivadas de una clase base `Exception`, lo que facilita la definición de nuevos motivos de error.
 
+</div>
+</div>
 
 ### ¿Dónde se produce el error?
 
-Si se eleva una excepción en el ejemplo anterior, ¿en cuál de las instrucciones del bloque `try` se ha producido?
+Si se eleva una excepción, ¿en cuál de las instrucciones del bloque `try` se ha producido?
 
 
 ### Separar la función y el tratamiento de errores
+
+<div class="cols">
+<div>
+
+Queda más fácil de comprender, modificar y depurar
+
+</div>
+<div>
 
 ```java
 public void delete(Page page) {
@@ -4246,23 +4535,14 @@ private void logError(Exception e) {
 }
 ```
 
-¿No queda más fácil de comprender, modificar y depurar?
+</div>
+</div>
 
 
 ### Excepciones en Java
 
-- __Checked__ — Instancias de clases derivadas de `java.lang.Throwable` (menos `RuntimeException`). Deben declararse en el método mediante `throws` y obligan al llamador a tratar la excepción.
-
-- __Unchecked__ — Instancias de clases derivadas de `java.lang.RuntimeException`. No se declaran en el método y no obligan al llamador a tratar la excepción.
-
-__¿Qué implica elevar una excepción `e` en Java?__
-
-1. Deshacer (_roll back_) la llamada a un método...
-2. ...hasta que se encuentre un bloque catch para el tipo de `e` y...
-3. ...si no se encuentra, la excepción es capturada por la JVM, que detiene el programa.
-
-
-#### Tratamiento de excepciones en Java
+<div class="cols">
+<div>
 
 ```java
   try {
@@ -4281,6 +4561,20 @@ __¿Qué implica elevar una excepción `e` en Java?__
   }
 ```
 
+__Elevar una excepción `e`__ $\Rightarrow$ Deshacer (_roll back_) la llamada a un método hasta encontrar un `catch` para el tipo de `e`. Si no se encuentra, se detiene el programa.
+
+</div>
+<div>
+
+__Tipos de excepciones__:
+
+- __Checked__ — Derivadas de `java.lang.Throwable` (menos `RuntimeException`). Deben declararse en el método mediante `throws` y obligan al llamador a tratar la excepción.
+
+- __Unchecked__ — Derivadas de `java.lang.RuntimeException`. No se declaran en el método y no obligan al llamador a tratar la excepción.
+
+</div>
+</div>
+
 
 #### Recomendaciones sobre excepciones
 
@@ -4290,17 +4584,59 @@ Incluir el __contexto__ de la ejecución:
 - No basta con el *stack trace*
 - Escribir mensajes informativos: operación fallida y tipo de fallo
 
-Los beneficios de las excepciones _checked_ en Java son mínimos: [¿por qué?](https://testing.googleblog.com/2009/09/checked-exceptions-i-love-you-but-you.html) ⟶ Hay quien recomienda usar solamente excepciones __unchecked__.
+Los beneficios de las excepciones _checked_ en Java son mínimos: **¿por qué?**
 
+(Hay quien recomienda [usar solamente](https://testing.googleblog.com/2009/09/checked-exceptions-i-love-you-but-you.html) excepciones __unchecked__)
+
+
+#### ¿Por qué no usar excepciones checked?
+
+Ejemplo: se necesita procesar un archivo CSV con datos de empleados. El código está estructurado en capas:
+
+1. `EmployeeCSVProcessor` (mi aplicación) — Necesita lanzar `IOException` si hay errores
+2. `CSVReader` (una librería de terceros) — Itera sobre las líneas del archivo
+3. `EmployeeRowHandler` (mi implementación de callback) — Procesa cada fila
+
+
+```java
+// Librería de terceros - NO sabe ni debe saber sobre IOException
+public class CSVReader {
+    public void processRows(RowHandler handler) {
+        List<String> lines = readFile(filePath);
+        for (String line : lines) {
+            handler.handle(line);  // Llama al handler
+        }
+    }
+}
+
+// Contrato que proporciona CSVReader
+public interface RowHandler {
+    void handle(String row);  // NO puede lanzar excepciones checked
+}
+
+// Mi implementación - ¡PROBLEMA!
+public class EmployeeRowHandler implements RowHandler {
+    @Override
+    public void handle(String row) throws IOException {  // ❌ INCOMPATIBLE
+        if (!isValid(row)) {
+            throw new IOException("Invalid employee data");
+        }
+    }
+}
+```
+
+
+__El dilema:__
+
+`EmployeeCSVProcessor` (quiere `IOException`) $\rightarrow$ `CSVReader` (no declara `IOException`) $\rightarrow$ `EmployeeRowHandler` (necesita lanzarla)
+
+$\Rightarrow$ ❌ Contrato violado: ¡no compila!
 
 __Cómo afectan al diseño las excepciones checked__
 
-Se paga el precio de violar el principio OCP (_Open-Closed Principle_): si lanzamos una excepción _checked_ desde un método y el `catch` está tres niveles por encima, hay que declarar la excepción en la signatura de todos los métodos que van entre medias. Esto significa que un cambio en un nivel bajo del software puede forzar cambios en niveles altos.
-
-#### Excepciones en otros lenguajes
-
-- C\#, C++, Python o Ruby no ofrecen excepciones _checked_.
-- Scala no usa excepciones _checked_ como Java: [Scala exception handling](https://www.baeldung.com/scala/exception-handling)
+- Se paga el precio de violar el principio OCP (_Open-Closed Principle_): si lanzamos una excepción _checked_ desde un método y el `catch` está tres niveles por encima, hay que declarar la excepción en la signatura de todos los métodos que van entre medias.
+- Esto significa que un cambio en un nivel bajo del software puede forzar cambios en niveles altos.
+- Imaginemos cuando entre medias hay una biblioteca de terceros que no podemos modificar
 
 
 #### Transformación de excepciones
@@ -4309,12 +4645,11 @@ Muchas APIs de Java lanzan excepciones _checked_ cuando deberían ser _unchecked
 
 __Ejemplo__: Al ejecutar una consulta mediante `executeQuery` en el API de JDBC se lanza una excepción `java.sql.SQLException` (de tipo checked) si la SQL es errónea.
 
-
 - ¿Le interesa al cliente del API saber que el error es provocado por una sentencia SQL?
 - ¿Le interesa al cliente del API conocer el tipo de excepción _checked_ que una consulta puede generar?
 
 
-__Solución: Transformación en unchecked__
+__Solución: ¿transformación en unchecked?__
 
 Transformar las excepciones checked en unchecked:
 
@@ -4325,6 +4660,78 @@ Transformar las excepciones checked en unchecked:
     throw new RuntimeException("Unchecked exception", ex)
   }
 ```
+
+
+__La solución es un code smell:__
+
+<div class="cols">
+<div>
+
+```java
+public class EmployeeRowHandler implements RowHandler {
+  @Override
+  public void handle(String row) {
+    if (!isValid(row)) {
+      throw new RuntimeException("Invalid employee data: " + row);
+    }
+  }
+}
+
+public class EmployeeCSVProcessor {
+  public void process(String filePath) throws IOException {
+    try {
+      reader.processRows(new EmployeeRowHandler());
+    } catch (RuntimeException e) {
+      // ¿Era una IOException o un error real?
+      if (e.getMessage().contains("Invalid")) {
+        throw new IOException(e);  // Reconvertir
+      }
+      throw e;  // Relanzar si era otra cosa
+    }
+  }
+}
+```
+
+</div>
+<div>
+
+__Precio a pagar:__
+
+- Pérdida de información: No se sabe si la `RuntimeException` es realmente la excepción esperada
+- Violación del tipo: La excepción no comunica claramente el error
+
+</div>
+</div>
+
+
+__Transformación a UncheckedIOException__
+
+Java 8 introdujo `UncheckedIOException`, para transformar una `IOException` en unchecked sin perder la información de la causa original
+
+```java
+import java.io.UncheckedIOException;
+
+public class EmployeeRowHandler implements RowHandler {
+    @Override
+    public void handle(String row) {
+        try {
+            if (!isValid(row)) {
+                throw new IOException("Invalid employee data");
+            }
+            // Lógica principal
+        } catch (IOException e) {
+            // "Envolvemos" el error checked en un wrapper unchecked oficial de Java
+            throw new UncheckedIOException(e);
+        }
+    }
+}
+```
+
+
+#### Excepciones en otros lenguajes
+
+- C\#, C++, Python o Ruby no ofrecen excepciones _checked_.
+- Scala no usa excepciones _checked_ como Java: [Scala exception handling](https://www.baeldung.com/scala/exception-handling)
 
 
 #### Excepciones encapsuladas
@@ -4352,7 +4759,13 @@ Criticar la siguiente implementación:
 
 __Código duplicado__: llamada a `reportPortError()` se repite mucho. ¿Cómo evitarlo?
 
+<div class="cols">
+<div>
+
 __Solución: Excepción encapsulada__
+
+</div>
+<div>
 
 ```java
 public class LocalPort {
@@ -4375,6 +4788,14 @@ public class LocalPort {
 }
 ```
 
+</div>
+</div>
+
+
+Sustituir ahora por...
+
+<div class="cols">
+<div>
 
 ```java
 LocalPort port = new LocalPort(12);
@@ -4388,41 +4809,62 @@ try {
 }
 ```
 
+</div>
+<div>
+
 - La encapsulación de excepciones es recomendable cuando se usa un API de terceros, para minimizar las dependencias con respecto al API elegido.
 - También facilita la implementación de __mocks__ del componente que proporciona el API para construir pruebas.
 
+</div>
+</div>
 
 #### Las excepciones son excepcionales
 
-__Recomendación de uso__: Usar excepciones para problemas excepcionales (eventos inesperados)
+- __Recomendación de uso__: Usar excepciones para problemas excepcionales (eventos inesperados)
 
-__Ejemplo: Excepciones por ficheros__: ¿Usar excepciones cuando se intenta abrir un fichero para leer y el fichero no existe?
 
-- Depende de si el fichero debe estar ahí
+__Ejemplo__: excepciones en el tratamiento de ficheros: ¿Usar excepciones cuando se intenta abrir un fichero para leer y el fichero no existe? Depende de si el fichero debe estar ahí
 
+<div class="cols">
+<div>
 
 - Caso en que se debe lanzar una excepción:
 
-  ```java
-  public void open_passwd() throws FileNotFoundException {
-    // This may throw FileNotFoundException...
-    ipstream = new FileInputStream("/etc/passwd");
-    // ...
-  }
-  ```
+</div>
+<div>
 
-- Caso en que no se debe lanzar una excepción:
+```java
+public void open_passwd() throws FileNotFoundException {
+  // This may throw FileNotFoundException...
+  ipstream = new FileInputStream("/etc/passwd");
+  // ...
+}
+```
 
-  ```java
-  public boolean open_user_file(String name)
-      throws FileNotFoundException {
-    File f = new File(name);
-    if (!f.exists())
-      return false;
-    ipstream = new FileInputStream(f);
-    return true;
-  }
-  ```
+</div>
+</div>
+
+<div class="cols">
+<div>
+
+- Caso en que no se debe lanzar:
+
+</div>
+<div>
+
+```java
+public boolean open_user_file(String name)
+    throws FileNotFoundException {
+  File f = new File(name);
+  if (!f.exists())
+    return false;
+  ipstream = new FileInputStream(f);
+  return true;
+}
+```
+
+</div>
+</div>
 
 
 ## ABUSO DE NULL
@@ -4432,12 +4874,12 @@ Obtener un _null_ cuando no se espera puede ser un quebradero de cabeza para el 
 
 __Principio general: no devolver null__
 
-Este código puede parecer inofensivo, pero es maligno:
+Este código puede parecer inofensivo, pero es maligno: ¿Qué pasa si `persistentStore` es null?
 
 ```java
 public void registerItem(Item item) {
   if (item != null) {
-    ItemRegistry registry = peristentStore.getItemRegistry();
+    ItemRegistry registry = persistentStore.getItemRegistry();
     if (registry != null) {
       Item existing = registry.getItem(item.getID());
       if (existing.getBillingPeriod().hasRetailOwner()) {
@@ -4448,8 +4890,6 @@ public void registerItem(Item item) {
 }
 ```
 
-¿Qué pasa si `persistentStore` es null?
-
 
 - Peligro de `NullPointerException`
 - ¿Se nos ha olvidado añadir un `if null`?
@@ -4459,10 +4899,15 @@ public void registerItem(Item item) {
 
 ### No devolver null
 
+<div class="cols">
+<div>
+
 Evitar esto:
 
 ```java
-List<Employee> employees = getEmployees();
+List<Employee> employees =
+                  getEmployees();
+
 if (employees != null) {
   for(Employee e : employees) {
     totalPay += e.getPay();
@@ -4470,12 +4915,16 @@ if (employees != null) {
 }
 ```
 
+</div>
+<div>
 
 Mejor así:
 
 ```java
-List<Employee> employees = getEmployees();
-for(Employee e : employees) {
+List<Employee> employees =
+                  getEmployees();
+
+for (Employee e: employees) {
   totalPay += e.getPay();
 }
 
@@ -4484,6 +4933,9 @@ public List<Employee> getEmployees() {
     return Collections.emptyList();
 }
 ```
+
+</div>
+</div>
 
 
 ### No pasar valores null
@@ -4525,8 +4977,6 @@ public class MetricsCalculator
 
 #### Alternativa con aserciones
 
-Solo para JDK ≥ 5.0
-
 ```java
 public class MetricsCalculator
 {
@@ -4538,7 +4988,7 @@ public class MetricsCalculator
 }
 ```
 
-El uso de `assert` es una buena forma de documentar, pero no resuelve el problema.
+El uso de `assert` es una buena forma de **documentar**, pero no resuelve el problema.
 
 Pueden usarse __aserciones__ o __contratos__ para resolver esto.
 
@@ -4675,44 +5125,38 @@ Podríamos seguir devolviendo `Optional` por toda la aplicación, pero en algún
 Para ello se usa `orElse()` para proporcionar un valor alternativo en caso de que el valor no estuviera presente.
 
 
-#### Ejemplo del API Streams en Java:
+#### Ejemplo: `record` en vez de clases
+
+El compilador genera automáticamente constructor, accessores (sin `get`), `equals`, `hashCode` y `toString`:
 
 ```java
-import java.util.List;
-import java.util.Arrays;
-...
+record ScreenResolution(int width, int height) {}
 
-List<String> myList = Arrays.asList("a1", "a2", "b1", "c2", "c1");
+record DisplayFeatures(String size, ScreenResolution resolution) {}
 
-myList.stream()
-  .filter(s -> s.startsWith("c"))
-  .map(String::toUpperCase)
-  .sorted()
-  .forEach(System.out::println);
-
-myList.stream()
-  .reduce( (a,b) -> a + " " + b )
-  .ifPresent(System.out::println);
+record Mobile(long id, String brand, String name,
+              DisplayFeatures displayFeatures) {}
 ```
 
 
-#### Ejemplo sin `Optional`: Programa de prueba
+#### Ejemplo: Programa de prueba
+
+Con `var` se infiere el tipo de cada variable local:
 
 ```java
-public class MobileTesterWithoutOptional {
+public class MobileTester {
   public static void main(String[] args) {
-    ScreenResolution resolution = new ScreenResolution(750,1334);
-    DisplayFeatures dfeatures = new DisplayFeatures("4.7", resolution);
-    Mobile mobile = new Mobile(2015001, "Apple", "iPhone 6s", dfeatures);
+    var resolution1 = new ScreenResolution(750, 1334);
+    var dfeatures1  = new DisplayFeatures("4.7", resolution1);
+    var mobile1     = new Mobile(2015001, "Apple", "iPhone 6s", dfeatures1);
 
-    MobileService mService = new MobileService();
-
-    int mobileWidth = mService.getMobileScreenWidth(mobile);
+    var mService = new MobileService();
+    int mobileWidth = mService.getMobileScreenWidth(mobile1);
     System.out.println("Apple iPhone 6s Screen Width = " + mobileWidth);
 
-    ScreenResolution resolution2 = new ScreenResolution(0,0);
-    DisplayFeatures dfeatures2 = new DisplayFeatures("0", resolution2);
-    Mobile mobile2 = new Mobile(2015001, "Apple", "iPhone 6s", dfeatures2);
+    var resolution2 = new ScreenResolution(0, 0);
+    var dfeatures2  = new DisplayFeatures("0", resolution2);
+    var mobile2     = new Mobile(2015001, "Apple", "iPhone 6s", dfeatures2);
     int mobileWidth2 = mService.getMobileScreenWidth(mobile2);
     System.out.println("Apple iPhone 16s Screen Width = " + mobileWidth2);
   }
@@ -4720,177 +5164,80 @@ public class MobileTesterWithoutOptional {
 ```
 
 
-Cantidad de código _boilerplate_ para comprobar los nulos en la clase principal:
+Reducir _boilerplate_ de `if (x!_null)`: expresión `switch` con _record patterns_ y _unnamed patterns_ `_`:
 
 ```java
 public class MobileService {
-  public int getMobileScreenWidth(Mobile mobile){
-    if(mobile != null){
-      DisplayFeatures dfeatures = mobile.getDisplayFeatures();
-      if(dfeatures != null){
-        ScreenResolution resolution = dfeatures.getResolution();
-        if(resolution != null){
-          return resolution.getWidth();
-        }
-      }
-    }
-    return 0;
+  public int getMobileScreenWidth(Mobile mobile) {
+    return switch (mobile) {
+      case null                                              -> 0;
+      case Mobile(_, _, _, null)                            -> 0;
+      case Mobile(_, _, _, DisplayFeatures(_, null))        -> 0;
+      case Mobile(_, _, _, DisplayFeatures(_, ScreenResolution(int w, _))) -> w;
+    };
   }
 }
 ```
 
 
-Clases de utilidad:
+##### Novedades de Java usadas en el ejemplo
 
-```java
-public class ScreenResolution {
-  private int width;
-  private int height;
-
-  public ScreenResolution(int width, int height){
-    this.width = width;
-    this.height = height;
-  }
-  public int getWidth() {
-    return width;
-  }
-  public int getHeight() {
-    return height;
-  }
-}
-```
+| Característica | JDK | Qué aporta |
+| :--- | --- | :--- |
+| `record` | 16 | Clase inmutable en una línea; accessors sin prefijo `get` |
+| _Pattern matching_ en `switch`** | 21 | Elimina `if (x != null)` anidados |
+| _Record patterns_ | 21 | Deconstrucción  en los `case` |
+| _Unnamed patterns_ `_` | 22 | Ignora campos del `record` irrelevantes |
+| `var` | 10 | Inferencia de tipo local; reduce repetición de tipos |
 
 
-```java
-public class DisplayFeatures {
-  private String size; // In inches
-  private ScreenResolution resolution;
+#### Ejemplo con `Optionals`
 
-  public DisplayFeatures(String size, ScreenResolution resolution){
-    this.size = size;
-    this.resolution = resolution;
-  }
-  public String getSize() {
-    return size;
-  }
-  public ScreenResolution getResolution() {
-    return resolution;
-  }
-}
-```
-
-
-```java
-public class Mobile {
-  private long id;
-  private String brand;
-  private String name;
-  private DisplayFeatures displayFeatures;
-
-  public Mobile(long id,
-                String brand,
-                String name,
-                DisplayFeatures displayFeatures){
-    this.id = id;
-    this.brand = brand;
-    this.name = name;
-    this.displayFeatures = displayFeatures;
-  }
-  public long getId() { return id; }
-  public String getBrand() { return brand; }
-  public String getName() { return name; }
-  public DisplayFeatures getDisplayFeatures() {
-    return displayFeatures;
-  }
-}
-```
-
-
-#### Ejemplo con `Optionals`: Uso de `Optional` en el programa de prueba
+Con `var` se infiere el tipo de cada variable local:
 
 ```java
 public class MobileTesterWithOptional {
   public static void main(String[] args) {
-    ScreenResolution resolution =
-      new ScreenResolution(750,1334);
-    DisplayFeatures dfeatures =
-      new DisplayFeatures("4.7", Optional.of(resolution));
-    Mobile mobile =
-      new Mobile(2015001, "Apple", "iPhone 13", Optional.of(dfeatures));
-
-    MobileService mService =
-      new MobileService();
+    var resolution = new ScreenResolution(750, 1334);
+    var dfeatures  = new DisplayFeatures("4.7", Optional.of(resolution));
+    var mobile     = new Mobile(2015001, "Apple", "iPhone 13", Optional.of(dfeatures));
+    var mService   = new MobileService();
 
     int width = mService.getMobileScreenWidth(Optional.of(mobile));
     System.out.println("Apple iPhone 13 Screen Width = " + width);
 
-    Mobile mobile2 = new Mobile(2015001, "Apple", "iPhone 13", Optional.empty());
-    int width2 = mService.getMobileScreenWidth(Optional.of(mobile2));
+    var mobile2 = new Mobile(2015001, "Apple", "iPhone 13", Optional.empty());
+    int width2  = mService.getMobileScreenWidth(Optional.of(mobile2));
     System.out.println("Apple iPhone 13 Screen Width = " + width2);
   }
 }
 ```
 
 
-Menos código _boilerplate_ en la clase principal:
+```java
+record ScreenResolution(int width, int height) {}
+
+record DisplayFeatures(String size, Optional<ScreenResolution> resolution) {}
+
+record Mobile(long id, String brand, String name,
+              Optional<DisplayFeatures> displayFeatures) {}
+```
+
+Menos _boilerplate_ - Sintaxis _fluent_ con `flatMap` - Elimina el problema de los nulos:
 
 ```java
 public class MobileService {
-  public Integer getMobileScreenWidth(Optional<Mobile> mobile){
-    return mobile.flatMap(Mobile::getDisplayFeatures)
-      .flatMap(DisplayFeatures::getResolution)
-      .map(ScreenResolution::getWidth)
+  public int getMobileScreenWidth(Optional<Mobile> mobile) {
+    return mobile.flatMap(Mobile::displayFeatures)
+      .flatMap(DisplayFeatures::resolution)
+      .map(ScreenResolution::width)
       .orElse(0);
   }
 }
 ```
 
-
-Clases de utilidad modificadas para que usen `Optional`:
-
-```java
-import java.util.Optional;
-
-public class DisplayFeatures {
-  private String size; // In inches
-  private Optional<ScreenResolution> resolution;
-  public DisplayFeatures(String size, Optional<ScreenResolution> resolution){
-    this.size = size;
-    this.resolution = resolution;
-  }
-  public String getSize() {
-    return size;
-  }
-  public Optional<ScreenResolution> getResolution() {
-    return resolution;
-  }
-}
-```
-
-
-```java
-public class Mobile {
-  private long id;
-  private String brand;
-  private String name;
-  private Optional<DisplayFeatures> displayFeatures;
-  public Mobile(long id,
-                String brand,
-                String name,
-                Optional<DisplayFeatures> displayFeatures){
-    this.id = id;
-    this.brand = brand;
-    this.name = name;
-    this.displayFeatures = displayFeatures;
-  }
-  public long getId() { return id; }
-  public String getBrand() { return brand; }
-  public String getName() { return name; }
-  public Optional<DisplayFeatures> getDisplayFeatures() {
-    return displayFeatures;
-  }
-}
-```
+>[!NOTE]
+> Esta solución, además de reducir el boilerplate, elimina el problema de manejar valores nulos
 
 
 ### Carencias de Optional
@@ -4940,7 +5287,7 @@ Deseamos ordenar por criterios distintos cada vez (id, fecha, etc.)
   - Mucho código repetido (no cumple DRY)
   - Muchos cambios si se añade un nuevo criterio (no cumple OCP)
 
-- Alternativa 2: No usar herencia, sino composición/delegación
+- Alternativa 2: no usar herencia, sino composición/delegación
   - Factorizar la _función_ de comparación
   - No delegar hacia las subclases
   - Delegar en objeto de otra clase que implemente la interfaz `java.util.Comparator`
@@ -4963,7 +5310,7 @@ La __función factorizada__ (la implementación de `Comparator`) es sustituible 
 
 ### Clases anónimas
 
-#### Ejemplo: versión con clases anónimas
+#### Comparador: versión con clases anónimas
 
 ```java
 Collections.sort(personas,
@@ -4975,6 +5322,9 @@ Collections.sort(personas,
 );
 ```
 
+
+<div class="cols">
+<div>
 
 __Clases anónimas (Java 7)__
 
@@ -4988,7 +5338,6 @@ public class ComparatorTest {
         return p1.getLastname().compareTo(p2.getLastname());
       }
     });
-
     System.out.println("=== Sorted Asc Lastname ===");
     for(Person p: personList){
       p.printName();
@@ -4999,7 +5348,6 @@ public class ComparatorTest {
         return p2.getLastname().compareTo(p1.getLastname());
       }
     });
-
     System.out.println("=== Sorted Desc Lastname ===");
     for(Person p: personList){
       p.printName();
@@ -5008,6 +5356,8 @@ public class ComparatorTest {
 }
 ```
 
+</div>
+<div>
 
 __Lambdas (Java 8)__
 
@@ -5021,7 +5371,6 @@ public class ComparatorTest {
     System.out.println("=== Sorted Asc Lastname ===");
     Collections.sort(personList, (Person p1, Person p2) ->
       p1.getLastname().compareTo(p2.getLastname()));
-
     for(Person p:personList){
       p.printName();
     }
@@ -5030,7 +5379,6 @@ public class ComparatorTest {
     System.out.println("=== Sorted Desc Lastname ===");
     Collections.sort(personList, (p1,  p2) ->
       p2.getLastname().compareTo(p1.getLastname()));
-
     for(Person p:personList){
       p.printName();
     }
@@ -5038,116 +5386,234 @@ public class ComparatorTest {
 }
 ```
 
+</div>
+</div>
 
-### Clases locales o internas
 
-- Son clases locales (_inner classes_) declaradas sin nombre, dentro de métodos
-- Pueden hacer referencia a identificadores declarados en la clase y a variables de solo lectura (`final`) del método en que se declaran
-- Sirven para clases que solo aparecen una vez en la aplicación
+### Clases Internas (_inner_)
 
+<div class="cols">
+<div>
+
+- Son clases locales anónimas, declaradas dentro de métodos
+- Pueden hacer referencia a identificadores declarados en la clase contenedora y a variables locales `final` (o _effectively final_) del método en que se declaran
+- Aglutinan funcionalidades que solo se necesitan una vez en la aplicación
+
+$\triangleright$ Viven en el _heap_
+$\triangleright$ Capturan el valor de las variables locales
+
+</div>
+<div>
 
 ```java
-public class EnclosingClass {
-  public class InnerClass {
-    public int incrementAndReturnCounter() {
+public class Enclosing {
+  public class Inner {
+    public int incrementAndReturn() {
       return counter++;
     }
   }
 
-  private int counter;
-  {
-    counter = 0;
-  }
+  private int counter = 0;
 
   public int getCounter() {
     return counter;
   }
 
   public static void main(String[] args) {
-    EnclosingClass enclosingClassInstance = new EnclosingClass();
-    EnclosingClass.InnerClass innerClassInstance =
-      enclosingClassInstance.new InnerClass();
-    for( int i = enclosingClassInstance.getCounter();
-         (i = innerClassInstance.incrementAndReturnCounter()) < 10; ) {
-      System.out.println(i);
+    var anEnclosing = new Enclosing();
+    var anInner = anEnclosing.new Inner();
+    int value;
+
+    while ((value = inner.incrementAndReturn()) < 10)
+    {
+        System.out.println(value);
     }
   }
 }
 ```
 
+</div>
+</div>
+
 
 ### Predicados
 
-En Java 8, inspirado por la biblioteca _guava_, se incluyen predicados como una forma de interfaz funcional.
+#### Ejemplo: partidos de una competición
 
-En la biblioteca Guava, los [`Iterators`](https://google.github.io/guava/releases/15.0/api/docs/com/google/common/collect/Iterators.html) tienen un método [`filter`](https://google.github.io/guava/releases/15.0/api/docs/com/google/common/collect/Iterators.html#filter) que recibe un objeto de tipo [`Predicate`](https://google.github.io/guava/releases/15.0/api/docs/com/google/common/base/Predicate.html).
+Queremos iterar sobre una colección de partidos de una competición y quedarnos sólo con los partidos que enfrentan a dos equipos concretos.
 
-Desde Java 8 existe una clase similar [`Predicate`](https://docs.oracle.com/javase/8/docs/api/java/util/function/Predicate.html).
+- ¿Cómo implementamos el __criterio__ de filtrado?
+- ¿Cómo resolvemos el retorno de `null` en algún paso de la iteración?
 
 
-### Ejemplo: partidos de una competición
+#### Guava y Java
 
-__Con clases anónimas:__
+Guava es una aitigua biblioteca open source de Google que proporciona una amplia gama de utilidades para Java, incluyendo colecciones, cachés, primitivas, concurrencia, etc.
+
+Iteración:
+
+- Guava usa una interfaz funcional [`com.google.common.base.Predicate`](https://google.github.io/guava/releases/15.0/api/docs/com/google/common/base/Predicate.html) (inspiraron la clase [`java.util.function.Predicate`](https://docs.oracle.com/javase/8/docs/api/java/util/function/Predicate.html) de Java) —Guava define `Predicate::apply()` y Java define `Predicate::test()`
+- Guava añade un método [`filter`](https://google.github.io/guava/releases/15.0/api/docs/com/google/common/collect/Iterators.html#filter) a los [`Iterators`](https://google.github.io/guava/releases/15.0/api/docs/com/google/common/collect/Iterators.html), que recibe un `Predicate` como criterio de filtrado
+- Guava no comprueba `null` en la programación fluent
+
+
+#### Ejemplo con Guava: null en la iteración
 
 ```java
-final Predicate<Match> condition = new Predicate<Match>() {
-  final Team team1 = new Team("Cadiz CF");
-  final Team team2 = new Team("RC Betis");
-  public boolean apply(Match match) {
-    return match.getLocalTeam().equals(team1) &&
-           match.getVisitingTeam().equals(team2);
-  }
+import java.util.Iterator;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterators;
+
+Iterator<Match> matches = repository.findMatches(); // puede ser null
+
+final Predicate<Match> condition = new Predicate<>() {
+    final Team team1 = new Team("Cadiz CF");
+    final Team team2 = new Team("RC Betis");
+
+    @Override
+    public boolean apply(Match match) {
+        return match.getLocalTeam().equals(team1)
+            && match.getVisitingTeam().equals(team2);
+    }
 };
-Iterator matchesByTeam = Iterators.filter(matches, condition);
-for (matches: matchesByTeam) { ... };
+
+Iterator<Match> matchesByTeam =
+    Iterators.filter(matches, condition); // 💥 Excepción si matches == null
+
+while (matchesByTeam.hasNext()) {
+    System.out.println(matchesByTeam.next());
+}
 ```
 
 
-__Sin clases anónimas:__
+Supongamos que `matches` se obtiene de una API heredada que puede devolver `null`. Entonces al hacer...
 
 ```java
-class FilterByTeam implements Predicate<Match> {
-  Team localTeam, visitingTeam;
+Iterator<Match> matchesByTeam = Iterators.filter(matches, condition);
+```
 
-  public FilterByTeam(Team t1, Team t2) {
-      this.localTeam = t1;
-      this.visitingTeam = t2;
+- El pipeline espera un iterador, no un `null`.
+- Si `matches` es `null`, se lanzará una excepción `NullPointerException` al intentar iterar sobre `matchesByTeam`.
+
+
+#### Ejemplo con Java 9+: null en la iteración
+
+```java
+import java.util.Iterator;
+import java.util.Spliterators;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+
+class MatchByTeamsPredicate implements Predicate<Match> {
+  private final Team localTeam;
+  private final Team visitingTeam;
+
+  MatchByTeamsPredicate(Team localTeam, Team visitingTeam) {
+    this.localTeam = localTeam;
+    this.visitingTeam = visitingTeam;
   }
 
-  public boolean apply(Match match) {
-      return match.getLocalTeam().equals(t1) ||
-             match.getVisitingTeam().equals(t2);
+  @Override
+  public boolean test(Match match) {
+    return match.getLocalTeam().equals(localTeam)
+        && match.getVisitingTeam().equals(visitingTeam);
   }
 }
 ```
 
 
-__Guava y Java 8__
+```java
+Stream<Match> toStream(Iterator<Match> iterator) {
+    return StreamSupport.stream(
+        Spliterators.spliteratorUnknownSize(iterator, 0),
+        false
+    );
+}
 
-Guava emplea `FluentIterable` para poder encadenar varios `Iterable` sin que haya problemas con el retorno de null en la programación _fluent_. La biblioteca estándar de Java 8 sustituye la solución del `FluentIterable` por los `Predicate` o por el uso de `StreamSupport` para resolver dicho problema.
+void main() {
+  Iterator<Match> matches = repository.findMatches(); // puede ser null
+
+  Predicate<Match> condition =
+      new MatchByTeamsPredicate(
+          new Team("Cadiz CF"),
+          new Team("RC Betis")
+      );
+
+  Stream.ofNullable(matches)
+      .flatMap(this::toStream)
+      .filter(condition)
+      .forEach(System.out::println);
+}
+```
+
+
+### Guava y Java 8
+
+Programación **fluent** y retorno de `null`en los iterables:
+
+- Guava usa `FluentIterable` para encadenar varios `Iterable`
+- Java 8 sustituye el `FluentIterable` por los `Predicate` o por el uso de `StreamSupport`
+- Java 9 introduce `Stream.ofNullable()`
 
 Lectura recomendada: [From Guava's FluentIterable via StreamSupport to Java 8 Streams](https://verhoevenv.github.io/2015/08/18/fluentiterable-streamsupport-java8.html)
 
+Colecciones **immutables**:
 
-Comprobar que, en un cierto grupo de la competición, un mismo partido no está repetido ni se enfrenta un equipo contra sí mismo:
+- Implementaciones immutables de colecciones: `ImmutableList`, `ImmutableSet`, `ImmutableMap`... en Guava
+- Adoptadas con `List.of()`, `Set.of()`, `Map.of()`... en Java 8
+
+
+#### Ejemplo con Java 8+: criterios de filtrado
+
+Comprobar que un mismo partido (_fixture_) no está repetido ni se enfrenta un equipo contra sí mismo en un grupo de la competición...
+
+
+```java
+import java.util.List;
+import java.util.function.Predicate;
+
+class FixturePredicate implements Predicate<Match> {
+    private final Team localTeam;
+    private final Team visitingTeam;
+
+    public FixturePredicate(Team local, Team visiting) {
+        this.localTeam = local; this.visitingTeam = visiting;
+    }
+
+    @Override
+    public boolean test(Match match) {
+        return match.getLocalTeam().equals(localTeam)
+            && match.getVisitingTeam().equals(visitingTeam);
+    }
+}
+
+private Predicate<Match> fixture(Team localTeam, Team visitingTeam) {
+    return new FixturePredicate(localTeam, visitingTeam);
+}
+```
+
 
 ```java
 private void checkMatchesInGroup(List<Match> matchesInGroup) {
-  for (Match match: matchesInGroup) {
-      Team t1 = match.getLocalTeam();
-      Team t2 = match.getVisitingTeam();
-      assertNotSame(t1, t2);
-      List<Match> firstLeg =
-          FluentIterable.from(matchesInGroup)
-                        .filter(new FilterByTeam(t1, t2))
-                        .toImmutableList();
-      assertTrue(firstLeg.size()==1);
-      List<Match> secondLeg =
-          FluentIterable.from(matchesInGroup)
-                        .filter(new FilterByTeam(t2, t1))
-                        .toImmutableList();
-      assertTrue(secondLeg.size()==0);
-  }
+    for (Match match : matchesInGroup) {
+        Team t1 = match.getLocalTeam();
+        Team t2 = match.getVisitingTeam();
+
+        assertNotSame(t1, t2);
+
+        List<Match> firstLeg = matchesInGroup.stream()
+            .filter(fixture(t1, t2))
+            .toList();
+
+        assertTrue(firstLeg.size() == 1);
+
+        List<Match> secondLeg = matchesInGroup.stream()
+            .filter(fixture(t2, t1))
+            .toList();
+
+        assertTrue(secondLeg.size() == 0);
+    }
 }
 ```
 
@@ -5327,7 +5793,7 @@ __Tutoriales recomendado:__
 
 ##### Captura de variables en lambdas
 
-Una expresión lambda en Java puede **capturar** (o no)...
+Una expresión lambda en Java puede __capturar__ (o no)...
 
 - variables de instancia no locales (atributos de la clase contenedora) y
 - variables locales (declaradas o no `final`, pero cuyo valor no es modificado)
@@ -5391,18 +5857,18 @@ public class LambdaInstanceCapturing implements Runnable {
 
 ##### Lambdas y clases anónimas internas
 
-En Java, una expresión lambda y una clase anónima interna (_inner class_) tienen un propósito similar, pero son diferentes en un aspecto: el **ámbito** (_scope_) de la definición de las variables locales.
+En Java, una expresión lambda y una _inner class_ tienen un propósito similar, pero son diferentes en el __ámbito__ (_scope_) de definición de las variables locales.
 
-- Cuando se usa una inner class, se crea un __nuevo ámbito__ para dicha clase.
-  - Se pueden ocultar las variables locales para el ámbito contenedor instanciando nuevas variables con el mismo nombre.
-  - También se puede usar la palabra reservada `this` dentro de una clase anónima para hacer referencia a su instancia.
+- Con una inner class se crea un __nuevo ámbito__ para la clase
+  - Se pueden ocultar las variables locales para el ámbito contenedor instanciando nuevas variables con el mismo nombre
+  - También se puede usar `this` dentro de una clase anónima para hacer referencia a su instancia
 
-- Sin embargo, las expresiones lambda trabajan con el __ámbito contenedor__.
-  - No se pueden ocultar las variables del ámbito contenedor dentro del cuerpo de la expresión lambda.
-  - `this` hace referencia a una instancia de la clase contenedora.
+- Las expresiones lambda trabajan con el __ámbito contenedor__
+  - No se pueden ocultar las variables del ámbito contenedor dentro del cuerpo de la expresión lambda
+  - `this` hace referencia a una instancia de la clase contenedora
 
 
-En el ejemplo siguiente, ¿qué valor devuelve `scopeExperiment()`?:
+En el ejemplo siguiente, ¿qué valor devuelve `scopeExperiment()`?
 
 ```java
 @FunctionalInterface
@@ -5415,12 +5881,12 @@ private String variable = "Valor de la contenedora";
 public String scopeExperiment() {
 
   ClaseFuncional unaInnerClass = new ClaseFuncional() {
-      String variable = "Valor de la inner class";
-      @Override
-      public String method(String string) {
-          return this.variable;
-            /*  Con o sin this, no hay lambdas ni variables libres */
-      }
+    String variable = "Valor de la inner class";
+    @Override
+    public String method(String string) {
+      return this.variable;
+      /*  Con o sin this, no hay lambdas ni variables libres */
+    }
   };
   String resultadoInnerClass = unaInnerClass.method("");
 
@@ -5429,14 +5895,14 @@ public String scopeExperiment() {
 ```
 
 
-El valor será:
+El valor devuelto será:
 
 ```text
 resultadoInnerClass  = Valor de la inner class
 ```
 
 
-En el ejemplo siguiente, ¿qué valor devuelve `scopeExperiment()`?:
+En el ejemplo siguiente, ¿qué valor devuelve `scopeExperiment()`?
 
 ```java
 @FunctionalInterface
@@ -5449,10 +5915,10 @@ private String variable = "Valor de la contenedora";
 public String scopeExperiment() {
 
   ClaseFuncional unaLambda = parametro -> {
-      String variable= "Valor de la lambda";
-      return this.variable;
-        /* Con this, la clausura de la variable libre se produce
-           con el valor de ClaseFuncional::variable */
+    String variable= "Valor de la lambda";
+    return this.variable;
+    /* Con this, la clausura de la variable libre se produce
+       con el valor de ClaseFuncional::variable */
   };
   String resultadoLambda = unaLambda.method("");
 
@@ -5472,21 +5938,30 @@ resultadoLambda = Valor de la contenedora
 
 ##### Bloques (_blocks_)
 
+<div class="cols">
+<div>
+
 __Sintaxis `do` ... `end`__
 
-  ```ruby
-  some_list = [ 10, 20, 30 ]
-  some_list.map do |i|
-      i += 1
-  end
-  ```
+```ruby
+some_list = [ 10, 20, 30 ]
+some_list.map do |i|
+    i += 1
+end
+```
+
+</div>
+<div>
 
 __Sintaxis `{` ... `}`__
 
-  ```ruby
-  some_list = [ 10, 20, 30 ]
-  some_list.map { |i| i += 1 }
-  ```
+```ruby
+some_list = [ 10, 20, 30 ]
+some_list.map { |i| i += 1 }
+```
+
+</div>
+</div>
 
 El método `map` itera y aplica un bloque repetitivamente a cada elemento de una colección (representado por el parámetro `i`)
 
@@ -5495,32 +5970,37 @@ El método `map` itera y aplica un bloque repetitivamente a cada elemento de una
 
 __Sin bloques:__
 
+```ruby
+class SongList
+  def with_title(title)
+    for i in 0...@songs.length
+      return @songs[i] if title == @songs[i].name
+    end
+    return nil
+  end
+end
+```
 
-  ```ruby
-  class SongList
-    def with_title(title)
-      for i in 0...@songs.length
-        return @songs[i] if title == @songs[i].name
-      end
-      return nil
+
+<div class="cols">
+<div>
+
+__Con bloques `do` ... `end`:__
+
+```ruby
+class SongList
+  def with_title(title)
+    @songs.find do |song|
+      title == song.name
     end
   end
-  ```
+end
+```
 
-__Con bloques (sintaxis `do` ... `end`):__
+</div>
+<div>
 
-  ```ruby
-  class SongList
-    def with_title(title)
-      @songs.find do |song|
-        title == song.name
-      end
-    end
-  end
-  ```
-
-
-__Con bloques (sintaxis `{` ... `}`):__
+__Con bloques `{` ... `}`:__
 
   ```ruby
   class SongList
@@ -5530,6 +6010,9 @@ __Con bloques (sintaxis `{` ... `}`):__
   end
   ```
 
+</div>
+</div>
+
 El método `find` itera y aplica el test del bloque a cada elemento `song` de la colección.
 
 
@@ -5537,12 +6020,13 @@ El método `find` itera y aplica el test del bloque a cada elemento `song` de la
 
 - El bloque debe aparecer al lado de una llamada a método
 - No se ejecuta el bloque, sino que se recuerda el contexto (variables locales, objeto actual, etc.) en que aparece
-- Cuando se ejecuta el método, el bloque es invocado donde aparezca `yield`
-- El control vuelve al método después del `yield`
 - Al bloque se le pueden pasar parámetros
 
 
-**Ejemplo: fibonacci**
+__Ejemplo: fibonacci__
+
+<div class="cols">
+<div>
 
 ```ruby
 def fib_up_to(max)
@@ -5552,13 +6036,27 @@ def fib_up_to(max)
     i1, i2 = i2, i1+i2
   end
 end
-fib_up_to(1000) {|f| print f, " " }
+fib_up_to(200) {|f| print f, " " }
 
-#Salida => 1 1 2 3 5 8 13 21 34 55 89 144 233 377 610 987
+#Salida => 1 1 2 3 5 8 13 21 34 55 89 144
 ```
 
+</div>
+<div>
 
-**Ejemplo de `yield`:**
+Ejecución con `yield`:
+
+- Cuando se ejecuta el método, el bloque es invocado donde aparezca `yield`
+- El control vuelve al método después del `yield`
+
+</div>
+</div>
+
+
+__Ejemplos de `yield`:__
+
+<div class="cols">
+<div>
 
 ```ruby
 def three_times
@@ -5569,8 +6067,8 @@ end
 three_times { puts "Hello" }
 ```
 
-
-**Ejemplo: implementación de `Array.find`**
+</div>
+<div>
 
 ```ruby
 class Array
@@ -5583,6 +6081,9 @@ class Array
   end
 end
 ```
+
+</div>
+</div>
 
 
 **Ejemplos: iterar con bloques**
@@ -5706,7 +6207,6 @@ end
     my_proc.call
     puts "After proc"
   end
-
   puts call_proc
   # Prints "Before proc" but not "After proc"
 
@@ -5716,13 +6216,12 @@ end
     my_lambda.call
     puts "After lambda"
   end
-
   puts call_lambda
   # Prints "Before lambda" and "After lambda"
   ```
 
 
-**Diferencias entre `Proc` y `lambda`:**
+__Diferencias entre `Proc` y `lambda`:__
 
 - Las lambdas se definen con `-> {}` y los procs con `Proc.new {}`
 - Los `Proc` retornan del método actual, las lambdas retornan de la propia función lambda
@@ -5736,7 +6235,7 @@ end
 - El bloque (realmente un objeto `Proc`) se pasa como una especie de parámetro no declarado
 
 
-**Ejemplos de paso de bloques:**
+__Ejemplos de paso de bloques:__
 
 - Llamada a un bloque sin parámetros
 
@@ -5857,25 +6356,21 @@ Las operaciones sobre un stream pueden ser intermediarias o terminales
 - Las operaciones __terminales__ son nulas o devuelven un resultado de un tipo diferente, normalmente un valor agregado a partir de cómputos anteriores
 
 
-### Ejemplo v0.1
+#### Ejemplo v0.1
 
 \[Probar en [paiza.io](https://paiza.io/projects/K6lkbmKSYAKnF0o0fo0oEQ?language=java)\]
 
 ```java
-public class Main{
-  public static void main(String []args){
+void main() {
+  List<String> myList =
+    Arrays.asList("a1", "a2", "b1", "c2", "c1");
 
-    List<String> myList =
-      Arrays.asList("a1", "a2", "b1", "c2", "c1");
-
-    myList
-      .stream()
-      .filter(s -> s.startsWith("c"))
-      .map(String::toUpperCase)
-      .sorted()
-      .forEach(System.out::println);
-
-  }
+  myList
+    .stream()
+    .filter(s -> s.startsWith("c"))
+    .map(String::toUpperCase)
+    .sorted()
+    .forEach(System.out::println);
 }
 ```
 
@@ -5898,24 +6393,68 @@ En el ejemplo anterior, se puede observar que:
 - Sólo se filtran ciertos elementos, se transforman a mayúsculas, se ordenan (por defecto, alfabéticamente) y se imprimen por pantalla
 
 
-### Ejemplo v0.2
+#### Ejemplo v0.2
 
 ```java
-List<String> myList =
-  Arrays.asList("a1", "a2", "b1", "c2", "c1");
+void main() {
+  List<String> myList =
+    Arrays.asList("a1", "a2", "b1", "c2", "c1");
 
-myList
-  .stream()
-  .filter(s -> s.startsWith("c"))
-  .map(String::toUpperCase)
-  .sorted()
-  .forEach(System.out::println);
+  myList
+    .stream()
+    .filter(s -> s.startsWith("c"))
+    .map(String::toUpperCase)
+    .sorted()
+    .forEach(System.out::println);
 
-myList
-  .stream()
-  .reduce( (a,b) -> a + " " + b )
-  .ifPresent(System.out::println);
+  myList
+    .stream()
+    .reduce( (a,b) -> a + " " + b )
+    .ifPresent(System.out::println);
+}
 ```
+
+
+#### Ejemplo práctico: partidos de una competición con lambdas
+
+Reutilizamos el caso de filtrado de partidos que vimos en el apartado de __Predicados__, pero implementando `fixture()` como una factoría con una expresión lambda, en lugar de una clase concreta:
+
+```java
+import java.util.List;
+import java.util.function.Predicate;
+
+private Predicate<Match> fixture(Team local, Team visiting) {
+    return match -> match.getLocalTeam().equals(local)
+                    && match.getVisitingTeam().equals(visiting);
+}
+```
+
+La lambda captura los parámetros `local` y `visiting` y devuelve un `Predicate<Match>` funcional. No hace falta clase auxiliar; la lógica de filtrado está integrada en la expresión lambda.
+
+
+Ahora usamos la factoría en un stream para validar que en una competición no hay partidos repetidos ni un equipo enfrentado a sí mismo:
+
+```java
+private void checkMatchesInGroup(List<Match> matchesInGroup) {
+  for (Match match : matchesInGroup) {
+    Team t1 = match.getLocalTeam();
+    Team t2 = match.getVisitingTeam();
+    assertNotSame(t1, t2); // no juega contra sí mismo
+
+    List<Match> firstLeg = matchesInGroup.stream()
+        .filter(fixture(t1, t2))
+        .toList();
+    assertTrue(firstLeg.size() == 1);
+
+    List<Match> secondLeg = matchesInGroup.stream()
+        .filter(fixture(t2, t1))
+        .toList();
+    assertTrue(secondLeg.size() == 0);
+  }
+}
+```
+
+El pipeline de streams no cambia: sigue siendo `stream().filter(...).toList()`. Lo que cambia es que ahora el criterio de filtrado (`fixture(...)`) devuelve una **lambda inline** en lugar de una instancia de una clase que implementa `Predicate`.
 
 
 ### Más información
@@ -6392,6 +6931,7 @@ end -- class ACCOUNT
 
 ### Contratos en Java
 
+- [OpenJML](https://www.openjml.org/), lenguaje de especificación que permite chequear programas en Java con anotaciones para especificar contratos: `@requires`, `@ensures`, `@loop_invariant`, `@old`, etc.
 - _iContract_, inactiva, recuperada en Java Contract Suite o [JContractS](http://jcontracts.sourceforge.net/)
 - _Contracts for Java_ o [Cofoja](https://github.com/nhatminhle/cofoja)
 - Usar [ApectJ Oval](https://sebthom.github.io/oval/USERGUIDE.html#programming-by-contract) para programar contratos
@@ -6411,7 +6951,7 @@ end -- class ACCOUNT
   } ensuring (_ * y == x)
   ```
 
-- Ejercicio: completar el tutorial en Scala sobre [Design by Contract](https://madusudanan.com/blog/scala-tutorials-part-29-design-by-contract/).
+- Ejercicio: Pedir a Copilot un tutorial de Design by Contract en Scala.
 
 
 ### ¿Hay contratos en C++?
@@ -6424,9 +6964,9 @@ Para interesados:
 - Ver el video de J. D. García sobre [Contracts programming after C++17](https://www.youtube.com/watch?v=IBas3S2HtdU): Desde el minuto 4'10''
 
 
-#### Ejemplo: Java + iContract
+#### Ejemplo: Java + anotaciones
 
-Java no permite especificar contratos (los _assert_ no son lo mismo). Así que hay que utilizar extensiones como _iContract_
+Java no permite especificar contratos (los _assert_ no son lo mismo). Así que hay que utilizar extensiones al código Java con anotaciones, como _OpenJML_ o _iContract_:
 
 
 __Ejemplo__: Inserción en una lista ordenada
@@ -6454,7 +6994,39 @@ public class OrderedList {
 - Una postcondición puede necesitar expresarse con parámetros pasados a un método para verificar un comportamiento correcto.
 - Si el método puede cambiar el valor del parámetro pasado (parámetro mutable), el contrato puede incumplirse.
 
-  - Opción en Java: Usar `variable@pre` de _iContract_
+  - Opción: Usar `variable@pre` de _iContract_
+
+
+#### Ejemplo: Java + OpenJML
+
+El mismo contrato puede expresarse en JML para que OpenJML lo verifique:
+
+```java
+public class OrderedList {
+  /*@ public invariant
+    @   (\forall int i; 1 <= i < elements.size();
+    @      elements.get(i - 1).value().compareTo(elements.get(i).value()) < 0);
+    @*/
+
+  /*@ requires !contains(aNode);
+    @ ensures contains(aNode);
+    @ ensures (\forall int i; 1 <= i < elements.size();
+    @      elements.get(i - 1).value().compareTo(elements.get(i).value()) < 0);
+    @*/
+  public void insertNode(final Node aNode) {
+    // ...
+  }
+}
+```
+
+
+#### OpenJML: anotaciones
+
+- `requires`: expresa precondiciones que deben cumplirse antes de invocar un método.
+- `ensures`: expresa postcondiciones que deben cumplirse al terminar normalmente.
+- `invariant`: propiedad que debe mantenerse siempre cierta para los objetos de la clase.
+- `\result` y `\old(expr)`: permiten referirse al valor devuelto y al valor previo de una expresión.
+- `\forall` indica que la propiedad debe cumplirse para todos los valores que satisfacen la condición indicada.
 
 
 ### _Dead programs tell no lies_

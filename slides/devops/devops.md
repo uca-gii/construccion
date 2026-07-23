@@ -1,13 +1,19 @@
+## Índice
+
+- [Slides de teoría para DevOps - Cultura DevOps](#slides-de-teoría-para-devops-cultura-devops)
+- [Slides de teoría para DevOps - CI/CD](#slides-de-teoría-para-devops-cicd)
+- [Slides de teoría para 'DevOps' - Branching patterns](#slides-de-teoría-para-devops-branching-patterns)
+- [Prácticas de Sistemas de Control de Versiones](#prácticas-de-sistemas-de-control-de-versiones)
+- [Prácticas de Terraform para Infraestructura Docker](#prácticas-de-terraform-para-infraestructura-docker)
+- [Prácticas de Jenkins](#prácticas-de-jenkins)
+- [Gitflow](#gitflow)
 
 <!-- Source: cultura.md -->
 # CULTURA DEVOPS
 
----
-
 
 **¿Qué es DevOps?**
 
----
 
 ## ¿Qué es DevOps?
 
@@ -24,7 +30,6 @@
   - La agilidad llega a los procesos de negocio
   - Falta incluir a los sysadmin
 
-<!--
 El foco principal de DevOps es maximizar el flujo de creación de software: desde la concepción, hasta el desarrollo y la entrega.
 
 - Los desarrolladores quieren innovar y entregar más rápido
@@ -39,22 +44,18 @@ La cultura DevOps  es un conjunto de prácticas que reducen las barreras entre d
 La cultura DevOps es como una extensión de los procesos ágiles a todos los equipos, tanto desarrolladores como negocios y operaciones.
 
 - DevOps está muy influenciado por la tendencia al lean manufacturing
--->
 
----
 
 | 📙 | Definiciones |
 ----:|:----
 **Desarrollo** |  Se refiere al proceso de crear software, donde los desarrolladores escriben y actualizan el código fuente de las aplicaciones.
 **Operaciones** | Se centran en la gestión y mantenimiento de los sistemas y la infraestructura en los que se ejecuta el software. Incluye tareas como la configuración, el monitoreo y la resolución de problemas.
 
----
 
 ## ¿Qué es DevOps?
 
 <iframe width="1000" height="684" src="https://www.youtube-nocookie.com/embed/Xrgk023l4lI" title="DevOps In 5 Minutes | What Is DevOps?| DevOps Explained | DevOps Tutorial For Beginners |Simplilearn" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 
----
 
 ## Elementos clave para la comunicación y colaboración
 
@@ -66,7 +67,6 @@ La cultura DevOps es como una extensión de los procesos ágiles a todos los equ
 - Feedback de usuarios
 - Monitorización de apps/infraestructura
 
-<!--
 Para facilitar la colaboración y comunicación entre Devs y Ops hacen falta varias cosas:
 
 - Despliegues frecuentes
@@ -74,29 +74,20 @@ Para facilitar la colaboración y comunicación entre Devs y Ops hacen falta var
 - Prácticas de integración y entrega continuas (CI/CD)
 - Recopilar el feedback de los usuarios tras cada nuevo despliegue.
 - Monitorizar las aplicaciones y la infraestructura.
--->
-
----
 
 
 **¿Qué significan **integración**, **entrega** (_delivery_) y **despliegue** (_deployment_)?**
-
----
 
 
 _On your marks, get set,... go!_
 
 ![Background image](img/on-your-marks.jpg)
 
-<!--
-**Notes**
-
-El despliegue es el "¡ya!" en "preparados, listos... ¡ya!"
+>[!NOTE]
+>El despliegue es el "¡ya!" en "preparados, listos... ¡ya!"
 
 La integración podría ser el "¡a sus puestos!"
--->
 
----
 
 | 📙 | Definiciones |
 ----:|:----
@@ -104,22 +95,16 @@ La integración podría ser el "¡a sus puestos!"
  ****Entrega****  continua  | Trasladar la aplicación de software desde el entorno de desarrollo y dejarla **disponible para** su despliegue en un entorno de producción. Incluye pruebas, empaquetado y preparación de cada _**release**_.
 ****Despliegue****    | Instalación de una aplicación en su entorno de **producción**, ya sea en un servidor, un conjunto de servidores, un contenedor, la nube, etc.
 
----
-
 
 **¿DevOps es un nuevo rol?**
 
 ![Background image](img/superhero.png)
 
-<!--
-**Notes**
-
-Muchos piensan que DevOps es un rol de TI, un híbrido entre desarrollador y administrador de sistemas.
+>[!NOTE]
+>Muchos piensan que DevOps es un rol de TI, un híbrido entre desarrollador y administrador de sistemas.
 
 El problema de este pensamiento es que las empresas tienden a crear un nuevo silo llamado DevOps e intentan llenarlo con superadministradores que saben mágicamente de ambas cosas.
--->
 
----
 
 ## ¿Qué no es DevOps?
 
@@ -132,7 +117,6 @@ El problema de este pensamiento es que las empresas tienden a crear un nuevo sil
   - No exclusivas
   - Proceso colaborativo
 
-<!--
 Más que un rol, DevOps es un cambio cultural en la forma en que se crea software.
 
 El objetivo no es contratar personas superhumanas, sino construir sistemas con una nueva mentalidad:
@@ -144,14 +128,10 @@ El objetivo no es contratar personas superhumanas, sino construir sistemas con u
 DevOps está más centrado en la colaboración entre equipos que en la creación de un nuevo rol.
 
 DevOps es más una cultura, indica qué conseguir. Pero habitualmente se suele mezclar con el cómo y se convierte en un rol.
--->
-
----
 
 
 **¿Por qué DevOps?**
 
----
 
 ## Motivación
 
@@ -166,10 +146,8 @@ DevOps es más una cultura, indica qué conseguir. Pero habitualmente se suele m
 - Arquitectura poco sólida
 - Requisitos no funcionales poco solventes
 
-<!--
-**Notes**
-
-El movimiento DevOps surgió de la frustración de muchos profesionales que trabajaban con sistemas frágiles.
+>[!NOTE]
+>El movimiento DevOps surgió de la frustración de muchos profesionales que trabajaban con sistemas frágiles.
 
 Frágiles porque el software se construye en silos donde los diferentes equipos no se comunican entre sí de una forma eficaz.
 
@@ -180,11 +158,10 @@ Los despliegues son complejos y propensos a errores.
 Los sistemas, cargados de deuda técnica, originan un trabajo no planificado.
 
 Los desarrolladores se ven obligados a tomar atajos, que suelen dar lugar a una arquitectura poco sólida y un retraso en los requisitos no funcionales, como la seguridad y la mantenibilidad.
--->
+
 
 ![Background image](img/punch.png)
 
----
 
 | 📙 | Definiciones |
 ----:|:----
@@ -192,7 +169,6 @@ Los desarrolladores se ven obligados a tomar atajos, que suelen dar lugar a una 
  <emph>Requisitos No Funcionales (NFR) | Aspectos que no están relacionados directamente con la funcionalidad de un sistema software, sino con características no directamente vinculados a sus funciones específicas (rendimiento, usabilidad, confiabilidad, seguridad, eficiencia, etc.)
  <emph>Arquitectura software | Estructura y diseño organizativo de un sistema de software, sobre cómo sus <emph>componentes** interactúan entre sí y cómo se organizan para lograr sus objetivos de manera efectiva. Proporciona un marco conceptual para abordar aspectos de los NFR.
 
----
 
 ## Cultura DevOps
 
@@ -206,17 +182,13 @@ Los desarrolladores se ven obligados a tomar atajos, que suelen dar lugar a una 
 - Personas en Colaboración
 - Productos con Herramientas
 
-<!--
-**Notes**
-
-¿Cuál es el proceso? Muy similar a los procesos ágiles, incluyendo los elementos clave descritos antes: CI/CD, monitorización, etc.
+>[!NOTE]
+>¿Cuál es el proceso? Muy similar a los procesos ágiles, incluyendo los elementos clave descritos antes: CI/CD, monitorización, etc.
 
 ¿Qué hacen las personas? Colaborar, comunicarse y compartir responsabilidades.
 
 ¿Cómo se crea el producto? Usando herramientas que automaticen todos los elementos del proceso y faciliten la colaboración y la comunicación.
--->
 
----
 
 ## CI/CD: Continous Integration / Continuous Delivery
 
@@ -228,51 +200,38 @@ Los desarrolladores se ven obligados a tomar atajos, que suelen dar lugar a una 
 
 Cada proceso tiene su propio **pipeline**
 
----
 
 ### Pipeline de CI
 
 ![CI pipeline](img/ci-pipeline.png)
 
-<!--
-**Notes**
+>[!NOTE]
+>CI es la práctica de construir y probar las aplicaciones en cada nueva versión.
 
-CI es la práctica de construir y probar las aplicaciones en cada nueva versión.
--->
-
----
 
 ### Pipeline de CD
 
 ![CD pipeline](img/cd-pipeline.png)
 
-<!--
-**Notes**
-
-CD añade pruebas automáticas y despliegue automático al proceso de CI.
+>[!NOTE]
+>CD añade pruebas automáticas y despliegue automático al proceso de CI.
 
 Gracias a CD, el software entregado debe funcionar siempre.
 
 Todos los cambios que se incorporan en un build pueden formar parte de un candidato a release.
 
 Antiguamente, los cambios pequeños solían tener que esperar a que se completaran otros muchos antes de ser empaquetados en una release. Siguiendo ese modelo, se suponía que el software era incorrecto hasta que era validado por profesionales de QA. Todas las pruebas se realizaban después del desarrollo, la responsabilidad de la calidad recaía exclusivamente en el equipo de QA.
--->
 
----
 
 ### Continuous Deployment
 
 ![CDEP pipeline](img/cdep-pipeline.png)
 
-<!--
-**Notes**
-
-El despliegue continuo es la práctica de desplegar automáticamente el software en producción después de cada cambio.
+>[!NOTE]
+>El despliegue continuo es la práctica de desplegar automáticamente el software en producción después de cada cambio.
 
 La entrega es manual, el despliegue es automático.
--->
 
----
 
 | 📙 | Definiciones |
 ----:|:----
@@ -280,7 +239,6 @@ La entrega es manual, el despliegue es automático.
 **Pipeline**   | un conjunto automatizado y secuencial de procesos que permiten la ejecución de tareas específicas. Analogía de una línea de montaje de la industria de fabricación
 **Staging** | entorno de prueba que replica el entorno de producción para realizar pruebas finales (con usuarios) antes del despliegue
 
----
 
 | 📙 | Definiciones |
 ----:|:----
@@ -288,7 +246,6 @@ La entrega es manual, el despliegue es automático.
 **Release** | una versión específica y completa de una aplicación o software que se considera lista para ser distribuida y utilizada por los usuarios finales
 **Release Candidate (RC)** | _release_ con el potencial de convertirse en la versión final o lanzamiento si no se encuentran problemas significativos durante las pruebas
 
----
 
 ![Background image](img/devops_practices_side.png)
 
@@ -298,7 +255,6 @@ La entrega es manual, el despliegue es automático.
 2. Automatizar los despliegues: **Provisioning**
 3. Medir, monitorizar y experimentar: **Feature flags**
 
----
 
 ### 1. Automatizar la infrastructura
 
@@ -311,19 +267,15 @@ La entrega es manual, el despliegue es automático.
 - Provisioning
 - Feature flags
 
-<!--
-**Notes**
-
-IaC es el proceso de escribir el código de las etapas de aprovisionamiento y configuración de los componentes de la infraestructura, lo que ayuda a automatizar su implementación de manera repetible y consistente.
+>[!NOTE]
+>IaC es el proceso de escribir el código de las etapas de aprovisionamiento y configuración de los componentes de la infraestructura, lo que ayuda a automatizar su implementación de manera repetible y consistente.
 
 La forma de permitir el self-service provisioning es crear un conjunto estándar de imágenes de máquinas que se puedan solicitar bajo demanda. Estas imágenes representan máquinas estándar con todos los controles de seguridad, políticas y paquetes de software estándar instalados.
 
 Por ejemplo, un desarrollador que necesira un servidor web con Ruby puede seleccionar, de entre un conjunto estándar de imágenes de máquinas, un servidor de aplicaciones NGINX, un servidor de base de datos MySQL, etc.
 
 El desarrollador no tiene que configurar ninguno de estos entornos. En su lugar, solo tiene que solicitar una imagen y un entorno de destino. El entorno se aprovisiona automáticamente y el desarrollador puede empezar a trabajar.
--->
 
----
 
 #### IaC por configuración
 
@@ -343,19 +295,15 @@ ENTRYPOINT ["/usr/sbin/nginx","-g","daemon off;"]
 EXPOSE 80
 ```
 
-<!--
-**Notes**
-
-Contenerización = desplegar aplicaciones en contenedores en lugar de desplegarlas en VM.
+>[!NOTE]
+>Contenerización = desplegar aplicaciones en contenedores en lugar de desplegarlas en VM.
 
 Es importante que la IaC sea inmutable, es decir, que no se pueda modificar una vez creada. Si se necesita un cambio, se crea una nueva versión de la imagen. A diferencia de las VMs, los contenedores son inmutables, es decir, la configuración de un contenedor no puede modificarse durante su ejecución.
 
 v.g.: Dockerfile para especificar la imagen (sistema operativo) base, middleware adicional y configuración de red y puertos. Solo contiene los ficheros y binarios necesarios para la aplicación.
 
 Esto puede funcionar en una IaaS. Pero también en una PaaS, donde los desarrolladores pueden realizar la misma funcionalidad de autoservicio utilizando la interfaz de usuario de la PaaS.
--->
 
----
 
 #### IaC con tipos declarativos
 
@@ -369,15 +317,11 @@ Esto puede funcionar en una IaaS. Pero también en una PaaS, donde los desarroll
 - Chef
 - Etc.
 
-<!--
-**Notes**
-
-Hay lenguajes declarativos en los que es suficiente escribir el estado del sistema o la infraestructura deseada en forma de configuración y propiedades.
+>[!NOTE]
+>Hay lenguajes declarativos en los que es suficiente escribir el estado del sistema o la infraestructura deseada en forma de configuración y propiedades.
 
 Este es el caso, por ejemplo, de Terraform y Vagrant de HashiCorp, Ansible, Azure ARM template, Azure Bicep, PowerShell DSC, Puppet y Chef.
--->
 
----
 
 **Ejemplo usando terraform** para definir un servicio de AWS con un contenedor de Docker que sirve una página web en un cluster de ECS (_Elastic Container Service_)
 
@@ -397,7 +341,6 @@ resource "aws_ecs_task_definition" "example_task" {
   ...
 ```
 
----
 
 ```hcl
   ...
@@ -419,7 +362,6 @@ EOF
 ...
 ```
 
----
 
 ```hcl
 ...
@@ -439,7 +381,6 @@ resource "aws_ecs_service" "example_service" {
 }
 ```
 
----
 
 ### 2. Automatizar los despliegues
 
@@ -452,17 +393,13 @@ resource "aws_ecs_service" "example_service" {
 
 - Feature flags
 
-<!--
-**Notes**
-
-En los viejos tiempos, los despliegues eran procesos manuales engorrosos que solían depender de personas específicas que conocían los pasos necesarios para desplegar un build.
+>[!NOTE]
+>En los viejos tiempos, los despliegues eran procesos manuales engorrosos que solían depender de personas específicas que conocían los pasos necesarios para desplegar un build.
 
 El proceso no era repetible debido a la intervención manual requerida y los despliegues eran ejercicios temidos que ocurrían tarde por la noche o temprano por la mañana.
 
 La automatización de los despliegues tiene como objetivo resolver todos estos problemas.
--->
 
----
 
 #### Provisioning (aprovisionamiento)
 
@@ -480,19 +417,15 @@ La automatización de los despliegues tiene como objetivo resolver todos estos p
 - Google Cloud Deployment Manager
 - Etc.
 
-<!--
-**Notes**
-
-Aprovisionamiento = creación de los recursos que forman la infraestructura.
+>[!NOTE]
+>Aprovisionamiento = creación de los recursos que forman la infraestructura.
 
 Puede aprovisionarse un PaaS o un tipo de recurso serverless, como una app web, una Azure function o un Event Hub. Pero también puede aprovisionarse la parte de red que se gestiona, como VNet, subnets, tablas de encaminamiento o un cortafuegos de Azure.
 
 Para las VM, solo se crea o actualiza el recurso cloud de la VM, pero no su contenido, que hay que aprovisionar.
 
 Diversas herramientas de aprovisionamiento
--->
 
----
 
 #### Buenas prácticas de IaC & provisioning
 
@@ -504,7 +437,6 @@ Análogas al desarrollo de software:
 - Código de la IaC debe ser **idempotente**
 - Integrar con CI/CD
 
-<!--
 IaC requiere de prácticas análogas a la del desarrollo software:
 
 - Todo debe estar automatizado en el código: hay que codificar y automatizar todos los pasos de aprovisionamiento y no dejar fuera pasos manuales que distorsionen la automatización de la infraestructura.
@@ -518,9 +450,7 @@ IaC requiere de prácticas análogas a la del desarrollo software:
 Al igual que los procesos de CI/CD, la IaC es clave en la cultura DevOps. La IaC solo puede ser eficaz con herramientas adecuadas.
 
 Para las pruebas locales de infraestructura, algunas herramientas como Vagrant pueden simular un entorno local.
--->
 
----
 
 ### 3. Medir, monitorizar y experimentar
 
@@ -534,7 +464,6 @@ Para las pruebas locales de infraestructura, algunas herramientas como Vagrant p
   - Distintas versiones, geografías, periodos de tiempo, navegadores, dispositivos, etc.
   - Experimentos en producción
 
-<!--
 Ejemplo: supongamos que un product manager tiene la teoría de que el proceso de registro es demasiado complejo para algunos usuarios y quiere probar un nuevo formulario más sencillo. La nueva página de registro se puede querer configurar para que se muestre cada vez que se solicite, de modo que el equipo pueda comparar las métricas de los usuarios de la nueva página con las de los usuarios de la página antigua. La cultura DevOps fomenta este tipo de experimentación fail fast.
 
 Las feature flags permiten configurar características que se pueden activar o desactivar, o que solo estén disponibles para un determinado grupo de usuarios.
@@ -546,9 +475,7 @@ Aprovechando las feature flags, podemos ejecutar experimentos como A/B testing p
 - Otra opción sería probar una característica en determinadas geografías, periodos de tiempo, navegadores o dispositivos.
 
 - Las FF también se pueden utilizar para probar características en producción con una carga de trabajo real. La característica se puede habilitar para un grupo de prueba o como un lanzamiento beta para una ubicación seleccionada. Después se puede supervisar de cerca y desactivarla una vez que se haya recopilado suficiente información o si se hay problemas.
--->
 
----
 
 | 📙 | Definiciones |
 ----:|:----
@@ -556,19 +483,62 @@ Aprovechando las feature flags, podemos ejecutar experimentos como A/B testing p
 **Provisioning** |  proceso de preparar y configurar de manera automática los recursos de infraestructura necesarios para ejecutar una aplicación o servicio
 **Feature flags** |  técnica de desarrollo de software que permite habilitar o deshabilitar características específicas de una aplicación durante o después del despliegue
 
----
 
+![Background image](img/12factor-app.png)
+
+## Metodología 12-Factor App
+
+- Guia para apps SaaS modernas: portables, escalables, mantenibles.
+- Define principios para codebase, configuración, dependencias y procesos.
+- https://12factor.net/
+
+
+### 12 factores para apps SaaS modernas
+
+<div class="cols">
+<div>
+
+1. **Codebase**: una base de codigo por app, versionada.
+2. **Dependencies**: declarar y aislar dependencias explícitamente.
+3. **Config**: configuración fuera del codigo, via variables de entorno.
+4. **Backing services**: tratar servicios externos como recursos adjuntos.
+5. **Build, release, run**: separar etapas de build y ejecución.
+6. **Processes**: ejecutar como procesos stateless, sin compartir estado.
+
+</div>
+<div>
+
+7. **Port binding**: exponer servicios por un puerto propio.
+8. **Concurrency**: escalar por procesos, no por hilos internos.
+9. **Disposability**: inicio rápido y apagado limpio.
+10. **Dev/prod parity**: entornos dev y prod lo más parecidos posible.
+11. **Logs**: logs como flujo de eventos, no archivos locales.
+12. **Admin processes**: tareas admin como procesos puntuales.
+
+</div>
+</div>
+
+
+![Background image](img/12factor-app.png)
+
+## Metodología <br> 12-Factor App
+
+Las herramientas de DevOps y CI/CD (Docker, K8s, etc.) no son solo utilidades aisladas, sino piezas necesarias para cumplir un estándar de arquitectura moderna (SaaS) robusta y escalable.
+
+*   **Factor I (Codebase)**: **Git** y **GitHub/GitLab** como la base del flujo de trabajo y el control de versiones.
+*   **Factor III (Config)**: Herramientas como **Ansible** y **Terraform** permiten tratar la IaC y gestionar configuraciones declarativas, alineándose con el mandato de separar la configuración del código.
+*   **Factor V (Build, Release, Run)**: Herramientas como **Jenkins**, **CircleCI** y **GitHub Actions** automatizan la separación estricta entre las etapas de construcción, lanzamiento y ejecución que exige el Factor V.
+*   **Factor VIII (Concurrency)**: **Kubernetes** como la herramienta para gestionar "pods" y escalar automáticamente, lo cual responde al Factor VIII (Concurrencia mediante el modelo de procesos).
+*   **Factor IX (Disposability)**: La capacidad de Kubernetes para recuperar contenedores cuando "las cosas van mal" o realizar "rolling updates" soporta el principio de Desechabilidad (Disposability) de los procesos.
+*   **Factor X (Dev/prod parity)**: **Docker** como la solución para "empaquetar aplicaciones y dependencias en una unidad estandarizada", eliminando el problema de "funciona en mi máquina". Esto es la realización directa del Factor X (Paridad entre desarrollo y producción).
+*   **Factor XI (Logs)**: El stack **ELK** (Elasticsearch, Logstash, Kibana) y **Prometheus** pueden transformar el "caos de los logs" en datos visualizables y centralizados, cumpliendo con el principio de tratar los logs como flujos de eventos (*event streams*) en lugar de archivos estáticos.
 <!-- Source: cicd.md -->
 # INTEGRACIÓN Y ENTREGA CONTINUAS
-
----
 
 
 ## Integración Continua
 
 ![Background image](img/jordan.jpg)
-
----
 
 
 ![Background image](img/jordan.jpg)
@@ -578,13 +548,9 @@ Aprovechando las feature flags, podemos ejecutar experimentos como A/B testing p
 
 **&emsp; Michael Jordan**
 
-<!--
-**Notes**
+>[!NOTE]
+>CI sigue el principio de que si algo cuesta mucho esfuerzo, se debe hacer más a menudo para que sea menos doloroso.
 
-CI sigue el principio de que si algo cuesta mucho esfuerzo, se debe hacer más a menudo para que sea menos doloroso.
--->
-
----
 
 | 📙 | Conceptos básicos |
 ----:|:----
@@ -596,12 +562,9 @@ CI sigue el principio de que si algo cuesta mucho esfuerzo, se debe hacer más a
 
 ¡Cuidado! A diferencia de otros SCV antiguos, hacer `checkout` en git es cambiar de rama o restaurar los ficheros de un _working tree_.
 
----
-
 
 **¿Cómo funciona CI en la práctica?**
 
----
 
 ## Ejemplo de CI a escala
 
@@ -622,7 +585,6 @@ Recibiendo objetos: 100% (688/688), 39.75 MiB | 22.49 MiB/s, listo.
 Resolviendo deltas: 100% (296/296), listo.
 ```
 
----
 
 Cambiarse al repo con la _working copy_ **local**
 
@@ -650,7 +612,6 @@ construccion/
 $ cd construccion
 ```
 
----
 
 ### Entorno de construcción
 
@@ -668,7 +629,6 @@ added 304 packages, and audited 305 packages in 3s
 found 0 vulnerabilities
 ```
 
----
 
 ### Construcción (_build_)
 
@@ -686,7 +646,6 @@ $ marp --allow-local-files --config-file ./marp/marp-engine.js \
 $ open ./html/cultura.html
 ```
 
----
 
 Ignorar el _build_ (carpeta `html/`) al sincronizar el repo:
 
@@ -701,7 +660,6 @@ html/img/*.gif
 ...
 ```
 
----
 
 ### Desarrollo y pruebas
 
@@ -717,7 +675,6 @@ Con git:
 - Hacer _commit_ es grabar los cambios en el repositorio (local).
 - Hacer _push_: es subir al repo global
 
----
 
 ### Colaboración con otros
 
@@ -739,7 +696,6 @@ Fast-forward
  2 files changed, 118 insertions(+), 260 deletions(-)
 ```
 
----
 
 ### Intregración
 
@@ -750,8 +706,6 @@ Aún no hemos acabado... Hay que hacer un build (manual o automático) en un ser
 - No hay que alejarse mucho de esa base estable pues llevaría mucho tiempo integrarse con ella.
 
 Martin Fowler: [Building a feature with CI](https://martinfowler.com/articles/continuousIntegration.html#BuildingAFeatureWithContinuousIntegration)
-
----
 
 
 ![Background image](img/devops-team.png)
@@ -770,16 +724,13 @@ Ventajas:
 - Lotes pequeños
 - Calidad y productividad
 
-<!--
 Un sistema software es algo muy complejo. Un cambio aparentemente sencillo en un fichero puede tener efectos no deseados en el sistema. Cuando muchos desarrolladores trabajan en un grupo de sistemas relacionados, coordinar los cambios es difícil, porque los cambios de diferentes desarrolladores pueden ser incompatibles.
 
 Las prácticas de integración continua (CI) sirven para abordar estos problemas.
 
 - CI propone crear ciclos de retroalimentación rápidos para garantizar que los desarrolladores trabajen en lotes pequeños.
 - CI permite a los equipos producir software de calidad, reducir el coste de desarrollo y mantenimiento, y aumentar la productividad.
--->
 
----
 
 ## Prácticas de CI
 
@@ -794,7 +745,6 @@ Las prácticas de integración continua (CI) sirven para abordar estos problemas
 
 Martin Fowler: [Practices of CI](https://martinfowler.com/articles/continuousIntegration.html#PracticesOfContinuousIntegration)
 
----
 
 ### Un solo repositorio
 
@@ -806,7 +756,6 @@ Martin Fowler: [Practices of CI](https://martinfowler.com/articles/continuousInt
 - Instalar SO, [IDE, SGBD] y... checkout!
 - Minimizar número de ramas
 
-<!--
 - SCM, CVS, configuration management,...
 
 - Poner en el repo todo lo necesario para hacer un build desde cero: código, test scripts, properties files, database schema, install scripts, third party libraries,... incluso compiladores (!)
@@ -816,9 +765,7 @@ Martin Fowler: [Practices of CI](https://martinfowler.com/articles/continuousInt
 - Antes de hacer un checkout para el build desde cero, quizá solo debería tener que instalarse un SO, un entorno de desarrollo (!) y un SGBD. A veces ni eso.
 
 - Minimizar el número de ramas
--->
 
----
 
 ![Background image](img/automatizar-construccion.png)
 
@@ -830,8 +777,6 @@ Martin Fowler: [Practices of CI](https://martinfowler.com/articles/continuousInt
 No depender de los IDEs para hacer builds
 
 
----
-
 ### Hacer el build self-testing
 
 ![Background image](img/self-testing.png)
@@ -841,7 +786,6 @@ No depender de los IDEs para hacer builds
 - XUnit, UI tests (Selenium), APIs (Appium), Mocking (mockito), etc.
 - SAST (SonarQube, ESLint, etc.)
 
-<!--
 - No es imprescindible hacer TDD o XP
 
 - Pero hay que tener una suite de tests automatizados. Si falla uno, debe fallar el build
@@ -849,9 +793,7 @@ No depender de los IDEs para hacer builds
 - Empezar con XUnit y seguir con pruebas de interfaz de usuario (Selenium), APIs (Appium), mocking (Mockito), etc.
 
 - Integrar el análisis estático de código (SonarQube, ESLint)
--->
 
----
 
 ### Todos deben hacer commit al trunk todos los días
 
@@ -862,32 +804,23 @@ No depender de los IDEs para hacer builds
 - Diff debugging tras detectar fallos al ejecutar el build:
   [`git bisect`](https://git-scm.com/docs/git-bisect)
 
-<!--
 - Para arreglar pronto los problemas, hay que encontrarlos pronto. Hacer commit frecuentes ayuda.
 
 - Si se trabaja en una rama, hay que hacer merge con frecuencia con el trunk
 
 - También se detectan conflictos al ejecutar el build: hacer diff debugging (hacer checkout de código entre un par de fechas, averiguar cuándo se introdujo el cambio que provoca el fallo y hacer diff para ver qué ha cambiado)
--->
-
----
 
 
 #### Búsqueda binaria de bugs en _commits_ (inicio)
 
 ![](img/git-bisect-1.png)
 
-<!--
-**Notes**
-
-Primero hay que proporcionarle un commit bueno y uno malo
+>[!NOTE]
+>Primero hay que proporcionarle un commit bueno y uno malo
 
 Mensaje que dice cuántos pasos quedan hasta encontrar el commit malo
 
 Bisecting: X revisions left to test after this (roughly Y steps)
--->
-
----
 
 
 #### Búsqueda binaria de bugs en _commits_ (repetir pasos)
@@ -896,7 +829,6 @@ Bisecting: X revisions left to test after this (roughly Y steps)
 
 `$ git bisect reset`
 
-<!--
 Repetir en cada paso indicando si el bug aún persiste
 - Si el bug persiste, git bisect bad
 - Si el bug desaparece, git bisect good
@@ -904,9 +836,7 @@ Repetir en cada paso indicando si el bug aún persiste
 Cuando se completan todos los pasos, git muestra el mensaje con el SHA del primer commit malo
 
 Tras encontrar el commit que introdujo el bug, se puede resetear el git bisect
--->
 
----
 
 ### 1 commit de _mainline_ $\Rightarrow$ 1 build en servidor de integración
 
@@ -917,29 +847,20 @@ Tras encontrar el commit que introdujo el bug, se puede resetear el git bisect
 - Build en máquina compartida (manual vs. servidor de integración)
 - Servidores de CI: Jenkins, Gitlab CI/CD, Teamcity, Bamboo, GitHub Actions, Azure DevOps services, CircleCI, Semaphore, etc.
 
-<!--
-**Notes**
-
-Alguien puede no hacer un update y build local antes de hacer commit. Los desarrolladores pueden tener configuraciones diferentes en sus máquinas, así que hay que hacer los build en una máquina compartida
+>[!NOTE]
+>Alguien puede no hacer un update y build local antes de hacer commit. Los desarrolladores pueden tener configuraciones diferentes en sus máquinas, así que hay que hacer los build en una máquina compartida
 
 En el build manual el desarrollador se conecta y lanza el build.
 El servidor de integración monitoriza el repositorio, lanza el build cuando hay un commit y notifica al desarrollador
 
 Servidores de CI (algunos solo disponibles en la nube)
--->
-
----
 
 
 **¿_Nightly builds_ es hacer integración continua?**
 
-<!--
-**Notes**
+>[!NOTE]
+>Nightly builds no es hacer CI
 
-Nightly builds no es hacer CI
--->
-
----
 
 ### Arreglar inmediatamente los builds fallidos
 
@@ -950,19 +871,15 @@ Nightly builds no es hacer CI
 - Técnica rápida: revertir el commit más reciente que ha roto el build y debug en local
 - Técnica para evitar romper la mainline: crear _working copy_ desde _head_ y hacer _commits_ en una rama **pending-head** diferente
 
-<!--
-**Notes**
-
-Prioridad 1:  arreglar un build que falla
+>[!NOTE]
+>Prioridad 1:  arreglar un build que falla
 
 No todo el mundo tiene que dejar de hacer lo que está haciendo para arreglarlo. Con un par de personas suele ser suficiente. Para poder hacer esto hay que seguir un workflow que lo permita.
 
 Manera rápida: revertir el commit más reciente que ha roto el build y hacer debug en local
 
 Técnica pending-head para evitar romper el mainline: crear una working copy que se actualiza desde el head verdadero (para mantenerse sincronizado) pero hacer commits en una rama diferente pending-head.
--->
 
----
 
 ### Mantener rápidos los build
 
@@ -975,17 +892,13 @@ Técnica pending-head para evitar romper el mainline: crear una working copy que
   **1ª etapa** rápida (compilación y pruebas unitarias sin la BD) $\rightarrow$  1er. _commit build_
   **2ª etapa** lenta (pruebas de integración con la BD real) $\rightarrow$  build secundario $\rightarrow$ si falla, añadir tests al commit build
 
-<!--
-**Notes**
-
-El cuello de botella más habitual es el testing (en particular, si involucran servicios externos como bases de datos): mocking!
+>[!NOTE]
+>El cuello de botella más habitual es el testing (en particular, si involucran servicios externos como bases de datos): mocking!
 
 Deployment pipeline, aka build pipeline / staged build
 
 Ejemplo two-stage pipeline: 1º rápida (compilación y pruebas unitarias sin la BD), 2º lenta (pruebas de integración con la BD real). El primer commit build se hace tras la 1ª etapa. Si falla el build secundario tras la 2ª etapa, es un síntoma de que hacen falta más tests en los commit builds.
--->
 
----
 
 ### Otras prácticas de CI...
 
@@ -994,22 +907,16 @@ Ejemplo two-stage pipeline: 1º rápida (compilación y pruebas unitarias sin la
 - Todos pueden ver lo que está pasando
 - Automatizar el despliegue
 
----
-
 
 ## Trunk-Based Development (TBD)
 
 ![Background image](img/tbd-timeline.png)
 
-<!--
 La CI también incluye dos prácticas más, según Kent Beck y la comunidad XP:
 
 1. TBD: los desarrolladores trabajan sobre el trunk (= master, main o mainline) en pequeños lotes y fusionan su trabajo regularmente en un trunk compartido, al menos una vez al día, en lugar de trabajar en ramas de features de larga duración.
 
 2. TDD: La creación de suites de pruebas unitarias automatizadas mantenibles es compleja. Una manera de resolver este problema es practicar el TDD. Los desarrolladores escriben pruebas automatizadas que inicialmente fallan, antes de implementar el código que hace que las pruebas pasen.
--->
-
----
 
 
 ### Timeline no TBD
@@ -1018,8 +925,6 @@ La CI también incluye dos prácticas más, según Kent Beck y la comunidad XP:
 
 [TBD vs no TBD](https://dora.dev/devops-capabilities/technical/trunk-based-development/)
 
-
----
 
 ## Controversia de CI
 
@@ -1035,7 +940,6 @@ La CI también incluye dos prácticas más, según Kent Beck y la comunidad XP:
 
 CI es el paso previo a la CD
 
-<!--
 Las prácticas de CI se consideran a veces controvertidas.
 
 - Requiere que los desarrolladores dividan las características grandes y otros cambios en pasos incrementales más pequeños que se puedan integrar con frecuencia en el trunk. Esto es un cambio para los desarrolladores que no están acostumbrados a trabajar de esta manera.
@@ -1049,16 +953,11 @@ Cuando los cambios son en lotes pequeños (y autocontenidos):
 - Esto hace más fácil y rápido detectar, clasificar y solucionar problemas.
 
 A pesar de las objeciones, ayudar a los equipos de desarrollo de software a implementar la CI debería ser la prioridad número uno para comenzar el viaje hacia la CD.
--->
-
----
 
 
 ![Background image](img/plutarco.png)
 
 ## Entrega Continua
-
----
 
 
 ![Background image](img/plutarco.png)
@@ -1067,8 +966,6 @@ A pesar de las objeciones, ayudar a los equipos de desarrollo de software a impl
 **_que no hace distinción_**
 
 **&emsp; Plutarco**
-
----
 
 
 ## Entrega Continua
@@ -1082,7 +979,6 @@ Se hace CD cuando:
 - Tras un cambio, cualquiera puede saber rápidamente si el sistema está listo para producción
 - Se puede desplegar con un click cualquier versión del software en cualquier entorno
 
----
 
 ![Background image](img/dilbert-software-finished.png)
 
@@ -1094,14 +990,11 @@ Se hace CD cuando:
 
 Cuanto antes te des cuenta...
 
----
-
 
 #### Cuanto antes te des cuenta, mejor
 
 ![Background image](img/dilbert-user-requirements.png)
 
----
 
 ### Cómo implementar CD
 
@@ -1116,15 +1009,11 @@ Cuanto antes te des cuenta...
 - Control de versiones de configuraciones y scripts de despliegue
 - **Gestión de cambios en la base de datos**: _fixtures_
 
-<!--
-**Notes**
-
-Arquitectura poco acoplada: permite a los equipos probar y desplegar sus aplicaciones de forma independiente, sin necesidad de orquestación con otros servicios. Permite trabajar de forma independiente sin depender de otros equipos para obtener soporte y servicios.
+>[!NOTE]
+>Arquitectura poco acoplada: permite a los equipos probar y desplegar sus aplicaciones de forma independiente, sin necesidad de orquestación con otros servicios. Permite trabajar de forma independiente sin depender de otros equipos para obtener soporte y servicios.
 
 Gestión de cambios en la base de datos: almacenar los cambios de la BD como scripts en el control de versiones (y gestionar estos cambios de la misma manera que los cambios de la aplicación en producción)
--->
 
----
 
 ### Errores comunes al implementar CD
 
@@ -1133,17 +1022,13 @@ Gestión de cambios en la base de datos: almacenar los cambios de la BD como scr
 - Centrarse solo en herramientas y patrones (v.g. deployment pipeline)
 - No hacer CD porque no se puede hacer CDEP
 
----
-
 
 ### Transformación
 
 ![Background image](img/cd-j-curve.png)
 
-<!--
-**Notes**
-
-Al principio de la curva de transformación se logran victorias rápidas.
+>[!NOTE]
+>Al principio de la curva de transformación se logran victorias rápidas.
 
 En una etapa inicial de mejora, la automatización ayuda a progresar de un bajo rendimiento a un rendimiento medio.
 
@@ -1152,14 +1037,9 @@ En el punto más bajo de la curva, la automatización aumenta los requisitos de 
 Al salir de la curva, la deuda técnica y el incremento de complejidad ralentizan el trabajo, provocando añadir controles manuales y más capas de procesos tras cada cambio.
 
 Sólo en la parte alta de la curva, el trabajo de mejora realizado logra un rendimiento alto.
--->
-
----
-
 <!-- Source: branching.md -->
 # BRANCHING PATTERNS
 
----
 
 ## SCV: Source Code Versioning
 
@@ -1173,15 +1053,10 @@ Sólo en la parte alta de la curva, el trabajo de mejora realizado logra un rend
 - Gestionar y coordinar el código fuente en equipos de desarrollo de software
 - Seguimiento de varias líneas de trabajo y ayudar a fusionar líneas
 
-<!--
-**Notes**
-
-El código fuente es un activo vital para cualquier equipo de desarrollo de software. Las herramientas de gestión de código fuente sirven para rastrear cambios, lo que facilita la recreación de versiones anteriores del software y ver cómo se desarrolla con el tiempo.
+>[!NOTE]
+>El código fuente es un activo vital para cualquier equipo de desarrollo de software. Las herramientas de gestión de código fuente sirven para rastrear cambios, lo que facilita la recreación de versiones anteriores del software y ver cómo se desarrolla con el tiempo.
 
 También sirven para coordinar a un equipo de programadores que trabajan en un código base común. Al registrar los cambios que cada desarrollador realiza, estos sistemas pueden hacer un seguimiento de múltiples líneas de trabajo al mismo tiempo y ayudar a los desarrolladores a fusionar estas líneas de trabajo.
--->
-
----
 
 
 ### SCV centralizado o distribuido
@@ -1189,14 +1064,10 @@ También sirven para coordinar a un equipo de programadores que trabajan en un c
 ![Background image](img/scv-centralized.png)
 ![Background image](img/scv-distributed.png)
 
----
-
 
 **¿Git es descentralidado o centralizado?**
 
 ![](img/git-logo.png)
-
----
 
 
 ### ¿Git descentralizado?
@@ -1212,7 +1083,6 @@ Repo central con la **verdad**
 - Subequipos: Alice & Bob, Alice & David, David & Clair
 - Alice define _remotes_ `bob` y `david`, etc.
 
----
 
 ### Git: repositorios remotos
 
@@ -1223,7 +1093,6 @@ Repo central con la **verdad**
 **origin** | Nombre para referirse al repositorio remoto del que se clonó un repo local
 **upstream** | Nombre para referirse al repositorio original desde el que se forkeó un repo
 
----
 
 ![Background image](img/scv-branching.png)
 
@@ -1233,15 +1102,11 @@ Repo central con la **verdad**
 - No son estándares definitivos
 - Dependen de la estructura social del equipo y sus prácticas habituales
 
-<!--
-**Notes**
-
-Se han desarrollado varios patrones para ayudar a manejar la división del desarrollo en líneas de trabajo que se dividen y fusionan en el flujo de trabajo (workflow) de los equipos de desarrollo de software.
+>[!NOTE]
+>Se han desarrollado varios patrones para ayudar a manejar la división del desarrollo en líneas de trabajo que se dividen y fusionan en el flujo de trabajo (workflow) de los equipos de desarrollo de software.
 
 Estos patrones no son estándares definitivos. El flujo de trabajo del desarrollo de software depende en gran medida del contexto, especialmente de la estructura social del equipo y otras prácticas que el equipo siga.
--->
 
----
 
 ![Background image](img/git-workflow.png)
 
@@ -1253,7 +1118,6 @@ Estos patrones no son estándares definitivos. El flujo de trabajo del desarroll
 - [OneFlow](https://www.endoflineblog.com/oneflow-a-git-branching-model-and-workflow): ramas de vida corta
 - [Gitlab flow](https://about.gitlab.com/topics/version-control/what-is-gitlab-flow/): menos _tagging_ y _merging_
 
----
 
 ![Background image](img/scv-branching.png)
 
@@ -1267,17 +1131,13 @@ Estos patrones no son estándares definitivos. El flujo de trabajo del desarroll
 - ¿Qué es un **head**?
 - ¿Qué es un **fork**?
 
-<!--
-**Notes**
-
-Git permite cambiar la historia a base de commits. Otros SCV no.
+>[!NOTE]
+>Git permite cambiar la historia a base de commits. Otros SCV no.
 
 Git representa los commits como snapshots, no como diffs. Eso hace que sea más rápido, pero ocupa más espacio.
 
 Staging es añadir ficheros al próximo commit.
--->
 
----
 
 | 📙 | Definiciones |
 ----:|:----
@@ -1291,10 +1151,8 @@ Staging es añadir ficheros al próximo commit.
 - ¿Cuando se clona un repo, se crea una nueva rama?
 - Distintos DVCS: Mercurial _branch_ $\neq$ Git _branch_ $\approx$ Mercurial _bookmark_
 
-<!--
-**Notes**
-
-En Mercurial, cada rama requiere su propio directorio
+>[!NOTE]
+>En Mercurial, cada rama requiere su propio directorio
 En Git, cada rama es un puntero a un commit, todo dentro de un único directorio
 
 En Mercurial, cambiar de rama es cambiar de directorio
@@ -1302,9 +1160,7 @@ En Git, cambiar de rama es cambiar el contenido del directorio (haciendo checkou
 
 Mercurial tiene named branches (permanentes) para ramas dentro de un mismo directorio
 En Git las ramas son temporales y se borran cuando se fusionan
--->
 
----
 
 | 📙 | Definiciones |
 ----:|:----
@@ -1316,7 +1172,6 @@ En Git las ramas son temporales y se borran cuando se fusionan
 
 En cada commit, pasar pruebas automáticas para asegurar que la rama no tiene defectos
 
----
 
 ### Codeline
 
@@ -1325,26 +1180,19 @@ En cada commit, pasar pruebas automáticas para asegurar que la rama no tiene de
   - ...cuando se clona un repo git, se hace un checkout de main y se actualiza algo, se obtiene una **codeline nueva**, aunque no se hagan commits
   - ...obtenemos ramas adicionales cada vez que clonamos un repositorio; las ramas pueden ser **locales** o **remotas**
 
----
-
 
 ### Merge vs rebase vs cherry-pick
 
 ![Conflicts](img/merge-rebase-cherry-b.png)
-
----
 
 
 ### Tutorial recomendado
 
 JJ Merelo: [Aprende Git](https://github.com/JJ/aprende-git)
 
----
-
 
 ## Patrones habituales de Workflow
 
----
 
 ### 1. Git Flow
 
@@ -1360,11 +1208,9 @@ No es muy adecuado para hacer CD o CDEP.
 
 Alex Hyett: [Comparativa GitHub flow vs GitFlow](https://www.alexhyett.com/git-flow-github-flow/)
 
----
 
 ![Background image](img/gitflow.png)
 
----
 
 ![Background image](imd/../img/mermaid-diagram-github-flow.png)
 
@@ -1382,7 +1228,6 @@ Despliegues deben estar automatizados.
 
 Scott Chacon: [GitHub Flow](https://scottchacon.com/2011/08/31/github-flow/)
 
----
 
 #### Git Flow vs GitHub Flow
 
@@ -1394,7 +1239,6 @@ Scott Chacon: [GitHub Flow](https://scottchacon.com/2011/08/31/github-flow/)
 | **Despliegue**          | Potencialmente más lento (muchas ramas)      | Más rápido (CI se hace en main)        |
 | **Automatización**      | Se beneficia de herramientas específicas     | Requiere despliegue automático         |
 
----
 
 ### 3. GitLab Flow
 
@@ -1408,14 +1252,11 @@ Versión simplificada y más orientada a la entrega continua
 
 NOTA: Los merge requests se llaman _pull requests_ en git
 
----
-
 
 ### Ejercicio recomendado
 
 [Tutorial de `git-flow`](https://github.com/uca-virtualizacion/devops/blob/main/gitflow.md)
 
----
 
 ## Tipos de patrones
 
@@ -1428,12 +1269,9 @@ Martin Fowler: [Patterns for managing source code branching](https://martinfowle
   - [Mainline](https://martinfowler.com/articles/branching-patterns.html#mainline)
   - [Healthy branch](https://martinfowler.com/articles/branching-patterns.html#healthy-branch)
 
----
-
 
 ## Patrones de integración
 
----
 
 ## Patrones de integración
 
@@ -1445,7 +1283,6 @@ Martin Fowler: [Patterns for managing source code branching](https://martinfowle
 Martin Fowler: _Patterns for managing source code branching_
 [Integration patterns](https://martinfowler.com/articles/branching-patterns.html#integration-patterns)
 
-<!--
 En GitHub Flow:
 
 - los desarrolladores trabajan con Feature branching
@@ -1453,9 +1290,6 @@ En GitHub Flow:
 - la Mainline integration usa PR (Pre-integration review)
 
 - no hay Continuous integration
--->
-
----
 
 
 ### Mainline integration
@@ -1468,8 +1302,6 @@ Checkout:
 - Mainline: _healthy branch_
 - Conflictos semánticos: _self-testing code_
 
----
-
 
 ### Mainline integration
 
@@ -1480,8 +1312,6 @@ Update:
 - Pull + push
 - Mainline: _healthy branch_
 - Conflictos semánticos: _self-testing code_
-
----
 
 
 ### Mainline integration
@@ -1494,8 +1324,6 @@ Pull:
 - Mainline: _healthy branch_
 - Conflictos semánticos: _self-testing code_
 
----
-
 
 ### Mainline integration
 
@@ -1506,8 +1334,6 @@ Merge:
 - Pull + push
 - Mainline: _healthy branch_
 - Conflictos semánticos: _self-testing code_
-
----
 
 
 ### Mainline integration
@@ -1520,12 +1346,8 @@ Integrate:
 - Mainline: _healthy branch_
 - Conflictos semánticos: _self-testing code_
 
----
-
 
 **¿Cuál debe ser la frecuencia de integración?**
-
----
 
 
 [Frecuencia de integración](https://martinfowler.com/articles/branching-patterns.html#integration-frequency)
@@ -1534,15 +1356,10 @@ Integrate:
 
 **Cantidad de trabajo**
 
-<!--
-**Notes**
-
-M1 es un push de algún otro desarrollador
+>[!NOTE]
+>M1 es un push de algún otro desarrollador
 
 El merge final de violeta es más complicado
--->
-
----
 
 
 [Frecuencia de integración](https://martinfowler.com/articles/branching-patterns.html#integration-frequency)
@@ -1556,16 +1373,12 @@ El merge final de violeta es más complicado
 - baja frecuencia: merge final `S1` y `V1`
 - alta frecuencia: primer merge
 
----
-
 
 ### Feature branching
 
 Branch:
 
 ![](img/fb-start.png)
-
----
 
 
 ### Feature branching
@@ -1576,13 +1389,8 @@ Pull:
 
 - Llegan otros commits a la mainline
 
-<!--
-**Notes**
-
-Hacer pull "de vez en cuando". ¿Cada cuánto?
--->
-
----
+>[!NOTE]
+>Hacer pull "de vez en cuando". ¿Cada cuánto?
 
 
 ### Feature branching
@@ -1593,12 +1401,9 @@ Integrate:
 
 - Mainline integration
 
----
-
 
 **¿Es compatible el _feature branching_ con la integración continua?**
 
----
 
 [Feature branching y CI](https://martinfowler.com/articles/branching-patterns.html#ComparingFeatureBranchingAndContinuousIntegration)
 
@@ -1611,8 +1416,6 @@ Integrate:
 - Feature branching
   - No obliga a mantener ramas saludables
   - Puede disuadir de hacer refactoring (que introducen conflictos)
-
----
 
 
 [Feature Branching y Open Source](https://martinfowler.com/articles/branching-patterns.html#FeatureBranchingAndOpenSource)
@@ -1630,20 +1433,13 @@ En proyectos comerciales:
 - Expectativas fiables de la calidad del código y la capacidad de entrega
 - Empleados remunerados y mayor control sobre el tiempo dedicado, estándares de codificación y hábitos del grupo
 
----
-
 
 **En proyectos open source, ¿qué se adapta mejor, _feature branching_ o CI?**
 
-<!--
-**Notes**
-
-Una estrategia de branching para equipos comerciales no tiene por qué ser la misma que en el mundo open-source.
+>[!NOTE]
+>Una estrategia de branching para equipos comerciales no tiene por qué ser la misma que en el mundo open-source.
 
 CI es casi imposible para los contribuidores ocasionales al open-source, pero es una alternativa realista para el trabajo comercial.
--->
-
----
 
 
 ## Patrones de entrega continua
@@ -1653,7 +1449,6 @@ CI es casi imposible para los contribuidores ocasionales al open-source, pero es
 Martin Fowler: _Patterns for managing source code branching_
 [The path from mainline to production release](https://martinfowler.com/articles/branching-patterns.html#path-to-production)
 
----
 
 ## Entrega desde la _mainline_
 
@@ -1664,7 +1459,6 @@ Martin Fowler: _Patterns for managing source code branching_
 - [Release train](https://martinfowler.com/articles/branching-patterns.html#release-train): Releases a intervalos regulares; desarrolladores eligen la suya
 - [Release-ready mainline](https://martinfowler.com/articles/branching-patterns.html#release-ready-mainline): Mantener la mainline lo suficientemente saludable como para que el head pueda ir directamente a producción
 
----
 
 ### Release branch
 
@@ -1677,19 +1471,15 @@ Martin Fowler: _Patterns for managing source code branching_
 - Release train
 - Release-ready mainline
 
-<!--
-**Notes**
-
-Las nuevas features no se añaden a la release, sino a la mainline
+>[!NOTE]
+>Las nuevas features no se añaden a la release, sino a la mainline
 
 Los desarrolladores solo se preocupan de la release para arreglar defectos urgentes (hotfixes)
 
 Los hotfixes se aplican a la release y se fusionan en la mainline (¡Recordarlo!)
 
 Release: explícita en Git Flow; no necesaria en GitHub Flow
--->
 
----
 
 ### Release branch
 
@@ -1702,10 +1492,8 @@ Release: explícita en Git Flow; no necesaria en GitHub Flow
 - Release train
 - Release-ready mainline
 
-<!--
-**Notes**
-
-Algunos productos tendrán muchas versiones presentes en producción.
+>[!NOTE]
+>Algunos productos tendrán muchas versiones presentes en producción.
 
 El software que se ejecuta en el equipo de los clientes solo se actualizará cuando el cliente lo desee.
 
@@ -1716,9 +1504,7 @@ Pero siguen queriendo correcciones de errores, especialmente si implican problem
 Se mantienen abiertas varias ramas para cada release y se aplican los hotfixes según sea necesario.
 
 Hotfix: explícita en Git Flow; no necesaria en GitHub Flow
--->
 
----
 
 ### Hotfix branch
 
@@ -1731,14 +1517,10 @@ Hotfix: explícita en Git Flow; no necesaria en GitHub Flow
 - Release train
 - Release-ready mainline
 
-<!--
-**Notes**
-
-Aplicar hotfix primero a producción y luego a la mainline
+>[!NOTE]
+>Aplicar hotfix primero a producción y luego a la mainline
 También a la release branch si hay una abierta
--->
 
----
 
 ### Hotfix branch
 
@@ -1751,15 +1533,11 @@ También a la release branch si hay una abierta
 - Release train
 - Release-ready mainline
 
-<!--
-**Notes**
-
-Si el equipo usa release branches, los cambios del hotfix se puede hacer en la release branch y se hace una nueva release.
+>[!NOTE]
+>Si el equipo usa release branches, los cambios del hotfix se puede hacer en la release branch y se hace una nueva release.
 
 Esto convierte la antigua release branch en una hotfix branch.
--->
 
----
 
 ### Hotfix branch
 
@@ -1772,18 +1550,14 @@ Esto convierte la antigua release branch en una hotfix branch.
 - Release train
 - Release-ready mainline
 
-<!--
-**Notes**
-
-Si se hace CD, se pueden lanzar hotfixes directamente desde la mainline.
+>[!NOTE]
+>Si se hace CD, se pueden lanzar hotfixes directamente desde la mainline.
 Se lanza la hotfix desde el último commit, no desde del último released.
 
 La nueva release se etiqueta como 2.2.1, ya que si un equipo trabaja así es probable que M4 y M5 no incluyan nuevas características. Si lo hacen, entonces el hotfix se incluirá en una release 2.3.
 
 No permitir commits en la mainline hasta que el hotfix esté completado.
--->
 
----
 
 ### Maturity branch
 
@@ -1796,19 +1570,15 @@ No permitir commits en la mainline hasta que el hotfix esté completado.
 - Release train
 - Release-ready mainline
 
-<!--
-**Notes**
-
-Los de QA quieren conocer la versión última del producto
+>[!NOTE]
+>Los de QA quieren conocer la versión última del producto
 
 Una vez que el codebase llegue a un cierto nivel de preparación, se copia a una rama específica: v.g. production
 
 A veces basta con usar bien el tagging en vez de una maturity branch separada
 
 En Git Flow, la rama master es la maturity branch para producción
--->
 
----
 
 ### Environment branch
 
@@ -1821,13 +1591,9 @@ En Git Flow, la rama master es la maturity branch para producción
 - Release train
 - Release-ready mainline
 
-<!--
-**Notes**
+>[!NOTE]
+>Cambios en una URL, en la configuración de acceso a la BD, ubicación del sistema de mensajería, etc.
 
-Cambios en una URL, en la configuración de acceso a la BD, ubicación del sistema de mensajería, etc.
--->
-
----
 
 ### Release train
 
@@ -1840,13 +1606,10 @@ Cambios en una URL, en la configuración de acceso a la BD, ubicación del siste
 - [Release train](https://martinfowler.com/articles/branching-patterns.html#release-train): múltiples
 - Release-ready mainline
 
-<!--
 Release train:
 - variación: trenes futuros
 - releases regulares desde la mainline
--->
 
----
 
 ### Release train
 
@@ -1859,13 +1622,10 @@ Release train:
 - [Release train](https://martinfowler.com/articles/branching-patterns.html#release-train): trenes futuros
 - Release-ready mainline
 
-<!--
 Release train:
 - variación: trenes futuros
 - releases regulares desde la mainline
--->
 
----
 
 ### Release train
 
@@ -1878,13 +1638,10 @@ Release train:
 - [Release train](https://martinfowler.com/articles/branching-patterns.html#release-train): desde mainline
 - Release-ready mainline
 
-<!--
 Release train:
 - variación: trenes futuros
 - releases regulares desde la mainline
--->
 
----
 
 ### Release-ready mainline
 
@@ -1897,19 +1654,12 @@ Release train:
 - Release train
 - [Release-ready mainline](https://martinfowler.com/articles/branching-patterns.html#release-ready-mainline)
 
-<!--
 - En GitFlow hay release branches, luego no hay una release-ready mainline;
 - En GitHub Flow solo hay una versión en producción, que se integra como Release-ready mainline
--->
-
----
-
 <!-- Source: scv/scv-01.md -->
 # Sistema de Control de Versiones (SCV)
 
 ![](img/Git-logo.png)
-
----
 
 
 ## SCV
@@ -1926,7 +1676,6 @@ Lugar donde se almacenan los archivos de un proyecto, junto con el historial de 
 
 Puede estar ubicado localmente en la máquina del usuario o de forma remota en un servidor.
 
----
 
 ## SCV: Source Code Versioning
 
@@ -1940,15 +1689,11 @@ Puede estar ubicado localmente en la máquina del usuario o de forma remota en u
 - Gestionar y coordinar el código fuente en equipos de desarrollo de software
 - Seguimiento de varias líneas de trabajo y ayudar a fusionar líneas
 
-<!--
-**Notes**
-
-El código fuente es un activo vital para cualquier equipo de desarrollo de software. Las herramientas de gestión de código fuente sirven para rastrear cambios, lo que facilita la recreación de versiones anteriores del software y ver cómo se desarrolla con el tiempo.
+>[!NOTE]
+>El código fuente es un activo vital para cualquier equipo de desarrollo de software. Las herramientas de gestión de código fuente sirven para rastrear cambios, lo que facilita la recreación de versiones anteriores del software y ver cómo se desarrolla con el tiempo.
 
 También sirven para coordinar a un equipo de programadores que trabajan en un código base común. Al registrar los cambios que cada desarrollador realiza, estos sistemas pueden hacer un seguimiento de múltiples líneas de trabajo al mismo tiempo y ayudar a los desarrolladores a fusionar estas líneas de trabajo.
--->
 
----
 
 ## Herramientas SCV
 
@@ -1962,7 +1707,6 @@ También sirven para coordinar a un equipo de programadores que trabajan en un c
 
 Git fue creado por Linus Torvalds en 2005 y se ha convertido en uno de los SCV más populares y ampliamente utilizados en la comunidad de desarrollo de software.
 
----
 
 ## Plataformas en la nube
 
@@ -1972,7 +1716,6 @@ Permiten a los desarrolladores alojar y colaborar en proyectos de código abiert
 
 ![](img/GitHub-logo.png) ![](img/gitlab-logo-100.png) ![](img/Bitbucket-Logo-blue.svg)
 
----
 
 ## GitHub
 
@@ -1991,7 +1734,6 @@ Permiten a los desarrolladores alojar y colaborar en proyectos de código abiert
 - Actions & workflows
 - Etc.
 
----
 
 ## Instalación de Git
 
@@ -2014,7 +1756,6 @@ Descarga e instala Git desde el sitio web oficial [Git for Mac](https://git-scm.
 brew install git
 ```
 
----
 
 ## Trabajando con repositorios
 
@@ -2031,7 +1772,6 @@ git init
 
 Sin embargo, en la mayoría de los casos, clonaremos un repositorio remoto.
 
----
 
 ### Clonar un repositorio remoto
 
@@ -2053,7 +1793,6 @@ Vamos a usar un repositorio público de Github:
 
 Donde `<curso_actual>` es el curso actual (por ejemplo, `24-25`).
 
----
 
 ### Actualizar un repositorio local
 
@@ -2076,7 +1815,6 @@ Podemos comprobar el estado del repositorio local usando el comando `git status`
 - Archivos nuevos o modificados aparecerán en rojo
 - Archivos añadidos al repositorio aparecerán en verde
 
----
 
 ### Actualizar cambios
 
@@ -2090,7 +1828,6 @@ git commit -m "Mensaje"
 - Al ejecutar `git commit`, se crea un nuevo commit en el repositorio local
 - Cada commit tiene un identificador único que se puede usar para identificarlo
 
----
 
 ### Sincronizar cambios
 
@@ -2106,7 +1843,6 @@ Si queremos actualizar nuestro repositorio local con los cambios del repositorio
 git pull
 ```
 
----
 
 ### Comprobar cambios
 
@@ -2131,7 +1867,6 @@ git log origin/main
 git log origin/main <file>
 ```
 
----
 
 ### Deshacer cambios
 
@@ -2155,7 +1890,6 @@ git reset HEAD <file>
 
 HEAD hace referencia al último commit realizado.
 
----
 
 ## Trabajando con ramas
 
@@ -2167,7 +1901,6 @@ Las ramas se pueden fusionar entre sí para combinar los cambios realizados en c
 
 [Ejemplo de ramas en un repositorio de Git](https://www.atlassian.com/git/tutorials/using-branches)
 
----
 
 ### Crear ramas (i)
 
@@ -2178,7 +1911,6 @@ Una rama se crea a partir de otra rama existente
 - `git branch` muestra las ramas existentes
 - Podemos ver la rama actual con `git branch` y con `git status`.
 
----
 
 ### Crear ramas (ii)
 
@@ -2194,7 +1926,6 @@ Para crear una nueva rama a partir de la rama actual y cambiar a ella:
 git checkout -b <nombre_de_la_rama>
 ```
 
----
 
 ### Checkout y push de ramas
 
@@ -2210,7 +1941,6 @@ Subir una rama al repositorio remoto:
 git push origin <nombre_de_la_rama>
 ```
 
----
 
 ### Eliminar ramas
 
@@ -2226,7 +1956,6 @@ Eliminar una rama del repositorio remoto (seguirá existiendo en el repositorio 
 git push origin --delete <nombre_de_la_rama>
 ```
 
----
 
 ### Stash de ramas
 
@@ -2240,7 +1969,6 @@ Guardar/esconder los cambios realizados en la rama actual para poder cambiar de 
 
 `git stash drop` - eliminar los cambios guardados
 
----
 
 ### Fusionar ramas (i)
 
@@ -2250,7 +1978,6 @@ Siempre que se fusionan dos ramas, se crea en la rama actual un nuevo commit que
 
 [Ejemplo de fusión de ramas en un repositorio de Git](https://www.atlassian.com/es/git/tutorials/using-branches/git-merge)
 
----
 
 ### Fusionar ramas (ii)
 
@@ -2267,7 +1994,6 @@ Para resolver conflictos, se editan los archivos que los contienen y se añaden 
 
 Una vez resueltos los conflictos, se puede fusionar la rama con la rama actual.
 
----
 
 ### Ejemplo de conflicto entre ramas
 
@@ -2281,7 +2007,6 @@ Una vez resueltos los conflictos, se puede fusionar la rama con la rama actual.
 
 ![](img/conflicto.png)
 
----
 
 ### Solucionar conflictos entre ramas
 
@@ -2301,7 +2026,6 @@ git checkout --theirs <file>
 
 Donde `ours` es la rama actual y `theirs` es la rama que estamos fusionando.
 
----
 
 ### Rebase de ramas (i)
 
@@ -2314,14 +2038,11 @@ Rebase soluciona el mismo problema que la fusión de ramas, pero de forma muy di
 
 [Ejemplo de rebase de ramas en un repositorio de Git](https://www.atlassian.com/es/git/tutorials/merging-vs-rebasing)
 
----
-
 
 ### Merge vs rebase vs cherry-pick
 
 ![Conflicts](img/merge-rebase-cherry-b.png)
 
----
 
 ### Rebase de ramas (ii)
 
@@ -2331,7 +2052,6 @@ Para hacer un rebase de una rama con la rama actual:
 git rebase <nombre_de_la_rama>
 ```
 
----
 
 ### Rebase de ramas (iii)
 
@@ -2345,7 +2065,6 @@ git rebase <nombre_de_la_rama>
 8. Hacer un rebase de la rama `feature_rebase` con la rama `main`
 9. Comprobar el historial de cambios con `git log`
 
----
 
 ### Rebase de ramas (iv)
 
@@ -2359,7 +2078,6 @@ Rebase es una operación muy potente, pero también muy peligrosa:
 - Si se hace mal, puede provocar que se pierdan commits
 - Siempre que se haga un rebase, se debe hacer en una rama que no se haya compartido con nadie
 
----
 
 ## Archivos especiales de git
 
@@ -2374,7 +2092,6 @@ Archivo `.gitkeep`:
 - Git no permite añadir directorios vacíos al repositorio
 - Para añadir un directorio vacío, se crea un archivo `.gitkeep` dentro del directorio
 
----
 
 ## Otras herramientas para trabajar con Git
 
@@ -2388,7 +2105,6 @@ Herramientas con interfaz gráfica:
 
 Los IDEs más populares (VS Code, JetBrains', etc.) tienen integración con Git
 
----
 
 ### Vocabulario git (1)
 
@@ -2401,7 +2117,6 @@ Los IDEs más populares (VS Code, JetBrains', etc.) tienen integración con Git
 **commit** | Conjunto de cambios en el código fuente que se registra en el repo
 **checkout** | Cambiar de rama activa en el repo local
 
----
 
 ### Vocabulario git (2)
 
@@ -2415,7 +2130,6 @@ Los IDEs más populares (VS Code, JetBrains', etc.) tienen integración con Git
 **rebase ** | Mover commits de una rama a otra
 **stash ** | Dejar a un lado (guardar) los cambios en la rama actual
 
----
 
 ## Tarea
 
@@ -2430,21 +2144,14 @@ Los IDEs más populares (VS Code, JetBrains', etc.) tienen integración con Git
 9. Subir los cambios al repositorio remoto
 10. Eliminar la rama `feature`
 
----
-
 
 ### Tutorial recomendado
 
 JJ Merelo: [Aprende Git](https://github.com/JJ/aprende-git)
-
----
-
 <!-- Source: terraform/terraform-01.md -->
 # Terraform para Infraestructura Docker
 
 ![](img/Terraform_PrimaryLogo_Color_RGB.svg)
-
----
 
 
 ## Introducción a Terraform (I)
@@ -2461,7 +2168,6 @@ IaC es una metodología que permite definir y administrar la infraestructura de 
 
 - Colaboración y Replicabilidad: archivos de configuración legibles y versionables
 
----
 
 ## Introducción a Terraform (II)
 
@@ -2471,7 +2177,6 @@ IaC es una metodología que permite definir y administrar la infraestructura de 
 - Plan: Vista previa de los cambios que Terraform realizará para que coincidan con tu configuración
 - Apply: Se aplican los cambios planificados
 
----
 
 ## Introducción a Terraform (III)
 
@@ -2483,7 +2188,6 @@ En esta práctica, se utilizará Terraform para crear y gestionar una infraestru
 
 ![](img/docker-010.png)
 
----
 
 ## Instalación de Terraform (I)
 
@@ -2503,7 +2207,6 @@ brew tap hashicorp/tap
 brew install hashicorp/tap/terraform
 ```
 
----
 
 ## Instalación de Terraform (II)
 
@@ -2517,7 +2220,6 @@ Instalación con [chocolatey](https://developer.hashicorp.com/terraform/tutorial
 choco install terraform
 ```
 
----
 
 ## Creación de Infraestructura Docker con Terraform (I)
 
@@ -2534,7 +2236,6 @@ Dentro del directorio de trabajo, inicializa un proyecto Terraform con el siguie
 terraform init
 ```
 
----
 
 ## Creación de Infraestructura Docker con Terraform (II)
 
@@ -2546,7 +2247,6 @@ El comando `terraform init` se utiliza para inicializar un directorio de trabajo
 
 - Validación de la **configuración**: Terraform verifica la sintaxis y la validez de tus archivos de configuración.
 
----
 
 ## Creación de Infraestructura Docker con Terraform (III)
 
@@ -2563,7 +2263,6 @@ A continuación se muestra un ejemplo de estado de Terraform:
 - Incluye la imagen utilizada
 - Incluye los puertos mapeados
 
----
 
 ### Ejemplo de Estado de Terraform
 
@@ -2608,11 +2307,9 @@ A continuación se muestra un ejemplo de estado de Terraform:
 }
 ```
 
----
 
 ## Creación de archivos de configuración (I)
 
----
 
 ### Ejemplo de configuración `nginx.tf`
 
@@ -2644,7 +2341,6 @@ resource "docker_container" "nginx" {
 }
 ```
 
----
 
 ## Creación de archivos de configuración (II)
 
@@ -2662,7 +2358,6 @@ terraform {
 - El bloque `terraform` define la configuración de Terraform. En este caso, hemos especificado el proveedor de Docker que se utilizará y su versión (igual o superior a 3.0.1 pero inferior a 4.0.0).
 - Terraform instala los proveedores del Registro de Terraform ([Terraform Registry](https://registry.terraform.io/)) de forma predeterminada
 
----
 
 ## Creación de archivos de configuración (III)
 
@@ -2673,7 +2368,6 @@ provider "docker" {}
 
 - El bloque `provider` especifica la configuración del proveedor Docker. En este caso, no se especifica ninguna configuración adicional
 
----
 
 ## Creación de archivos de configuración (IV)
 
@@ -2688,7 +2382,6 @@ resource "docker_image" "nginx" {
 - El prefijo del tipo se relaciona con el nombre del proveedor. Terraform gestiona el recurso `docker_image` con el proveedor docker.
 - El tipo y el nombre del recurso forman un ID único para el recurso (`docker_image.nginx`).
 
----
 
 ## Creación de archivos de configuración (V)
 
@@ -2708,7 +2401,6 @@ resource "docker_container" "nginx" {
 
 Ejecutar `terraform init` para inicializar el directorio de trabajo con la nueva configuración.
 
----
 
 ## Formateo y validación
 
@@ -2728,7 +2420,6 @@ Puede comprobarse si la configuración es sintácticamente válida utilizando el
 terraform validate
 ```
 
----
 
 ## Planificación de la creación de la infraestructura
 
@@ -2744,7 +2435,6 @@ terraform plan
 
 Terraform escaneará tus archivos de configuración, evaluará la infraestructura actual y generará un plan detallado de los cambios propuestos.
 
----
 
 ## Creación de la infraestructura (I)
 
@@ -2759,7 +2449,6 @@ terraform apply
 
 La información mostrada es similar a la de `terraform plan`.
 
----
 
 ## Creación de la infraestructura (II)
 
@@ -2781,7 +2470,6 @@ Plan: 2 to add, 0 to change, 0 to destroy.
 
 Terraform solicitará confirmación antes de aplicar los cambios (`yes` para continuar).
 
----
 
 ## Creación de la infraestructura (III)
 
@@ -2802,7 +2490,6 @@ Listar los recursos actuales:
 terraform state list
 ```
 
----
 
 ## Modificación de la infraestructura
 
@@ -2824,7 +2511,6 @@ Aplica los cambios con `terraform apply` y comprueba que el contenedor se ha rec
 - El prefijo `-`/`+` significa que Terraform destruirá y volverá a crear el recurso
 - Terraform puede actualizar algunos atributos (prefijo `~`), pero cambiar el puerto de un contenedor requiere recrearlo
 
----
 
 ## Destrucción de la infraestructura
 
@@ -2840,7 +2526,6 @@ Tras confirmar, se eliminarán los recursos de la infraestructura.
 
 En el caso de Docker, los contenedores se eliminarán y las imágenes se eliminarán si no se utilizan en otros contenedores.
 
----
 
 ## Aplicación de Variables de Entorno (I)
 
@@ -2861,7 +2546,6 @@ variable "container_name" {
 - El tipo de variable es `string`
 - El valor predeterminado es `NginxContainer`
 
----
 
 ## Aplicación de Variables de Entorno (II)
 
@@ -2880,7 +2564,6 @@ resource "docker_container" "nginx" {
 
 Aplica los cambios con `terraform apply` y comprueba que el contenedor se ha recreado con el nuevo nombre.
 
----
 
 ## Aplicación de Variables de Entorno (III)
 
@@ -2900,7 +2583,6 @@ resource "docker_container" "nginx" {
 }
 ```
 
----
 
 ## Volúmenes de Docker
 
@@ -2926,7 +2608,6 @@ resource "docker_container" "nginx" {
 
 Cada volumen se define indicando el nombre del volumen y la ruta de montaje dentro del contenedor.
 
----
 
 ## Redes de Docker
 
@@ -2949,7 +2630,6 @@ resource "docker_container" "nginx" {
 }
 ```
 
----
 
 ## Tarea Entregable
 
@@ -2959,19 +2639,14 @@ resource "docker_container" "nginx" {
 4. Debe existir un volumen para almacenar los datos de la base de datos y que no se eliminen al destruir la infraestructura.
 5. Deben usarse variables de entorno para configurar la aplicación Wordpress.
 6. Debe existir un archivo de configuración `variables.tf` con las variables de entorno.
-
----
-
 <!-- Source: jenkins/jenkins-01.md -->
 # CI/CD con Jenkins
 
----
 
 ![Background image](img/cicd-jenkins.png)
 
 # Integración y Entrega Continuas
 
----
 
 ## Continous Integration / Continuous Delivery
 
@@ -2983,31 +2658,22 @@ resource "docker_container" "nginx" {
 
 Cada proceso tiene su propio **pipeline**
 
-<!--
-**Notes**
+>[!NOTE]
+>Cada uno de estos procesos tiene su propio pipeline
 
-Cada uno de estos procesos tiene su propio pipeline
--->
-
----
 
 ### Pipeline de CI
 
 ![CI pipeline](img/ci-pipeline.png)
 
-<!--
-**Notes**
+>[!NOTE]
+>CI es la práctica de construir y probar las aplicaciones en cada nueva versión.
 
-CI es la práctica de construir y probar las aplicaciones en cada nueva versión.
--->
-
----
 
 ### Pipeline de CD
 
 ![CD pipeline](img/cd-pipeline.png)
 
-<!--
 CD añade pruebas automáticas y despliegue automático al proceso de CI.
 
 Gracias a CD, el software entregado debe funcionar siempre.
@@ -3015,23 +2681,17 @@ Gracias a CD, el software entregado debe funcionar siempre.
 Todos los cambios que se incorporan en un _build_ pueden formar parte de un candidato a _release_.
 
 Antiguamente, los cambios pequeños solían tener que esperar a que se completaran otros muchos antes de ser empaquetados en una release. Siguiendo ese modelo, se suponía que el software era incorrecto hasta que era validado por profesionales de QA. Todas las pruebas se realizaban después del desarrollo, la responsabilidad de la calidad recaía exclusivamente en el equipo de QA.
--->
 
----
 
 ### Continuous Deployment
 
 ![CDEP pipeline](img/cdep-pipeline.png)
 
-<!--
-**Notes**
-
-El despliegue continuo es la práctica de desplegar automáticamente el software en producción después de cada cambio.
+>[!NOTE]
+>El despliegue continuo es la práctica de desplegar automáticamente el software en producción después de cada cambio.
 
 La entrega es manual, el despliegue es automático.
--->
 
----
 
 | 📙 | Definiciones |
 ----:|:----
@@ -3041,13 +2701,10 @@ La entrega es manual, el despliegue es automático.
 **Artefacto** | resultado del _build_. Pueden ser binarios ejecutables, bibliotecas, paquetes de instalación, etc., necesarios para ejecutar la aplicación
 **Release** | una versión específica y completa de una aplicación o software que se considera lista para ser distribuida y utilizada por los usuarios finales
 
----
 
 # Jenkins
 
 ![](img/jenkins.svg)
-
----
 
 
 ## ¿Qué es Jenkins?
@@ -3060,7 +2717,6 @@ La entrega es manual, el despliegue es automático.
 
 - Se puede integrar con una gran cantidad de herramientas de desarrollo y pruebas a través de complementos.
 
----
 
 ## Descargar e instalar Jenkins en Docker
 
@@ -3076,7 +2732,6 @@ Como requisito previo, debes tener instalado Docker en su sistema
 
 https://www.jenkins.io/doc/book/installing/docker/
 
----
 
 ### Imágenes de Docker
 
@@ -3096,7 +2751,6 @@ Crear una red de tipo bridge en Docker:
 docker network create jenkins
 ```
 
----
 
 ## Docker in Docker (dind)
 
@@ -3107,7 +2761,6 @@ Crea un contenedor hijo dentro de otro contenedor Docker
 - Contenedores e imágenes disponibles en el contenedor hijo
 - Acceso [privilegiado](https://docs.docker.com/engine/reference/run/#runtime-privilege-and-linux-capabilities) al host (¡seguridad!)
 
----
 
 ### Instalación dind:
 
@@ -3132,7 +2785,6 @@ RUN apt-get update && \
     curl -sSL https://get.docker.com/ | sh
 ```
 
----
 
 ### Docker in Docker (macOS y Linux) (comando)
 
@@ -3148,7 +2800,6 @@ docker run --name jenkins-docker --rm --detach \
   docker:dind --storage-driver overlay2
 ```
 
----
 
 ### Docker in Docker (Windows) (comando)
 
@@ -3164,7 +2815,6 @@ docker run --name jenkins-docker --rm --detach ^
   docker:dind
 ```
 
----
 
 ### Docker in Docker
 
@@ -3184,7 +2834,6 @@ docker run --name jenkins-docker # Nombre del contenedor
   --storage-driver overlay2 # Controlador de almacenamiento a utilizar
 ```
 
----
 
 ### Dockerfile
 
@@ -3205,7 +2854,6 @@ USER jenkins
 RUN jenkins-plugin-cli --plugins "blueocean docker-workflow"
 ```
 
----
 
 ### Construir imagen
 
@@ -3215,7 +2863,6 @@ Construye una nueva imagen de Docker a partir de este Dockerfile y asigna a la i
 docker build -t myjenkins-blueocean .
 ```
 
----
 
 ## Ejecutar Jenkins
 
@@ -3233,7 +2880,6 @@ docker run --name jenkins-blueocean --restart=on-failure --detach \
 
 Opcionalmente, puede añadirse `--env JAVA_OPTS="-Dorg.jenkinsci.plugins.durabletask.BourneShellScript.LAUNCH_DIAGNOSTICS=true" \` justo antes de la última línea para que Jenkins muestre los logs de los scripts.
 
----
 
 ### Ejecutar Jenkins (explicación)
 
@@ -3252,7 +2898,6 @@ docker run
   myjenkins-blueocean # Especifica la imagen de Docker a utilizar
 ```
 
----
 
 ## Accediendo al contenedor de Docker
 
@@ -3270,7 +2915,6 @@ docker logs jenkins-blueocean
 
 En caso de haber usado otro nombre para el contenedor, sustituye `jenkins-blueocean` por el nombre que hayas usado.
 
----
 
 ## Asistente de configuración
 
@@ -3283,7 +2927,6 @@ Este asistente te guía para:
   - Instalar plugins
   - Crear el primer usuario administrador
 
----
 
 ## Crear un Pipeline (I)
 
@@ -3297,7 +2940,6 @@ Un pipeline se define en un archivo de texto llamado `Jenkinsfile`.
 
 3. Haz clic en **OK**
 
----
 
 ## Crear un Pipeline (II)
 
@@ -3320,7 +2962,6 @@ Un pipeline se define en un archivo de texto llamado `Jenkinsfile`.
 
 3. Haz clic en **Guardar**
 
----
 
 ## Ejecutar un Pipeline
 
@@ -3332,7 +2973,6 @@ Un pipeline se define en un archivo de texto llamado `Jenkinsfile`.
 
 Debido a que personalizamos la imagen de Jenkins, también podemos usar la interfaz **Open Blue Ocean** (menú de la izquierda).
 
----
 
 ## Jenkinsfile
 
@@ -3354,7 +2994,6 @@ pipeline {
 }
 ```
 
----
 
 ### Agentes (Jenkins)
 
@@ -3376,7 +3015,6 @@ pipeline {
 }
 ```
 
----
 
 ### Agentes (Docker)
 
@@ -3402,7 +3040,6 @@ pipeline {
 }
 ```
 
----
 
 ### Variables de entorno
 
@@ -3420,7 +3057,6 @@ pipeline {
 - `key` es el nombre de la variable de entorno
 - `value` es el valor de la variable de entorno
 
----
 
 ### Etapas
 
@@ -3443,7 +3079,6 @@ pipeline {
   - Los pasos se ejecutan secuencialmente
   - Se usa `sh` para ejecutar comandos de shell
 
----
 
 ## Pipeline from SCM
 
@@ -3451,7 +3086,6 @@ Escribir y mantener pipelines complejas dentro del área de texto del Script en 
 
 La alternativa para facilitar este proceso es escribir tu Jenkinsfile en un IDE y luego subirlo al control de código fuente.
 
----
 
 ### Crear Pipeline from SCM
 
@@ -3467,7 +3101,6 @@ La alternativa para facilitar este proceso es escribir tu Jenkinsfile en un IDE 
 4. En **Script Path**, introduce el path del archivo Jenkinsfile
 5. Haz clic en **Guardar**
 
----
 
 ## Pipeline para desplegar aplicación React
 
@@ -3478,7 +3111,6 @@ Como requisito previo, debes publicar dos puertos adicionales en el contenedor D
 
 `--publish 3000:3000 --publish 5000:5000`
 
----
 
 ### Ejemplo: Pipeline para desplegar aplicación React (I)
 
@@ -3492,7 +3124,6 @@ Como requisito previo, debes publicar dos puertos adicionales en el contenedor D
    - **Script Path**: Jenkinsfile
    - **Branches to build**: */master
 
----
 
 ### Ejemplo: Pipeline para desplegar aplicación React (II)
 
@@ -3516,7 +3147,6 @@ pipeline {
 }
 ```
 
----
 
 ### Ejemplo: Pipeline para desplegar aplicación React (III)
 
@@ -3534,7 +3164,6 @@ Después de clonar tu repositorio local, `Jenkins`:
 
 Una vez finalizada la ejecución, podemos ver el resultado en la interfaz de Jenkins.
 
----
 
 ### Ejemplo: Pipeline para desplegar aplicación React (IV)
 
@@ -3554,7 +3183,6 @@ Actualizamos el archivo `Jenkinsfile`:
 
 Podemos volver a Jenkins y ejecutar el pipeline.
 
----
 
 ### Ejemplo: Pipeline para desplegar aplicación React (V)
 
@@ -3573,7 +3201,6 @@ Actualizamos el archivo `Jenkinsfile` con una etapa de Entrega/Despliegue:
 - El script `deliver.sh` entrega y despliega la aplicación en un contenedor Docker (más detalles dentro del script)
 - `input message` detiene la ejecución y solicita respuesta al usuario
 
----
 
 ### Ejemplo: Pipeline para desplegar aplicación React (VI)
 
@@ -3585,9 +3212,6 @@ Si accedemos a http://localhost:3000, podemos ver la aplicación React desplegad
 
 - Si accedemos al contenedor de Jenkins, podemos ver los archivos generados por el pipeline en el directorio `/var/jenkins_home/workspace/<nombre-del-pipeline>`
 - Además, con el comando `docker ps` podemos ver el contenedor creado durante la ejecución del pipeline
-
----
-
 <!-- Source: gitflow.md -->
 # Gitflow
 
@@ -3693,11 +3317,9 @@ It creates the master and develop branches, and asks for the respective names of
 
 In order to compare Git Flow to Git, we’ll provide the equivalent Git commands. The equivalent Git command to achieve this is:
 
-<!--
-**Notes**
+>[!NOTE]
+>`$ git checkout -b develop master`
 
-`$ git checkout -b develop master`
--->
 
 ![](img/cmd-git-01.png)
 
@@ -3758,11 +3380,9 @@ Now, start committing on your feature. When done, use:
 
 Without `gitflow`, this would be the command to achieve the same:
 
-<!--
-**Notes**
+>[!NOTE]
+>`$ git checkout -b feature/ST-TASK01 develop`
 
-`$ git checkout -b feature/ST-TASK01 develop`
--->
 
 ![](img/cmd-git-02.png)
 
@@ -3816,12 +3436,10 @@ Summary of actions:
 
 Without `gitflow`, you’d have to run the following:
 
-<!--
-**Notes**
-
-`$ git checkout feature/ST-TASK01`
+>[!NOTE]
+>`$ git checkout feature/ST-TASK01`
 `$ git push origin feature/ST-TASK01`
--->
+
 
 ![](img/cmd-git-03.png)
 
@@ -3858,13 +3476,11 @@ Summary of actions:
 
 And these are the equivalent vanilla Git commands to achieve the same result:
 
-<!--
-**Notes**
-
-`$ git checkout develop`
+>[!NOTE]
+>`$ git checkout develop`
 `$ git merge --no-ff feature/MYFEATURE`
 `$ git branch -d feature/MYFEATURE`
--->
+
 
 ![](img/cmd-git-04.png)
 
@@ -3925,11 +3541,9 @@ Follow-up actions:
 
 Without `gitflow`, you’d have to run the following command to create the same release branch:
 
-<!--
-**Notes**
+>[!NOTE]
+>`$ git checkout -b release/0.1.0 develop`
 
-`$ git checkout -b release/0.1.0 develop`
--->
 
 ![](img/cmd-git-05.png)
 
@@ -3980,12 +3594,10 @@ Summary of actions:
 
 Here are the equivalent commands for vanilla Git:
 
-<!--
-**Notes**
-
-`$ git checkout release/0.1.0`
+>[!NOTE]
+>`$ git checkout release/0.1.0`
 `$ git push origin release/0.1.0`
--->
+
 
 ![](img/cmd-git-06.png)
 
@@ -4036,16 +3648,14 @@ If you don't do it, your default editor is `vim`. After writing each releasing m
 
 The release finish command does a lot. Without the power of `gitflow`, you’d have to go through all these Git commands to get to the same result:
 
-<!--
-**Notes**
-
-`$ git checkout master`
+>[!NOTE]
+>`$ git checkout master`
 `$ git merge --no-ff release/0.1.0`
 `$ git tag -a 0.1.0`
 `$ git checkout develop`
 `$ git merge --no-ff release/0.1.0`
 `$ git branch -d release/0.1.0`
--->
+
 
 ![](img/cmd-git-07.png)
 
@@ -4120,11 +3730,9 @@ Follow-up actions:
 
 The equivalent non-`gitflow` command would be:
 
-<!--
-**Notes**
+>[!NOTE]
+>`$ git checkout -b hotfix/ST-TASK01 master`
 
-`$ git checkout -b hotfix/ST-TASK01 master`
--->
 
 ![](img/cmd-git-08.png)
 
@@ -4202,16 +3810,14 @@ Summary of actions:
 
 The `gitflow`’s hotfix command is another example of a great shortcut command. It does a lot. These are the Git equivalent commands:
 
-<!--
-**Notes**
-
-`$ git checkout master`
+>[!NOTE]
+>`$ git checkout master`
 `$ git merge --no-ff hotfix/ST-TASK01`
 `$ git tag -a ST-TASK01`
 `$ git checkout develop`
 `$ git merge --no-ff hotfix/ST-TASK01`
 `$ git branch -d hotfix/ST-TASK01`
--->
+
 
 ![](img/cmd-git-09.png)
 

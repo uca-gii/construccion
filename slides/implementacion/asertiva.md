@@ -537,6 +537,7 @@ end -- class ACCOUNT
 
 ### Contratos en Java
 
+- [OpenJML](https://www.openjml.org/), lenguaje de especificación que permite chequear programas en Java con anotaciones para especificar contratos: `@requires`, `@ensures`, `@loop_invariant`, `@old`, etc.
 - _iContract_, inactiva, recuperada en Java Contract Suite o [JContractS](http://jcontracts.sourceforge.net/)
 - _Contracts for Java_ o [Cofoja](https://github.com/nhatminhle/cofoja)
 - Usar [ApectJ Oval](https://sebthom.github.io/oval/USERGUIDE.html#programming-by-contract) para programar contratos
@@ -557,7 +558,7 @@ end -- class ACCOUNT
   } ensuring (_ * y == x)
   ```
 
-- Ejercicio: completar el tutorial en Scala sobre [Design by Contract](https://madusudanan.com/blog/scala-tutorials-part-29-design-by-contract/).
+- Ejercicio: Pedir a Copilot un tutorial de Design by Contract en Scala.
 
 ---
 
@@ -572,9 +573,10 @@ Para interesados:
 
 ---
 
-#### Ejemplo: Java + iContract
+#### Ejemplo: Java + anotaciones
 
-Java no permite especificar contratos (los _assert_ no son lo mismo). Así que hay que utilizar extensiones como _iContract_
+Java no permite especificar contratos (los _assert_ no son lo mismo). Así que hay que utilizar extensiones al código Java con anotaciones, como _OpenJML_ o _iContract_:
+
 
 ---
 
@@ -604,7 +606,41 @@ public class OrderedList {
 - Una postcondición puede necesitar expresarse con parámetros pasados a un método para verificar un comportamiento correcto.
 - Si el método puede cambiar el valor del parámetro pasado (parámetro mutable), el contrato puede incumplirse.
 
-  - Opción en Java: Usar `variable@pre` de _iContract_
+  - Opción: Usar `variable@pre` de _iContract_
+
+---
+
+#### Ejemplo: Java + OpenJML
+
+El mismo contrato puede expresarse en JML para que OpenJML lo verifique:
+
+```java
+public class OrderedList {
+  /*@ public invariant
+    @   (\forall int i; 1 <= i < elements.size();
+    @      elements.get(i - 1).value().compareTo(elements.get(i).value()) < 0);
+    @*/
+
+  /*@ requires !contains(aNode);
+    @ ensures contains(aNode);
+    @ ensures (\forall int i; 1 <= i < elements.size();
+    @      elements.get(i - 1).value().compareTo(elements.get(i).value()) < 0);
+    @*/
+  public void insertNode(final Node aNode) {
+    // ...
+  }
+}
+```
+
+---
+
+#### OpenJML: anotaciones
+
+- `requires`: expresa precondiciones que deben cumplirse antes de invocar un método.
+- `ensures`: expresa postcondiciones que deben cumplirse al terminar normalmente.
+- `invariant`: propiedad que debe mantenerse siempre cierta para los objetos de la clase.
+- `\result` y `\old(expr)`: permiten referirse al valor devuelto y al valor previo de una expresión.
+- `\forall` indica que la propiedad debe cumplirse para todos los valores que satisfacen la condición indicada.
 
 ---
 
