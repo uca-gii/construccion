@@ -1,0 +1,22 @@
+name: Notify dodero.github.io
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - "docs/implementacion/**"
+      - "site/**"
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Request publication of construccion-implementacion-notas
+        env:
+          GH_TOKEN: ${{ secrets.SITE_DISPATCH_TOKEN }}
+        run: |
+          gh api repos/dodero/dodero.github.io/dispatches \
+            --method POST \
+            -f event_type=publish-material \
+            -f 'client_payload[repository]=${{ github.repository }}' \
+            -f 'client_payload[ref]=${{ github.ref_name }}'

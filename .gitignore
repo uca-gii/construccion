@@ -126,3 +126,10 @@ dist
 
 #Node files
 **/node_modules
+
+# Docusaurus site (site/)
+site/build/
+site/.docusaurus/
+site/.cache-loader/
+# Fetched at install time by scripts/fetch-tools-jar.mjs - not vendored (18 MB)
+site/static/tools.jar
