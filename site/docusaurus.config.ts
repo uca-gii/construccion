@@ -1,6 +1,8 @@
 import {themes as prismThemes} from 'prism-react-renderer';
 import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
 import remarkRunnableCodeBlocks from './src/remark/runnable-code-blocks.mjs';
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
@@ -25,6 +27,16 @@ const config: Config = {
 
   onBrokenLinks: 'throw',
 
+  stylesheets: [
+    {
+      href: 'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css',
+      type: 'text/css',
+      integrity:
+        'sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+',
+      crossorigin: 'anonymous',
+    },
+  ],
+
   i18n: {
     defaultLocale: 'es',
     locales: ['es'],
@@ -39,6 +51,8 @@ const config: Config = {
           routeBasePath: '/',
           sidebarPath: './sidebars.ts',
           beforeDefaultRemarkPlugins: [remarkRunnableCodeBlocks],
+          remarkPlugins: [remarkMath],
+          rehypePlugins: [rehypeKatex],
           editUrl:
             'https://github.com/uca-gii/construccion/tree/master/docs/',
         },
