@@ -466,26 +466,26 @@ Un **trait** es una forma de separar las dos principales responsabilidades de un
 #### Ejemplo 2: Un iterador con Scala traits
 
 ```scala hl_lines="4"
-trait Iterator[A] {
-  def hasNext: Boolean
-  def next(): A
+trait Iterador[A] {
+  def haySiguiente: Boolean
+  def siguiente(): A
 }
 
-class IntIterator(to: Int) extends Iterator[Int] {
-  private var current = 0
-  override def hasNext: Boolean = current < to
-  override def next(): Int =  {
-    if (hasNext) {
-      val t = current
-      current += 1
+class IteradorEnteros(hasta: Int) extends Iterador[Int] {
+  private var actual = 0
+  override def haySiguiente: Boolean = actual < hasta
+  override def siguiente(): Int =  {
+    if (haySiguiente) {
+      val t = actual
+      actual += 1
       t
     } else 0
   }
 }
 
-val iterator = new IntIterator(10)
-println(iterator.next())  // prints 0
-println(iterator.next())  // prints 1
+val iterador = new IteradorEnteros(10)
+println(iterador.siguiente())  // prints 0
+println(iterador.siguiente())  // prints 1
 ```
 
 ---
@@ -829,7 +829,7 @@ public class Creador {
     PersonajeDeAccion[] x = {
       new PersonajeDeAccion(),
       new PersonajeDeAccion(),
-      new Heroe(),
+      new Heroe(), // Upcast implícito: se guarda como PersonajeDeAccion
       new PersonajeDeAccion()
     };
     return x;
@@ -847,7 +847,7 @@ public class Aventura {
   public static void main(String[] args) {
     PersonajeDeAccion[] cuatroFantasticos = new Creador().personajes();
     cuatroFantasticos[1].luchar();
-    cuatroFantasticos[2].luchar(); // Upcast
+    cuatroFantasticos[2].luchar(); // Ya es un PersonajeDeAccion (upcast al crearlo)
 
     // En tiempo de compilacion: metodo no encontrado:
     //! cuatroFantasticos[2].volar();
@@ -1072,14 +1072,14 @@ p {
 
 - Tipos **genéricos**
   - Ada
-  - C++ generics
-  - Java _templates_ (desde JDK 1.5)
+  - C++ _generics_ o _templates_
+  - Java _generics_ (desde JDK 1.5)
   - Scala
   - etc.
 
 - Diferencias entre lenguajes:
   - En C++, los genéricos permiten meta-programación en tiempo de compilación
-  - En Java, las plantillas son wrappers que _moldean_ objetos (_syntactic sugar_)
+  - En Java, los generics son wrappers que _moldean_ objetos (_syntactic sugar_)
   
 ---
 
@@ -1216,6 +1216,10 @@ object Test {
 }
 ```
 
+`writer3` y `writer4` producen el mismo resultado (`"A B C"`): mayúsculas y
+espaciado conmutan aquí. El problema no es el orden, sino la subclase extra
+que hace falta por cada combinación.
+
 ---
 
 ¿Y si aparece una nueva forma de imprimir?
@@ -1235,6 +1239,8 @@ class ChecksumWriter extends ConsoleWriter {
 ---
 
 #### Ejemplo: Herencia fuera de control
+
+_(Extrapolando cómo quedaría la jerarquía si se siguiera combinando_ `Uppercase`_,_ `WithSpaces` _y_ `Checksum` _entre sí)_
 
 @startuml
 
@@ -1326,9 +1332,9 @@ A B C
 
 ### Stackable traits
 
-- En Scala, los `trait` normales son como interfaces, se enlazan en tiempo de ejecución (no tienen acceso a `super`).
-- Se pueden redefinir [_stackable traits_](https://www.artima.com/articles/scalas-stackable-trait-pattern) con `abstract override` para dar acceso a `super`
-- `abstract` no es necesario si se redefine un método no abstracto, que ya tiene una implementación
+- Un trait puede llamar a `super.metodo()` con un `override` normal si ese método ya es concreto en la cadena de supertipos _declarada_ por el trait
+- Si el método es abstracto en esa cadena (como `Writer.print` aquí), hace falta `abstract override`: compila la llamada a `super` confiando en que, en tiempo de ejecución, la [_linearization_ de clases](https://www.scala-lang.org/files/archive/spec/2.13/05-classes-and-objects.html#class-linearization) (el orden en que Scala resuelve `super` al mezclar varios traits) habrá colocado antes una implementación concreta
+- Este patrón se llama [_stackable traits_](https://www.artima.com/articles/scalas-stackable-trait-pattern)
 - En diseño, son una implementación del patrón _Decorator_ pero por composición de clases en vez de por composición de objetos
 
 ---

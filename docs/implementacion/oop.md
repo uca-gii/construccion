@@ -248,8 +248,7 @@ Y entre dos formas de heredar:
 El polimorfismo es el fenómeno por el que, al llamar a una operación de un
 objeto del que no se sabe su tipo específico, se ejecuta el método adecuado
 de acuerdo con su tipo real. Se basa en el **enlace dinámico** (*dynamic
-binding*): el método a ejecutar se elige en tiempo de ejecución, en función de
-la clase del objeto.
+binding*): el método a ejecutar se elige en tiempo de ejecución, en función del **tipo**  del objeto.
 
 ### Overriding
 
@@ -291,18 +290,18 @@ en una clase tienen precedencia sobre los de un `trait`.
 #### Ejemplo 2: un iterador con Scala traits
 
 ```scala
-trait Iterator[A] {
-  def hasNext: Boolean
-  def next(): A
+trait Iterador[A] {
+  def haySiguiente: Boolean
+  def siguiente(): A
 }
 
-class IntIterator(to: Int) extends Iterator[Int] {
-  private var current = 0
-  override def hasNext: Boolean = current < to
-  override def next(): Int = {
-    if (hasNext) {
-      val t = current
-      current += 1
+class IteradorEnteros(hasta: Int) extends Iterador[Int] {
+  private var actual = 0
+  override def haySiguiente: Boolean = actual < hasta
+  override def siguiente(): Int = {
+    if (haySiguiente) {
+      val t = actual
+      actual += 1
       t
     } else 0
   }
@@ -310,9 +309,9 @@ class IntIterator(to: Int) extends Iterator[Int] {
 
 object Test {
   def main(args: Array[String]): Unit = {
-    val iterator = new IntIterator(10)
-    println(iterator.next()) // 0
-    println(iterator.next()) // 1
+    val iterador = new IteradorEnteros(10)
+    println(iterador.siguiente()) // 0
+    println(iterador.siguiente()) // 1
   }
 }
 ```
@@ -550,7 +549,7 @@ class Creador {
     PersonajeDeAccion[] x = {
         new PersonajeDeAccion(),
         new PersonajeDeAccion(),
-        new Heroe(),
+        new Heroe(), // Upcast implícito: se guarda como PersonajeDeAccion
         new PersonajeDeAccion()
     };
     return x;
@@ -561,7 +560,7 @@ public class Main {
   public static void main(String[] args) {
     PersonajeDeAccion[] cuatroFantasticos = new Creador().personajes();
     cuatroFantasticos[1].luchar();
-    cuatroFantasticos[2].luchar(); // Upcast, sin problema
+    cuatroFantasticos[2].luchar(); // Ya es un PersonajeDeAccion (upcast al crearlo)
 
     // En tiempo de compilación no existe el método volar() en PersonajeDeAccion:
     // cuatroFantasticos[2].volar();
@@ -697,9 +696,9 @@ Conviene distinguir dos ejes distintos:
 
 ¿El polimorfismo está ligado siempre a la herencia? No: también existe el
 **polimorfismo paramétrico**, mediante tipos genéricos (Ada, C++ *generics*,
-Java *templates* desde JDK 1.5, Scala...). Eso sí, con diferencias entre
+Java *generics* desde JDK 1.5, Scala...). Eso sí, con diferencias entre
 lenguajes: en C++ los genéricos permiten meta-programación en tiempo de
-compilación, mientras que en Java las plantillas son sobre todo *wrappers*
+compilación, mientras que en Java los generics son sobre todo *wrappers*
 que moldean objetos (*syntactic sugar*, por *type erasure*).
 
 ## Usos incorrectos de la herencia
@@ -803,6 +802,13 @@ class WithSpacesUppercaseWriter extends WithSpacesWriter {
 }
 ```
 
+Nótese que, para `"abc"`, ambas clases producen el mismo resultado
+(`"A B C"`): poner en mayúsculas y separar caracteres con espacios son
+operaciones que conmutan en este caso concreto. El problema que ilustran
+estas dos clases no es que el orden cambie el resultado, sino que hace falta
+una subclase distinta por cada combinación — y ese número crece
+combinatoriamente en cuanto aparece una forma de imprimir más.
+
 Y si aparece una **nueva** forma de imprimir (por ejemplo, con un *checksum*
 delante), hay que repetir la combinatoria para cada forma ya existente:
 
@@ -818,7 +824,11 @@ class ChecksumWriter extends ConsoleWriter {
 ```
 
 El resultado de seguir combinando así es una jerarquía de herencia que crece
-combinatoriamente y se vuelve inmanejable:
+combinatoriamente y se vuelve inmanejable. El diagrama extrapola cómo
+quedaría la jerarquía si se siguiera combinando `Uppercase`, `WithSpaces` y
+`Checksum` entre sí — no se ha mostrado en código cada una de esas
+combinaciones, solo las piezas sueltas (`UppercaseWriter`, `WithSpacesWriter`,
+`ChecksumWriter`) y dos combinaciones a modo de ejemplo:
 
 ![Jerarquía de herencia fuera de control entre las variantes de Writer](/img/implementacion/oop/writer-hierarchy.svg)
 
@@ -870,13 +880,19 @@ A B C
 
 Con *stackable traits*, cada combinación se construye **componiendo** traits
 en el momento de crear el objeto (`with Uppercase with WithSpaces`), en lugar
-de declarar una subclase nueva por cada combinación. En Scala, los `trait`
-normales son como interfaces y se enlazan en tiempo de ejecución (sin acceso
-a `super`); para poder llamar a `super` hace falta redefinirlos como
-*stackable* con `abstract override` (`abstract` no es necesario si el método
-que se redefine no es abstracto). En términos de diseño, este patrón es una
-implementación del patrón *Decorator*, pero por composición de **clases** en
-vez de composición de **objetos**.
+de declarar una subclase nueva por cada combinación. Un trait puede llamar a
+`super.metodo()` con un `override` normal si ese método ya es concreto en la
+cadena de supertipos *declarada* por el trait. Aquí no lo es: `Uppercase` y
+`WithSpaces` extienden `Writer`, que declara `print` como abstracto — así que
+hace falta `abstract override`, precisamente para poder compilar una llamada
+a `super.print` confiando en que, en tiempo de ejecución, la [*linearization*
+de clases](https://www.scala-lang.org/files/archive/spec/2.13/05-classes-and-objects.html#class-linearization)
+(el orden en que Scala resuelve `super` cuando se mezclan varios traits)
+habrá colocado antes una implementación concreta (la de `ConsoleWriter`,
+mezclada al construir el objeto). `abstract` no sería necesario si el trait
+extendiera directamente una clase con `print` ya concreto. En términos de
+diseño, este patrón es una implementación del patrón *Decorator*, pero por
+composición de **clases** en vez de composición de **objetos**.
 
 ## Implementación y diseño: rectángulos y cuadrados
 
